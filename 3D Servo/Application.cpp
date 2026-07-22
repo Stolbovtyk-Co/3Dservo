@@ -27,7 +27,7 @@ void Application::Initialize() {
         WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT, // Overlay Flags
         L"ServoOverlayClass", L"Overlay",
         WS_POPUP, // No frame
-        0, 0, 800, 600, // Size
+        0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), // Size
         nullptr, nullptr, hInstance, nullptr
     );
 
