@@ -71,5 +71,52 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 			&m_swapChain
 		);
 	}
+
+	hr = m_swapChain->GetBuffer(
+		0,
+		__uuidof(ID3D11Texture2D),
+		(void**)&m_pBackBuffer);
+
+	hr = m_device->CreateRenderTargetView(
+		m_pBackBuffer.Get(),
+		nullptr,
+		m_pRenderTarget.GetAddressOf()
+	);
+
+	m_pBackBuffer->GetDesc(&m_bbDesc);
+
+	CD3D11_TEXTURE2D_DESC depthStencilDesc(
+		DXGI_FORMAT_D24_UNORM_S8_UINT,
+		static_cast<UINT> (m_bbDesc.Width),
+		static_cast<UINT> (m_bbDesc.Height),
+		1, // This depth stencil view has only one texture.
+		1, // Use a single mipmap level.
+		D3D11_BIND_DEPTH_STENCIL
+	);
+
+	m_device->CreateTexture2D(
+		&depthStencilDesc,
+		nullptr,
+		&m_pDepthStencil
+	);
+
+	CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
+
+	m_device->CreateDepthStencilView(
+		m_pDepthStencil.Get(),
+		&depthStencilViewDesc,
+		&m_pDepthStencilView
+	);
+
+	ZeroMemory(&m_viewport, sizeof(D3D11_VIEWPORT));
+	m_viewport.Height = (float)m_bbDesc.Height;
+	m_viewport.Width = (float)m_bbDesc.Width;
+	m_viewport.MinDepth = 0;
+	m_viewport.MaxDepth = 1;
+
+	m_context->RSSetViewports(
+		1,
+		&m_viewport
+	);
 	//Other shit from private
 }
