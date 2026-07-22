@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="3D Servo/3D Servo.vcxproj" />
+  <Project Path="3D Servo\3D Servo.vcxproj" />
 </Solution>
