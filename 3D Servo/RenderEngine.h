@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d11.h>
+#include <wrl/client.h>
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -14,8 +15,8 @@ public:
     void Render();
 
 private:
-    ID3D11Device* m_device = nullptr;
-    ID3D11DeviceContext* m_context = nullptr;
-    IDXGISwapChain* m_swapChain = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Device> m_device = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context = nullptr;
+    Microsoft::WRL::ComPtr <IDXGISwapChain> m_swapChain = nullptr;
     ID3D11RenderTargetView* m_renderTargetView = nullptr;
 };

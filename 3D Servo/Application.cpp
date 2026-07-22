@@ -60,15 +60,16 @@ LRESULT CALLBACK Application::WindowProc(HWND m_hWnd, UINT message, WPARAM wPara
 }
 
 void Application::Process() {
+    bool bGotMsg;
     MSG msg = {};
-
-    while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg); 
-
-        if (msg.message == WM_QUIT) {
-
+    PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE);
+    while (WM_QUIT != msg.message) {
+        bGotMsg = (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE) != 0);
+        if (bGotMsg) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
         }
+
     }
 }
 
