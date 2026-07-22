@@ -8,7 +8,7 @@ Application::Application() {
 }
 
 void Application::Initialize() {
-#pragma region Window Setting 
+    #pragma region Window Setting 
     // Open the window, it's stuffy here.
 
     HINSTANCE hInstance = GetModuleHandle(nullptr);
@@ -23,21 +23,19 @@ void Application::Initialize() {
 
     RegisterClassExW(&wc); 
 
-    hWnd = CreateWindowExW(
-        WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT, // Overlay Flags
+    m_hWnd = CreateWindowExW(
+        WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT,  // Overlay Flags
         L"ServoOverlayClass", L"Overlay",
         WS_POPUP, // No frame
-        0, 0, 800, 600, // Size
+        0, 0, WIN_WIDTH, WIN_HEIGHT, // Size
         nullptr, nullptr, hInstance, nullptr
     );
 
-    // Invisibility
-    MARGINS margins = { -1, -1, -1, -1 };
-    DwmExtendFrameIntoClientArea(hWnd, &margins);
-
     // Show Window
-    ShowWindow(hWnd, SW_SHOW);
-#pragma endregion
+    ShowWindow(m_hWnd, SW_SHOW);
+    #pragma endregion
+
+    m_renderEngine.Initialize(m_hWnd, WIN_WIDTH, WIN_HEIGHT);
 
     m_isRunning = true; 
 }
@@ -52,13 +50,13 @@ void Application::Run() {
 /// <summary>
 /// Scary Function For Scary System, Don't open!
 /// </summary>
-LRESULT CALLBACK Application::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK Application::WindowProc(HWND m_hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
     case WM_DESTROY:
         PostQuitMessage(0); 
         return 0;
     }
-    return DefWindowProc(hWnd, message, wParam, lParam);
+    return DefWindowProc(m_hWnd, message, wParam, lParam);
 }
 
 void Application::Process() {

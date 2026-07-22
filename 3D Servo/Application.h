@@ -1,11 +1,16 @@
 #pragma once
 #include <Windows.h>
+#include "RenderEngine.h"
 
 class Application
 {
 private:
+	const int WIN_WIDTH = GetSystemMetrics(SM_CXSCREEN);
+	const int WIN_HEIGHT = GetSystemMetrics(SM_CYSCREEN);
 	bool m_isRunning;
-	HWND hWnd;
+
+	HWND m_hWnd = nullptr;
+	RenderEngine m_renderEngine;
 public:
 	Application();
 
