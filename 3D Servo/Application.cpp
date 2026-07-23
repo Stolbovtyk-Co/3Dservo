@@ -46,7 +46,7 @@ void Application::Initialize() {
 
 void Application::Run() {
 	while (m_isRunning) {
-        m_renderEngine.Clear(1.0f, 1.0f, 1.0f, 0.0f);
+        m_renderEngine.Clear(0.0f, 1.0f, 0.0f, 0.5f);
 		Process();
 		Risovat();
 	}

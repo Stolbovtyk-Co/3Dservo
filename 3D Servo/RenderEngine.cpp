@@ -159,7 +159,7 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 }
 
 void RenderEngine::Clear(float r, float g, float b, float a) {
-	float clearColor[] = { r, g, b, a };
+	float clearColor[] = { r * a, g * a, b * a, a };
 
 	m_context->ClearRenderTargetView(m_pRenderTarget.Get(), clearColor);
 
