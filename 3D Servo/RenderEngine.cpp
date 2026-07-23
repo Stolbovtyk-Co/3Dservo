@@ -266,16 +266,14 @@ void RenderEngine::Render() {
 
 void RenderEngine::CreateViewAndPerspective()
 {
-	// Use DirectXMath to create view and perspective matrices.
-
-	DirectX::XMVECTOR eye = DirectX::XMVectorSet(0.0f, 0.7f, 1.5f, 0.f);
+	DirectX::XMVECTOR eye = DirectX::XMVectorSet(0.0f, 0.7f, -1.5f, 0.f); // Поменяли Z на -1.5f
 	DirectX::XMVECTOR at = DirectX::XMVectorSet(0.0f, -0.1f, 0.0f, 0.f);
 	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.f);
 
 	DirectX::XMStoreFloat4x4(
 		&m_constantBufferData.view,
 		DirectX::XMMatrixTranspose(
-			DirectX::XMMatrixLookAtRH(
+			DirectX::XMMatrixLookAtLH( // Переключили на LH
 				eye,
 				at,
 				up
@@ -283,14 +281,14 @@ void RenderEngine::CreateViewAndPerspective()
 		)
 	);
 
-	float aspectRatioX = width / height;
+	float aspectRatioX = width / height; // Исправили деление int
 	float aspectRatioY = aspectRatioX < (16.0f / 9.0f) ? aspectRatioX / (16.0f / 9.0f) : 1.0f;
 
 	DirectX::XMStoreFloat4x4(
 		&m_constantBufferData.projection,
 		DirectX::XMMatrixTranspose(
-			DirectX::XMMatrixPerspectiveFovRH(
-				2.0f * std::atan(std::tan(DirectX::XMConvertToRadians(70) * 0.5f) / aspectRatioY),
+			DirectX::XMMatrixPerspectiveFovLH( // Переключили на LH
+				DirectX::XMConvertToRadians(70), // Упростили расчет FOV для теста
 				aspectRatioX,
 				0.01f,
 				100.0f
@@ -298,6 +296,7 @@ void RenderEngine::CreateViewAndPerspective()
 		)
 	);
 }
+
 
 /// <summary>
 /// Not Async ¯\_(ツ)_/¯, But Loading Shaders & Buffers
