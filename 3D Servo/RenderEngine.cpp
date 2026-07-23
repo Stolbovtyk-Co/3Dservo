@@ -16,11 +16,8 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 	bb.hRgnBlur = NULL;
 
 	// Apply Blur Behind
-	HRESULT hr = DwmEnableBlurBehindWindow(hWnd, &bb);
-	if (!SUCCEEDED(hr))
-	{
-		std::cout << hr;
-	}
+	HRESULT hr;
+	//hr = DwmEnableBlurBehindWindow(hWnd, &bb);
 
 	D3D_FEATURE_LEVEL levels[] = {
 	D3D_FEATURE_LEVEL_11_1,
@@ -71,7 +68,7 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 	scd.BufferCount = 2;
 	scd.Scaling = DXGI_SCALING_STRETCH;            // New: Specify resizing behavior
 	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;  // New: Best practice flip model
-	scd.AlphaMode = DXGI_ALPHA_MODE_IGNORE;        // New: Background transparency
+	scd.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;        // New: Background transparency
 	scd.Flags = 0;
 
 	Microsoft::WRL::ComPtr<IDXGIDevice3> dxgiDevice;
@@ -101,6 +98,13 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 			<< std::dec          // Reset stream to decimal (good practice)
 			<< std::endl;
 	}
+
+	DCompositionCreateDevice(dxgiDevice.Get(), IID_PPV_ARGS(&dcompDevice));
+	dcompDevice->CreateTargetForHwnd(hWnd, TRUE, &dcompTarget);
+	dcompDevice->CreateVisual(&visual);
+	visual->SetContent(m_swapChain.Get());
+	dcompTarget->SetRoot(visual.Get());
+	dcompDevice->Commit();
 
 	hr = m_swapChain->GetBuffer(
 		0,
