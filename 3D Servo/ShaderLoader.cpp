@@ -12,7 +12,7 @@ void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 	FILE* vShader, * pShader;
 	BYTE* bytes;
 
-	size_t destSize = 4096;
+	size_t destSize = 20000;
 	size_t bytesRead = 0;
 	bytes = new BYTE[destSize];
 
@@ -23,7 +23,7 @@ void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 		return;
 	}
 
-	bytesRead = fread_s(bytes, destSize, 1, 4096, vShader);
+	bytesRead = fread_s(bytes, destSize, 1, 20000, vShader);
 	hr = device->CreateVertexShader(
 		bytes,
 		bytesRead,
@@ -31,7 +31,8 @@ void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 		&m_vertexShader
 	);
 	if (!SUCCEEDED(hr)) {
-	//	HRErrorHandler::Throw(hr);
+		std::cout << bytes;
+		//0x80070057
 	}
 
 	D3D11_INPUT_ELEMENT_DESC iaDesc[] =
@@ -60,7 +61,7 @@ void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 	bytes = new BYTE[destSize];
 	bytesRead = 0;
 	fopen_s(&pShader, "PixelShader.cso", "rb");
-	bytesRead = fread_s(bytes, destSize, 1, 4096, pShader);
+	bytesRead = fread_s(bytes, destSize, 1, 20000, pShader);
 	hr = device->CreatePixelShader(
 		bytes,
 		bytesRead,

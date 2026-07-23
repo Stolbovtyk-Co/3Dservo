@@ -13,6 +13,7 @@ PS_OUTPUT main(PS_INPUT In)
     PS_OUTPUT Output;
 
     Output.RGBAColor = In.Color;
+    //Output.RGBAColor.a = 1.0f;
     Output.RGBAColor.rgb *= Output.RGBAColor.a;
 
     return Output;

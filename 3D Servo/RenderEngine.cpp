@@ -5,6 +5,7 @@
 #include <dwmapi.h>
 #include <iomanip>
 #include <DirectXMath.h>
+#include <iostream>
 
 using namespace DirectX;
 
@@ -218,19 +219,15 @@ void RenderEngine::Render() {
 		&offset
 	);
 	
-	
-	
 		m_context->IASetIndexBuffer(
 		m_indexBuffer.Get(), //BufferLoader
 		DXGI_FORMAT_R16_UINT,
 		0
 	);
-	
 
 	m_context->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
 	);
-	
 	
 		m_context->VSSetShader(
 		m_vertexShader.Get(), //ShaderLoader
@@ -238,13 +235,13 @@ void RenderEngine::Render() {
 		0
 	);
 	
+	m_context->IASetInputLayout(m_inputLayout.Get());
 
 	m_context->VSSetConstantBuffers(
 		0,
 		1,
 		m_constantBuffer.GetAddressOf()
 	);
-
 	
 	m_context->PSSetShader(
 		m_pixelShader.Get(), //ShaderLoader
