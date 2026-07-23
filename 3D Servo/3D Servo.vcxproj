@@ -140,12 +140,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="HRErrorHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
+    <ClCompile Include="ShaderLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="HRErrorHandler.h" />
     <ClInclude Include="RenderEngine.h" />
+    <ClInclude Include="ShaderLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

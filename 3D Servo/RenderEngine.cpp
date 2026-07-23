@@ -10,16 +10,7 @@
 
 void RenderEngine::Initialize(HWND hWnd, int width, int height)
 {
-	DWM_BLURBEHIND bb = { 0 };
-
-	// Enable Blur Behind and apply to the entire client area
-	bb.dwFlags = DWM_BB_ENABLE;
-	bb.fEnable = true;
-	bb.hRgnBlur = NULL;
-
-	// Apply Blur Behind
 	HRESULT hr;
-	//hr = DwmEnableBlurBehindWindow(hWnd, &bb);
 
 	D3D_FEATURE_LEVEL levels[] = {
 	D3D_FEATURE_LEVEL_11_1,

@@ -24,12 +24,24 @@
     <ClCompile Include="RenderEngine.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderLoader.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="HRErrorHandler.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="RenderEngine.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderLoader.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="HRErrorHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
