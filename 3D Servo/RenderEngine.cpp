@@ -4,12 +4,27 @@
 #include <iostream>
 #include <dwmapi.h>
 #include <iomanip>
+#include <DirectXMath.h>
+
+using namespace DirectX;
 
 #pragma comment(lib, "dcomp.lib")
 
-void RenderEngine::Initialize(HWND hWnd, int width, int height)
+
+RenderEngine::RenderEngine(std::shared_ptr<Logger> logger, HWND hWnd, int Width, int Height)
+{
+	m_logger = logger;
+	Initialize(hWnd, Width, Height);
+	CreateViewAndPerspective();
+	m_frameCount = 0;
+}
+
+void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 {
 	HRESULT hr;
+
+	this->width = Width;
+	this->height = Height;
 
 	D3D_FEATURE_LEVEL levels[] = {
 	D3D_FEATURE_LEVEL_11_1,
@@ -168,4 +183,55 @@ void RenderEngine::Clear(float r, float g, float b, float a) {
 
 void RenderEngine::Render() {
 	m_swapChain->Present(1, 0);
+}
+
+void RenderEngine::Update()
+{
+	DirectX::XMStoreFloat4x4(
+		&m_constantBufferData.world,
+		DirectX::XMMatrixTranspose(
+			DirectX::XMMatrixRotationY(
+				DirectX::XMConvertToRadians(
+					(float)m_frameCount++
+				)
+			)
+		)
+	);
+
+	if (m_frameCount == MAXUINT)  m_frameCount = 0;
+}
+
+void RenderEngine::CreateViewAndPerspective()
+{
+	// Use DirectXMath to create view and perspective matrices.
+
+	DirectX::XMVECTOR eye = DirectX::XMVectorSet(0.0f, 0.7f, 1.5f, 0.f);
+	DirectX::XMVECTOR at = DirectX::XMVectorSet(0.0f, -0.1f, 0.0f, 0.f);
+	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.f);
+
+	DirectX::XMStoreFloat4x4(
+		&m_constantBufferData.view,
+		DirectX::XMMatrixTranspose(
+			DirectX::XMMatrixLookAtRH(
+				eye,
+				at,
+				up
+			)
+		)
+	);
+
+	float aspectRatioX = width / height;
+	float aspectRatioY = aspectRatioX < (16.0f / 9.0f) ? aspectRatioX / (16.0f / 9.0f) : 1.0f;
+
+	DirectX::XMStoreFloat4x4(
+		&m_constantBufferData.projection,
+		DirectX::XMMatrixTranspose(
+			DirectX::XMMatrixPerspectiveFovRH(
+				2.0f * std::atan(std::tan(DirectX::XMConvertToRadians(70) * 0.5f) / aspectRatioY),
+				aspectRatioX,
+				0.01f,
+				100.0f
+			)
+		)
+	);
 }
