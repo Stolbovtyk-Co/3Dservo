@@ -1,11 +1,13 @@
 #pragma once
 #include <Windows.h>
 #include <wrl/client.h>
+#include <d3d11.h>
+#include <DirectXMath.h>
 
 class ShaderLoader
 {
 public:
-	HRESULT LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device);
+	void LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device);
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;

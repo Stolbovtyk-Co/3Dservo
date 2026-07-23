@@ -2,10 +2,9 @@
 #include <d3d11.h>
 #include <iostream>
 #include <fstream>
-#include <DirectXMath.h>
 #include "HRErrorHandler.h"
 
-HRESULT ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
+void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 {
 	ID3D11Device* device = com_device.Get();
 	HRESULT hr = S_OK;;
@@ -26,7 +25,7 @@ HRESULT ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_devic
 		&m_vertexShader
 	);
 	if (!SUCCEEDED(hr)) {
-		HRErrorHandler::Throw(hr);
+	//	HRErrorHandler::Throw(hr);
 	}
 
 	D3D11_INPUT_ELEMENT_DESC iaDesc[] =
@@ -47,7 +46,7 @@ HRESULT ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_devic
 	);
 
 	if (!SUCCEEDED(hr)) {
-				HRErrorHandler::Throw(hr);
+	//	HRErrorHandler::Throw(hr);
 	}
 
 	delete bytes;
@@ -64,7 +63,7 @@ HRESULT ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_devic
 	);
 
 	if (!SUCCEEDED(hr)) {
-				HRErrorHandler::Throw(hr);
+	//	HRErrorHandler::Throw(hr);
 	}
 
 	delete bytes;
@@ -82,11 +81,10 @@ HRESULT ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_devic
 	);
 
 	if (!SUCCEEDED(hr)) {
-		HRErrorHandler::Throw(hr);
+	//	HRErrorHandler::Throw(hr);
 	}
 
 	fclose(vShader);
 	fclose(pShader);
 
-	return S_OK;
 }
