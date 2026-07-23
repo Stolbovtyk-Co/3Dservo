@@ -6,6 +6,8 @@
 #include <iostream>
 #include <iomanip>
 
+#pragma comment(lib, "dcomp.lib")
+
 void RenderEngine::Initialize(HWND hWnd, int width, int height)
 {
 	DWM_BLURBEHIND bb = { 0 };
