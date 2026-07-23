@@ -24,5 +24,5 @@ private:
     D3D11_TEXTURE2D_DESC                           m_bbDesc;
     Microsoft::WRL::ComPtr<ID3D11Texture2D>        m_pDepthStencil = nullptr;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_pDepthStencilView = nullptr;
-    D3D11_VIEWPORT m_viewport = nullptr;
+    D3D11_VIEWPORT m_viewport;
 };
