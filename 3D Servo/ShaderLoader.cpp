@@ -16,7 +16,7 @@ void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 	size_t bytesRead = 0;
 	bytes = new BYTE[destSize];
 
-	fopen_s(&vShader, "CubeVertexShader.cso", "rb");
+	fopen_s(&vShader, "VertexShader.cso", "rb");
 	bytesRead = fread_s(bytes, destSize, 1, 4096, vShader);
 	hr = device->CreateVertexShader(
 		bytes,
@@ -53,7 +53,7 @@ void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 
 	bytes = new BYTE[destSize];
 	bytesRead = 0;
-	fopen_s(&pShader, "CubePixelShader.cso", "rb");
+	fopen_s(&pShader, "PixelShader.cso", "rb");
 	bytesRead = fread_s(bytes, destSize, 1, 4096, pShader);
 	hr = device->CreatePixelShader(
 		bytes,
