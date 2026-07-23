@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include "RenderEngine.h"
+#include "Logger.h"
 #include <string>
 
 class Application
@@ -12,7 +13,8 @@ private:
 	static std::wstring m_windowClassName;
 
 	HWND m_hWnd = nullptr;
-	RenderEngine m_renderEngine;
+	std::shared_ptr<Logger> m_logger = std::make_shared<Logger>();
+	std::unique_ptr<RenderEngine> m_renderEngine = nullptr;
 public:
 	Application();
 

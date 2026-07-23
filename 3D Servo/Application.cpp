@@ -1,6 +1,5 @@
 #include <dwmapi.h>
 #include "Application.h"
-#include <iostream>
 
 #pragma comment(lib, "dwmapi.lib")
 
@@ -9,6 +8,7 @@
 std::wstring Application::m_windowClassName = L"ServoOverlayClass"; 
 
 Application::Application() {
+    m_renderEngine = std::make_unique<RenderEngine>(m_logger);
     Initialize();
     
     m_isRunning = true;
@@ -41,12 +41,11 @@ void Application::Initialize() {
 
     ShowWindow(m_hWnd, SW_SHOW);
 
-    m_renderEngine.Initialize(m_hWnd, WIN_WIDTH, WIN_HEIGHT);
+    m_renderEngine->Initialize(m_hWnd, WIN_WIDTH, WIN_HEIGHT);
 }
 
 void Application::Run() {
 	while (m_isRunning) {
-        m_renderEngine.Clear(0.0f, 1.0f, 0.0f, 0.5f);
 		Process();
 		Risovat();
 	}
@@ -66,7 +65,7 @@ LRESULT CALLBACK Application::WindowProc(HWND m_hWnd, UINT message, WPARAM wPara
 
 void Application::Process() {
     MSG msg = {};
-    while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) { //Infinite loop fixed
+    while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
 
@@ -76,7 +75,7 @@ void Application::Process() {
     }
 }
 
-void Application::Risovat() { //TODO: FIX ALPHA BLENDING OR SMTH
-
-    m_renderEngine.Render();
+void Application::Risovat() {
+    m_renderEngine->Clear(0.0f, 1.0f, 0.0f, 0.5f);
+    m_renderEngine->Render();
 }

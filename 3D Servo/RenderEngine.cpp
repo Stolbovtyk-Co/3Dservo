@@ -3,7 +3,6 @@
 #include <dxgi1_3.h>
 #include <iostream>
 #include <dwmapi.h>
-#include <iostream>
 #include <iomanip>
 
 #pragma comment(lib, "dcomp.lib")
@@ -46,11 +45,15 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 		&m_featureLevel,            // Returns feature level of device created.
 		&context                    // Returns the device immediate context.
 	);
+	if (!SUCCEEDED(hr)) {
+		m_logger->logHR(hr);
+		return;
+	}
+
 	device.As(&m_device);
 	context.As(&m_context);
 
 	DXGI_SWAP_CHAIN_DESC1 scd = {};
-	//ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
 	scd.Width = width;                             // Moved out of BufferDesc
 	scd.Height = height;                            // Moved out of BufferDesc
 	scd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;       // Moved out of BufferDesc
@@ -71,25 +74,22 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 	Microsoft::WRL::ComPtr<IDXGIFactory2> factory;
 
 	hr = dxgiDevice->GetAdapter(&adapter);
+	if (!SUCCEEDED(hr)) {
+		m_logger->logHR(hr);
+		return;
+	}
+	
+	adapter->GetParent(IID_PPV_ARGS(&factory));
 
-	if (SUCCEEDED(hr))
-	{
-		adapter->GetParent(IID_PPV_ARGS(&factory));
-
-		hr = factory->CreateSwapChainForComposition(
-			m_device.Get(),
-			&scd,
-			nullptr,
-			&m_swapChain
-		);
-		std::cout << "HRESULT: 0x"
-			<< std::hex          // Switch to hexadecimal output
-			<< std::uppercase    // Use uppercase letters (A-F)
-			<< std::setfill('0') // Pad with zeros if the number is short
-			<< std::setw(8)      // Ensure the output is exactly 8 characters wide
-			<< hr
-			<< std::dec          // Reset stream to decimal (good practice)
-			<< std::endl;
+	hr = factory->CreateSwapChainForComposition(
+		m_device.Get(),
+		&scd,
+		nullptr,
+		&m_swapChain
+	);
+	if (!SUCCEEDED(hr)) {
+		m_logger->logHR(hr);
+		return;
 	}
 
 	DCompositionCreateDevice(dxgiDevice.Get(), IID_PPV_ARGS(&dcompDevice));
@@ -103,12 +103,20 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 		0,
 		__uuidof(ID3D11Texture2D),
 		(void**)&m_pBackBuffer);
+	if (!SUCCEEDED(hr)) {
+		m_logger->logHR(hr);
+		return;
+	}
 
 	hr = m_device->CreateRenderTargetView(
 		m_pBackBuffer.Get(),
 		nullptr,
 		m_pRenderTarget.GetAddressOf()
 	);
+	if (!SUCCEEDED(hr)) {
+		m_logger->logHR(hr);
+		return;
+	}
 
 	m_pBackBuffer->GetDesc(&m_bbDesc);
 
@@ -147,6 +155,7 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 	);
 
 	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get()); 
+
 }
 
 void RenderEngine::Clear(float r, float g, float b, float a) {
