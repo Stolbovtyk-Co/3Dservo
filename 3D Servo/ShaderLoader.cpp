@@ -69,6 +69,7 @@ HRESULT ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_devic
 
 	delete bytes;
 
+
 	CD3D11_BUFFER_DESC cbDesc(
 		sizeof(ConstantBufferStruct),
 		D3D11_BIND_CONSTANT_BUFFER
@@ -81,7 +82,7 @@ HRESULT ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_devic
 	);
 
 	if (!SUCCEEDED(hr)) {
-				HRErrorHandler::Throw(hr);
+		HRErrorHandler::Throw(hr);
 	}
 
 	fclose(vShader);
