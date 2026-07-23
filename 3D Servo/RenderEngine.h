@@ -3,10 +3,15 @@
 #include <wrl/client.h>
 #include <dxgi1_3.h>
 #include<dcomp.h>
+
 #include "Logger.h"
 #include "ShaderLoader.h"
+#include "BufferLoader.h"
 
 #pragma comment(lib, "d3d11.lib")
+
+class ShaderLoader;
+class BufferLoader;
 
 class RenderEngine {
 public:
@@ -21,6 +26,8 @@ public:
     void Update();
 
     void CreateViewAndPerspective();
+
+    void PreloadAssetsAsync();
 
 private:
     ShaderLoader::ConstantBufferStruct m_constantBufferData;
@@ -43,4 +50,21 @@ private:
     Microsoft::WRL::ComPtr<IDCompositionVisual> visual;
 
     std::shared_ptr<Logger> m_logger = nullptr;
+    //Loaders
+    ShaderLoader m_shaderLoader;
+    BufferLoader m_bufferLoader;
+
+    //=========================\\
+    //Direct3D device resources\\
+    //=========================\\
+    
+    //Shaders
+    Microsoft::WRL::ComPtr<ID3D11VertexShader>      m_vertexShader;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader>       m_pixelShader;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>            m_constantBuffer;
+    //Buffers
+    Microsoft::WRL::ComPtr<ID3D11Buffer>            m_vertexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>            m_indexBuffer;
+    //Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_pInputLayoutExtended;
 };

@@ -168,9 +168,6 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		1,
 		&m_viewport
 	);
-
-	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get()); 
-
 }
 
 void RenderEngine::Clear(float r, float g, float b, float a) {
@@ -179,10 +176,6 @@ void RenderEngine::Clear(float r, float g, float b, float a) {
 	m_context->ClearRenderTargetView(m_pRenderTarget.Get(), clearColor);
 
 	m_context->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-}
-
-void RenderEngine::Render() {
-	m_swapChain->Present(1, 0);
 }
 
 void RenderEngine::Update()
@@ -199,6 +192,79 @@ void RenderEngine::Update()
 	);
 
 	if (m_frameCount == MAXUINT)  m_frameCount = 0;
+}
+
+void RenderEngine::Render() {
+	m_context->UpdateSubresource(
+		m_constantBuffer.Get(),
+		0,
+		nullptr,
+		&m_constantBufferData,
+		0,
+		0
+	);
+
+	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get());
+	
+
+	UINT stride = sizeof(BufferLoader::VertexPositionColor);
+	UINT offset = 0;
+
+	m_context->IASetVertexBuffers(
+		0,
+		1,
+		m_vertexBuffer.GetAddressOf(), //BufferLoader
+		&stride,
+		&offset
+	);
+	
+	
+	
+		m_context->IASetIndexBuffer(
+		m_indexBuffer.Get(), //BufferLoader
+		DXGI_FORMAT_R16_UINT,
+		0
+	);
+	
+
+	m_context->IASetPrimitiveTopology(
+		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+	);
+	
+	
+		m_context->VSSetShader(
+		m_vertexShader.Get(), //ShaderLoader
+		nullptr,
+		0
+	);
+	
+
+	m_context->VSSetConstantBuffers(
+		0,
+		1,
+		m_constantBuffer.GetAddressOf()
+	);
+
+	
+	m_context->PSSetShader(
+		m_pixelShader.Get(), //ShaderLoader
+		nullptr,
+		0
+	);
+
+	m_context->DrawIndexed(
+		m_bufferLoader.GetIndexCount(), //BufferLoader
+		0,
+		0
+	);
+	
+	//Update  `m_contantBufferData`, `m_pConstantBuffer.Get()`
+	//Clear  Application::Risovat()
+	//Settings `VertexPositionColor`, `m_pVertexBuffer` ,`m_pIndexBuffer`, 
+	//VertexShader ShaderLoader::Load->GetVertex(), `m_pConstantBuffer`
+	//PixelShader ShaderLoader::Load->GetPixel()
+
+	m_swapChain->Present(1, 0);
 }
 
 void RenderEngine::CreateViewAndPerspective()
@@ -234,4 +300,26 @@ void RenderEngine::CreateViewAndPerspective()
 			)
 		)
 	);
+}
+
+/// <summary>
+/// Not Async ¯\_(ツ)_/¯, But Loading Shaders & Buffers
+/// </summary>
+void RenderEngine::PreloadAssetsAsync() //TODO: Asynch Loading
+{
+#pragma region Shaders
+	m_shaderLoader.LoadShaders(m_device);
+	ShaderLoader::ShadersStuffDTO ShadeDTO = m_shaderLoader.GetShadersStuff();
+	m_vertexShader = ShadeDTO.VertexShader;
+	m_inputLayout = ShadeDTO.InputLayout;
+	m_pixelShader = ShadeDTO.PixelShader;
+	m_constantBuffer = ShadeDTO.ConstantBuffer;
+#pragma endregion
+
+#pragma region Buffers
+	m_bufferLoader.LoadBuffer(m_device);
+	BufferLoader::BuffersStaffDTO BuffDTO = m_bufferLoader.GetBuffersStaff();
+	m_vertexBuffer = BuffDTO.VertexBuffer;
+	m_indexBuffer = BuffDTO.IndexBuffer;
+#pragma endregion
 }

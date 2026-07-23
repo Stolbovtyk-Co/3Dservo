@@ -41,6 +41,7 @@ void Application::Initialize() {
     ShowWindow(m_hWnd, SW_SHOW);
 
     m_renderEngine = std::make_unique<RenderEngine>(m_logger, m_hWnd, WIN_WIDTH, WIN_HEIGHT);
+    m_renderEngine->PreloadAssetsAsync();
 }
 
 void Application::Run() {
@@ -72,9 +73,11 @@ void Application::Process() {
             m_isRunning = false;
         }
     }
+    m_renderEngine->Update();
 }
 
 void Application::Risovat() {
-    m_renderEngine->Clear(0.0f, 1.0f, 0.0f, 0.5f);
+    
+    //m_renderEngine->Clear(0.0f, 1.0f, 0.0f, 0.5f);
     m_renderEngine->Render();
 }

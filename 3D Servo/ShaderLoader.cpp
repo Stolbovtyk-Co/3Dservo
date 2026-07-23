@@ -16,7 +16,13 @@ void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 	size_t bytesRead = 0;
 	bytes = new BYTE[destSize];
 
-	fopen_s(&vShader, "VertexShader.cso", "rb");
+	errno_t err = fopen_s(& vShader, "VertexShader.cso", "rb");
+	std::cout << err;
+	if (vShader == nullptr) {
+		MessageBoxA(nullptr, "Не удалось найти VertexShader.cso! Проверь, где лежит файл.", "Ошибка", MB_OK);
+		return;
+	}
+
 	bytesRead = fread_s(bytes, destSize, 1, 4096, vShader);
 	hr = device->CreateVertexShader(
 		bytes,
