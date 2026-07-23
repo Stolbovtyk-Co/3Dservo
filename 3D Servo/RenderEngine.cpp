@@ -2,9 +2,26 @@
 #include <wrl/client.h>
 #include <dxgi1_3.h>
 #include <iostream>
+#include <dwmapi.h>
+#include <iostream>
+#include <iomanip>
 
 void RenderEngine::Initialize(HWND hWnd, int width, int height)
 {
+	DWM_BLURBEHIND bb = { 0 };
+
+	// Enable Blur Behind and apply to the entire client area
+	bb.dwFlags = DWM_BB_ENABLE;
+	bb.fEnable = true;
+	bb.hRgnBlur = NULL;
+
+	// Apply Blur Behind
+	HRESULT hr = DwmEnableBlurBehindWindow(hWnd, &bb);
+	if (!SUCCEEDED(hr))
+	{
+		std::cout << hr;
+	}
+
 	D3D_FEATURE_LEVEL levels[] = {
 	D3D_FEATURE_LEVEL_11_1,
 	D3D_FEATURE_LEVEL_11_0,
@@ -27,7 +44,7 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 	Microsoft::WRL::ComPtr<ID3D11Device>        device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
 
-	HRESULT hr = D3D11CreateDevice(
+	hr = D3D11CreateDevice(
 		nullptr,                    // Specify nullptr to use the default adapter.
 		D3D_DRIVER_TYPE_HARDWARE,   // Create a device using the hardware graphics driver.
 		0,                          // Should be 0 unless the driver is D3D_DRIVER_TYPE_SOFTWARE.
@@ -42,24 +59,26 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 	device.As(&m_device);
 	context.As(&m_context);
 
-	DXGI_SWAP_CHAIN_DESC scd = {};
-	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
-	scd.BufferCount = 2;
-	scd.BufferDesc.Width = width;
-	scd.BufferDesc.Height = height;
-	scd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;   
-	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;    
-	scd.OutputWindow = hWnd;                                
+	DXGI_SWAP_CHAIN_DESC1 scd = {};
+	//ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
+	scd.Width = width;                             // Moved out of BufferDesc
+	scd.Height = height;                            // Moved out of BufferDesc
+	scd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;       // Moved out of BufferDesc
+	scd.Stereo = FALSE;                          // New: Must be explicitly set
 	scd.SampleDesc.Count = 1;
 	scd.SampleDesc.Quality = 0;
-	scd.Windowed = TRUE;
-	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; //Critical Fix For BufferCount 2
+	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	scd.BufferCount = 2;
+	scd.Scaling = DXGI_SCALING_STRETCH;            // New: Specify resizing behavior
+	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;  // New: Best practice flip model
+	scd.AlphaMode = DXGI_ALPHA_MODE_IGNORE;        // New: Background transparency
+	scd.Flags = 0;
 
 	Microsoft::WRL::ComPtr<IDXGIDevice3> dxgiDevice;
 	m_device.As(&dxgiDevice);
 
 	Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
-	Microsoft::WRL::ComPtr<IDXGIFactory> factory;
+	Microsoft::WRL::ComPtr<IDXGIFactory2> factory;
 
 	hr = dxgiDevice->GetAdapter(&adapter);
 
@@ -67,11 +86,20 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 	{
 		adapter->GetParent(IID_PPV_ARGS(&factory));
 
-		hr = factory->CreateSwapChain(
+		hr = factory->CreateSwapChainForComposition(
 			m_device.Get(),
 			&scd,
+			nullptr,
 			&m_swapChain
 		);
+		std::cout << "HRESULT: 0x"
+			<< std::hex          // Switch to hexadecimal output
+			<< std::uppercase    // Use uppercase letters (A-F)
+			<< std::setfill('0') // Pad with zeros if the number is short
+			<< std::setw(8)      // Ensure the output is exactly 8 characters wide
+			<< hr
+			<< std::dec          // Reset stream to decimal (good practice)
+			<< std::endl;
 	}
 
 	hr = m_swapChain->GetBuffer(

@@ -46,6 +46,7 @@ void Application::Initialize() {
 
 void Application::Run() {
 	while (m_isRunning) {
+        m_renderEngine.Clear(1.0f, 1.0f, 1.0f, 0.0f);
 		Process();
 		Risovat();
 	}
@@ -75,8 +76,7 @@ void Application::Process() {
     }
 }
 
-void Application::Risovat() {
-    m_renderEngine.Clear(0.0f ,1.0f, 0.0f, 0.3f); //TODO: FIX ALPHA BLENDING OR SMTH
+void Application::Risovat() { //TODO: FIX ALPHA BLENDING OR SMTH
 
     m_renderEngine.Render();
 }
