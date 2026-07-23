@@ -1,7 +1,7 @@
 #include "RenderEngine.h"
 #include <wrl/client.h>
 #include <dxgi1_3.h>
-
+#include <iostream>
 
 void RenderEngine::Initialize(HWND hWnd, int width, int height)
 {
@@ -18,6 +18,7 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 	D3D_FEATURE_LEVEL m_featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	UINT deviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+
 
 #if defined(DEBUG) || defined(_DEBUG)
 	deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -52,6 +53,7 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 	scd.SampleDesc.Count = 1;
 	scd.SampleDesc.Quality = 0;
 	scd.Windowed = TRUE;
+	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; //Critical Fix For BufferCount 2
 
 	Microsoft::WRL::ComPtr<IDXGIDevice3> dxgiDevice;
 	m_device.As(&dxgiDevice);
@@ -118,5 +120,18 @@ void RenderEngine::Initialize(HWND hWnd, int width, int height)
 		1,
 		&m_viewport
 	);
-	//Other shit from private
+
+	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get()); 
+}
+
+void RenderEngine::Clear(float r, float g, float b, float a) {
+	float clearColor[] = { r, g, b, a };
+
+	m_context->ClearRenderTargetView(m_pRenderTarget.Get(), clearColor);
+
+	m_context->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+}
+
+void RenderEngine::Render() {
+	m_swapChain->Present(1, 0);
 }
