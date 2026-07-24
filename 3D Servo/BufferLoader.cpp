@@ -1,5 +1,5 @@
 #include "BufferLoader.h"
-
+#include <Windows.h>
 
 void BufferLoader::LoadBuffer(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 {

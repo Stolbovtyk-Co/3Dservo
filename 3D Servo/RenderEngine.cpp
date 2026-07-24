@@ -1,11 +1,7 @@
 #include "RenderEngine.h"
-#include <wrl/client.h>
-#include <dxgi1_3.h>
-#include <iostream>
-#include <dwmapi.h>
-#include <iomanip>
 #include <DirectXMath.h>
-#include <iostream>
+#include <dxgi1_3.h>
+#include <wrl/client.h>
 
 using namespace DirectX;
 
@@ -22,10 +18,10 @@ RenderEngine::RenderEngine(std::shared_ptr<Logger> logger, HWND hWnd, int Width,
 
 void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 {
-	HRESULT hr;
+	HRESULT hr = S_OK;
 
-	this->width = Width;
-	this->height = Height;
+	m_width = Width;
+	m_height = Height;
 
 	D3D_FEATURE_LEVEL levels[] = {
 	D3D_FEATURE_LEVEL_11_1,
@@ -70,8 +66,8 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 	context.As(&m_context);
 
 	DXGI_SWAP_CHAIN_DESC1 scd = {};
-	scd.Width = width;                             // Moved out of BufferDesc
-	scd.Height = height;                            // Moved out of BufferDesc
+	scd.Width = m_width;                             // Moved out of BufferDesc
+	scd.Height = m_height;                            // Moved out of BufferDesc
 	scd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;       // Moved out of BufferDesc
 	scd.Stereo = FALSE;                          // New: Must be explicitly set
 	scd.SampleDesc.Count = 1;
@@ -90,7 +86,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 	Microsoft::WRL::ComPtr<IDXGIFactory2> factory;
 
 	hr = dxgiDevice->GetAdapter(&adapter);
-	if (!SUCCEEDED(hr)) {
+	if (FAILED(hr)) {
 		m_logger->logHR(hr);
 		return;
 	}
@@ -103,7 +99,19 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		nullptr,
 		&m_swapChain
 	);
-	if (!SUCCEEDED(hr)) {
+	if (FAILED(hr)) {
+		m_logger->logHR(hr);
+		return;
+	}
+
+	D3D11_RASTERIZER_DESC rasterDesc = {};
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.FrontCounterClockwise = FALSE;
+	rasterDesc.DepthClipEnable = TRUE;
+
+	hr = m_device->CreateRasterizerState(&rasterDesc, m_rasterizerState.GetAddressOf());
+	if (FAILED(hr)) {
 		m_logger->logHR(hr);
 		return;
 	}
@@ -119,7 +127,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		0,
 		__uuidof(ID3D11Texture2D),
 		(void**)&m_pBackBuffer);
-	if (!SUCCEEDED(hr)) {
+	if (FAILED(hr)) {
 		m_logger->logHR(hr);
 		return;
 	}
@@ -129,7 +137,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		nullptr,
 		m_pRenderTarget.GetAddressOf()
 	);
-	if (!SUCCEEDED(hr)) {
+	if (FAILED(hr)) {
 		m_logger->logHR(hr);
 		return;
 	}
@@ -140,8 +148,8 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		DXGI_FORMAT_D24_UNORM_S8_UINT,
 		static_cast<UINT> (m_bbDesc.Width),
 		static_cast<UINT> (m_bbDesc.Height),
-		1, // This depth stencil view has only one texture.
-		1, // Use a single mipmap level.
+		1,
+		1,
 		D3D11_BIND_DEPTH_STENCIL
 	);
 
@@ -196,6 +204,12 @@ void RenderEngine::Update()
 }
 
 void RenderEngine::Render() {
+	// Update  `m_contantBufferData`, `m_pConstantBuffer.Get()`
+	// Clear  Application::Risovat() //skip
+	// Settings `VertexPositionColor`, `m_pVertexBuffer` ,`m_pIndexBuffer`, 
+	// VertexShader ShaderLoader::Load->GetVertex(), `m_pConstantBuffer`
+	// PixelShader ShaderLoader::Load->GetPixel()
+
 	m_context->UpdateSubresource(
 		m_constantBuffer.Get(),
 		0,
@@ -214,13 +228,13 @@ void RenderEngine::Render() {
 	m_context->IASetVertexBuffers(
 		0,
 		1,
-		m_vertexBuffer.GetAddressOf(), //BufferLoader
+		m_vertexBuffer.GetAddressOf(),
 		&stride,
 		&offset
 	);
 	
 		m_context->IASetIndexBuffer(
-		m_indexBuffer.Get(), //BufferLoader
+		m_indexBuffer.Get(),
 		DXGI_FORMAT_R16_UINT,
 		0
 	);
@@ -230,7 +244,7 @@ void RenderEngine::Render() {
 	);
 	
 		m_context->VSSetShader(
-		m_vertexShader.Get(), //ShaderLoader
+		m_vertexShader.Get(),
 		nullptr,
 		0
 	);
@@ -244,36 +258,32 @@ void RenderEngine::Render() {
 	);
 	
 	m_context->PSSetShader(
-		m_pixelShader.Get(), //ShaderLoader
+		m_pixelShader.Get(),
 		nullptr,
 		0
 	);
 
+	m_context->RSSetState(m_rasterizerState.Get());
+
 	m_context->DrawIndexed(
-		m_bufferLoader.GetIndexCount(), //BufferLoader
+		m_bufferLoader.GetIndexCount(),
 		0,
 		0
 	);
-	
-	//Update  `m_contantBufferData`, `m_pConstantBuffer.Get()`
-	//Clear  Application::Risovat()
-	//Settings `VertexPositionColor`, `m_pVertexBuffer` ,`m_pIndexBuffer`, 
-	//VertexShader ShaderLoader::Load->GetVertex(), `m_pConstantBuffer`
-	//PixelShader ShaderLoader::Load->GetPixel()
 
 	m_swapChain->Present(1, 0);
 }
 
 void RenderEngine::CreateViewAndPerspective()
 {
-	DirectX::XMVECTOR eye = DirectX::XMVectorSet(0.0f, 0.7f, -1.5f, 0.f); // Поменяли Z на -1.5f
-	DirectX::XMVECTOR at = DirectX::XMVectorSet(0.0f, -0.1f, 0.0f, 0.f);
+	DirectX::XMVECTOR eye = DirectX::XMVectorSet(0.0f, 0.0f, 1.5f, 0.f); 
+	DirectX::XMVECTOR at = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.f);
 	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.f);
 
 	DirectX::XMStoreFloat4x4(
 		&m_constantBufferData.view,
 		DirectX::XMMatrixTranspose(
-			DirectX::XMMatrixLookAtLH( // Переключили на LH
+			DirectX::XMMatrixLookAtLH( 
 				eye,
 				at,
 				up
@@ -281,14 +291,14 @@ void RenderEngine::CreateViewAndPerspective()
 		)
 	);
 
-	float aspectRatioX = width / height; // Исправили деление int
+	float aspectRatioX = m_width / m_height;
 	float aspectRatioY = aspectRatioX < (16.0f / 9.0f) ? aspectRatioX / (16.0f / 9.0f) : 1.0f;
 
 	DirectX::XMStoreFloat4x4(
 		&m_constantBufferData.projection,
 		DirectX::XMMatrixTranspose(
-			DirectX::XMMatrixPerspectiveFovLH( // Переключили на LH
-				DirectX::XMConvertToRadians(70), // Упростили расчет FOV для теста
+			DirectX::XMMatrixPerspectiveFovLH(
+				DirectX::XMConvertToRadians(70), 
 				aspectRatioX,
 				0.01f,
 				100.0f
@@ -296,7 +306,6 @@ void RenderEngine::CreateViewAndPerspective()
 		)
 	);
 }
-
 
 /// <summary>
 /// Not Async ¯\_(ツ)_/¯, But Loading Shaders & Buffers

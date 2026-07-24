@@ -1,8 +1,7 @@
 #include "ShaderLoader.h"
 #include <d3d11.h>
 #include <iostream>
-#include <fstream>
-#include "HRErrorHandler.h"
+#include <Windows.h>
 
 void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 {

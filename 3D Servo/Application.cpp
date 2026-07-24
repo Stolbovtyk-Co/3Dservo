@@ -78,6 +78,6 @@ void Application::Process() {
 
 void Application::Risovat() {
     
-    m_renderEngine->Clear(0.0f, 1.0f, 0.0f, 0.0f);
+    m_renderEngine->Clear(0.0f, 0.0f, 0.0f, 0.0f);
     m_renderEngine->Render();
 }

@@ -1,5 +1,4 @@
 #pragma once
-#include <Windows.h>
 #include <wrl/client.h>
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -22,7 +21,7 @@ public:
 	
 	void LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device);
 
-	ShadersStuffDTO GetShadersStuff() {
+	inline ShadersStuffDTO GetShadersStuff() {
 		ShadersStuffDTO dto;
 		dto.VertexShader = m_vertexShader;
 		dto.InputLayout = m_inputLayout;
