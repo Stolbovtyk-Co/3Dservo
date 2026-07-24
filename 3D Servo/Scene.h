@@ -3,12 +3,14 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "FileManager.h"
+#include <memory>
+#include "ShaderLoader.h"
 
 class Scene
 {
 public:
 	
-	Scene();
+	Scene(Microsoft::WRL::ComPtr<ID3D11Device> com_device);
 
 	 virtual void Update(float delta);
 
@@ -26,8 +28,7 @@ protected:
 	virtual class ShaderManager 
 	{
 	public:
-		ShaderManager(FileManager* flMgr);
-		virtual struct _constantBufferStruct {};
+		ShaderManager(FileManager* flMgr, Microsoft::WRL::ComPtr<ID3D11Device> com_device);
 		struct ShaderDTO
 		{
 			Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
@@ -37,14 +38,18 @@ protected:
 		};
 		ShaderDTO GetShaderManagerDTO();
 	protected:
-		virtual void Setup(FileManager* flMgr);
+		virtual void Setup(FileManager* flMgr, Microsoft::WRL::ComPtr<ID3D11Device> com_device);
 		Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 		Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_constantBuffer;
 	};
 
-	ShaderManager m_sh;
+	std::unique_ptr <ShaderManager> m_sh;
 	SceneSettings m_st;
+
+	//---------------------------------------
+	//IMPORTED FROM RENDER ENGINE CLASSES:
+	Microsoft::WRL::ComPtr<ID3D11Device> m_com_device;
 };
 

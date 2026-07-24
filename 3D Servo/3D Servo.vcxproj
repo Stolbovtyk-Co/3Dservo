@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="BufferLoader.h" />
+    <ClInclude Include="EngineConstants.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="HRErrorHandler.h" />
     <ClInclude Include="Logger.h" />
