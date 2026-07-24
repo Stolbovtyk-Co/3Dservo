@@ -1,14 +1,12 @@
 #include "FileManager.h"
 
-size_t FileManager::ReadBytes(std::string PATH)
+FileManager::ReadedBytesDTO FileManager::ReadBytes(std::string PATH)
 {
 	HRESULT hr = S_OK;
 	FILE* File;
 
-	BYTE* bytes;
-
+	ReadedBytesDTO Result;
 	size_t destSize = 0;
-	size_t bytesRead = 0;
 
 	errno_t err;
 	
@@ -21,11 +19,11 @@ size_t FileManager::ReadBytes(std::string PATH)
 	fseek(File, 0, SEEK_END);
 	destSize = ftell(File);
 	fseek(File, 0, SEEK_SET);
-	bytes = new BYTE[destSize];
+	Result.Bytes = new BYTE[destSize];
 
-	bytesRead = fread_s(bytes, destSize, 1, destSize, File);
+	Result.BytesRead = fread_s(Result.Bytes, destSize, 1, destSize, File);
 
 	fclose(File);
 
-	return bytesRead;
+	return Result;
 }

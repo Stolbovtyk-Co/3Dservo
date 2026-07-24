@@ -7,7 +7,12 @@ class FileManager
 public:
 	FileManager() = default;
 
-	size_t ReadBytes(std::string PATH);
+	struct ReadedBytesDTO {
+		BYTE* Bytes;
+		size_t BytesRead;
+	};
+
+	ReadedBytesDTO ReadBytes(std::string PATH);
 private:
 };
 
