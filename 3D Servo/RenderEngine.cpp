@@ -189,15 +189,25 @@ void RenderEngine::Clear(float r, float g, float b, float a) {
 
 void RenderEngine::Update()
 {
+	m_frameCount++;
+
+	XMMATRIX finalRotation = DirectX::XMMatrixRotationY(
+		DirectX::XMConvertToRadians(
+			(float)m_frameCount
+		)
+	) * DirectX::XMMatrixRotationX(
+		DirectX::XMConvertToRadians(
+			(float)m_frameCount
+		)
+	) * DirectX::XMMatrixRotationZ(
+		DirectX::XMConvertToRadians(
+			(float)m_frameCount / 2
+		)
+	);
+	
 	DirectX::XMStoreFloat4x4(
 		&m_constantBufferData.world,
-		DirectX::XMMatrixTranspose(
-			DirectX::XMMatrixRotationY(
-				DirectX::XMConvertToRadians(
-					(float)m_frameCount++
-				)
-			)
-		)
+		finalRotation
 	);
 
 	if (m_frameCount == MAXUINT)  m_frameCount = 0;
