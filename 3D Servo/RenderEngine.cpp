@@ -191,7 +191,7 @@ void RenderEngine::Update()
 {
 	m_frameCount++;
 
-	XMMATRIX finalRotation = DirectX::XMMatrixRotationY(
+	XMMATRIX Rotation = DirectX::XMMatrixRotationY(
 		DirectX::XMConvertToRadians(
 			(float)m_frameCount
 		)
@@ -205,9 +205,11 @@ void RenderEngine::Update()
 		)
 	);
 	
+	XMMATRIX Translation = DirectX::XMMatrixTranslation(-6.3, -3.2, -5);
+
 	DirectX::XMStoreFloat4x4(
 		&m_constantBufferData.world,
-		finalRotation
+		DirectX::XMMatrixTranspose(Rotation * Translation)
 	);
 
 	if (m_frameCount == MAXUINT)  m_frameCount = 0;
