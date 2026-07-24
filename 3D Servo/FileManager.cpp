@@ -15,7 +15,7 @@ size_t FileManager::ReadBytes(std::string PATH)
 	err = fopen_s(&File, "VertexShader.cso", "rb");
 	if (err != 0 || &File == nullptr) {
 		MessageBoxA(nullptr, "Load Error!", "Pososal!", MB_OK);
-		return;
+		throw;
 	}
 
 	fseek(File, 0, SEEK_END);

@@ -146,6 +146,7 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +156,7 @@
     <ClInclude Include="HRErrorHandler.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="RenderEngine.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderLoader.h" />
   </ItemGroup>
   <ItemGroup>
