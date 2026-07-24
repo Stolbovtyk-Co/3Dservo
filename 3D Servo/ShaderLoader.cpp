@@ -11,27 +11,36 @@ void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 	FILE* vShader, * pShader;
 	BYTE* bytes;
 
-	size_t destSize = 20000;
-	size_t bytesRead = 0;
-	bytes = new BYTE[destSize];
+	size_t destSize;
+	size_t bytesRead;
 
-	errno_t err = fopen_s(& vShader, "VertexShader.cso", "rb");
-	std::cout << err;
+	errno_t err;
+
+	err = fopen_s(&vShader, "VertexShader.cso", "rb");
+	std::cout << err << std::endl;
 	if (vShader == nullptr) {
-		MessageBoxA(nullptr, "Не удалось найти VertexShader.cso! Проверь, где лежит файл.", "Ошибка", MB_OK);
+		MessageBoxA(nullptr, "NO VertexShader.cso!", "Fatal Error", MB_OK);
 		return;
 	}
 
-	bytesRead = fread_s(bytes, destSize, 1, 20000, vShader);
+	fseek(vShader, 0, SEEK_END);
+	destSize = ftell(vShader);
+	fseek(vShader, 0, SEEK_SET);
+	bytes = new BYTE[destSize];
+	bytesRead = 0;
+
+	bytesRead = fread_s(bytes, destSize, 1, destSize, vShader);
 	hr = device->CreateVertexShader(
 		bytes,
 		bytesRead,
 		nullptr,
 		&m_vertexShader
 	);
-	if (!SUCCEEDED(hr)) {
+
+	fclose(vShader);
+
+	if (FAILED(hr)) {
 		std::cout << bytes;
-		//0x80070057
 	}
 
 	D3D11_INPUT_ELEMENT_DESC iaDesc[] =
@@ -51,24 +60,33 @@ void ShaderLoader::LoadShaders(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 		&m_inputLayout
 	);
 
-	if (!SUCCEEDED(hr)) {
+	if (FAILED(hr)) {
 	//	HRErrorHandler::Throw(hr);
 	}
 
 	delete bytes;
 
+	err = fopen_s(&pShader, "PixelShader.cso", "rb");
+	std::cout << err << std::endl;
+	if (pShader == nullptr) {
+		MessageBoxA(nullptr, "NO PixelShader.cso!", "Fatal Error", MB_OK);
+		return;
+	}
+	fseek(pShader, 0, SEEK_END);
+	destSize = ftell(pShader);
+	fseek(pShader, 0, SEEK_SET);
 	bytes = new BYTE[destSize];
 	bytesRead = 0;
-	fopen_s(&pShader, "PixelShader.cso", "rb");
-	bytesRead = fread_s(bytes, destSize, 1, 20000, pShader);
+
+	bytesRead = fread_s(bytes, destSize, 1, destSize, pShader);
 	hr = device->CreatePixelShader(
 		bytes,
 		bytesRead,
 		nullptr,
 		m_pixelShader.GetAddressOf()
 	);
-
-	if (!SUCCEEDED(hr)) {
+	fclose(pShader);
+	if (FAILED(hr)) {
 	//	HRErrorHandler::Throw(hr);
 	}
 

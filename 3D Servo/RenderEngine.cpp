@@ -57,7 +57,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		&m_featureLevel,            // Returns feature level of device created.
 		&context                    // Returns the device immediate context.
 	);
-	if (!SUCCEEDED(hr)) {
+	if (FAILED(hr)) {
 		m_logger->logHR(hr);
 		return;
 	}
