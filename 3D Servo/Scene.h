@@ -2,6 +2,7 @@
 #include <wrl/client.h>
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "FileManager.h"
 
 class Scene
 {
@@ -19,16 +20,13 @@ public:
 protected:
 
 	virtual void Setup();
-	// RESOURCE MANAGER
 
-	//SETTINGS
-	// \ - Clear Color
-	// Node tree
+	FileManager m_fileMgr;
 
 	virtual class ShaderManager 
 	{
 	public:
-		ShaderManager();
+		ShaderManager(FileManager* flMgr);
 		virtual struct _constantBufferStruct {};
 		struct ShaderDTO
 		{
@@ -39,7 +37,7 @@ protected:
 		};
 		ShaderDTO GetShaderManagerDTO();
 	protected:
-		virtual void Setup();
+		virtual void Setup(FileManager* flMgr);
 		Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 		Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;

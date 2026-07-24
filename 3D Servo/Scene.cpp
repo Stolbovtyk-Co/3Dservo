@@ -16,9 +16,9 @@ void Scene::Update(float delta)
 {
 }
 
-Scene::ShaderManager::ShaderManager()
+Scene::ShaderManager::ShaderManager(FileManager* flMgr)
 {
-	Scene::ShaderManager::Setup();
+	Scene::ShaderManager::Setup(flMgr);
 }
 
 Scene::ShaderManager::ShaderDTO Scene::ShaderManager::GetShaderManagerDTO()
@@ -31,6 +31,6 @@ Scene::ShaderManager::ShaderDTO Scene::ShaderManager::GetShaderManagerDTO()
 	return dto;
 }
 
-void Scene::ShaderManager::Setup()
+void Scene::ShaderManager::Setup(FileManager* flMgr)
 {
 }
