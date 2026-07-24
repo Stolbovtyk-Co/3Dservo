@@ -8,7 +8,7 @@ cbuffer ModelViewProjectionConstantBuffer : register(b0)
 struct VS_INPUT
 {
     float3 vPos : POSITION;
-    float3 vColor : COLOR0;
+    float4 vColor : COLOR0;
 };
 struct VS_OUTPUT
 {
@@ -29,7 +29,7 @@ VS_OUTPUT main(VS_INPUT input) // main is the default function name
     Output.Position = pos;
 
     // Just pass through the color data
-    Output.Color = float4(input.vColor, 1.0f);
+    Output.Color = input.vColor;
 
     return Output;
 }
