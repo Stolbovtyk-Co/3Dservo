@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BufferLoader.cpp" />
+    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="HRErrorHandler.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
@@ -150,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="BufferLoader.h" />
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="HRErrorHandler.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="RenderEngine.h" />
