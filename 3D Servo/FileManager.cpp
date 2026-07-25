@@ -10,8 +10,8 @@ FileManager::ReadedBytesDTO FileManager::ReadBytes(std::string PATH)
 
 	errno_t err;
 	
-	err = fopen_s(&File, "VertexShader.cso", "rb");
-	if (err != 0 || &File == nullptr) {
+	err = fopen_s(&File, PATH.c_str(), "rb");
+	if (err != 0 || File == nullptr) {
 		MessageBoxA(nullptr, "Load Error!", "Pososal!", MB_OK);
 		throw;
 	}
