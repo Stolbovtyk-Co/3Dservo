@@ -3,77 +3,90 @@
 #include <vector>
 #include <string>
 #include <list>
+#include "EngineConstants.h"
 
 class Node3D
 {
 public:
-	Node3D(long id) {long m_ID = id; }
+	Node3D(long id) : m_ID(id), m_parent(nullptr) {
+		DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
+		DirectX::XMStoreFloat4x4(&m_localTransform, identity);
+		DirectX::XMStoreFloat4x4(&m_globalTransform, identity);
+	}
 
-	virtual void Initialize() { }
+	virtual void Initialize();
 
 	virtual void Update();
 
-	virtual void ChangeGPos(DirectX::XMVECTOR newParentGPos);
-
-#pragma region Getters
-
-	inline virtual std::string GetName() {
-		return m_name;
-	}
-
-	inline virtual DirectX::XMFLOAT3 GetOffset() {
-		return m_offset;
-	}
-
-	inline virtual 
-#pragma endregion
+	virtual void UpdateTransforms(DirectX::FXMMATRIX parentGlobal);
 
 #pragma region Setters
 
 	inline virtual void SetName(std::string newName) {
-		m_name = newName;
+		m_name = std::move(newName);
 	}
 
-	inline virtual void SetOffset(DirectX::XMFLOAT3 newPos);
+	virtual void SetPosition(DirectX::XMFLOAT3 newPos);
+
+	inline virtual void SetLocalIndeces(std::vector<long> newInd) {
+		m_localIndices = std::move(newInd);
+	}
+
+	inline virtual void SetLocalVertices(std::vector<EConst::VertexPositionColor> newVert) {
+		m_localVertices = std::move(newVert);
+	}
 		
+#pragma endregion
+
+#pragma region Getters
+
+	inline virtual std::string GetName() const {
+		return m_name;
+	}
+
+	inline virtual DirectX::XMFLOAT3 getLocalPosition() const {
+		return DirectX::XMFLOAT3(m_localTransform._41, m_localTransform._42, m_localTransform._43);
+	}
+
+	inline virtual DirectX::XMFLOAT4X4 GetGlobalTransform() const {
+		return m_globalTransform;
+	}
+
+	inline const std::vector<EConst::VertexPositionColor>& GetVertexPositionColor() const {
+		return m_localVertices;
+	}
+
+	inline std::vector<long> GetIndexBuffer() const {
+		return m_localIndices;
+	}
+
+	inline long GetIndexCount() const {
+		return static_cast<long>(m_localIndices.size());
+	}
+
 #pragma endregion
 
 #pragma region TreeTools
 
-	inline virtual void addChild(Node3D* child) {
+	virtual void addChild(Node3D* child);
 
-		m_children.push_back(child);
-	}
-
-	inline virtual void removeChild(Node3D* child) {
-		m_children.remove(child);
-	}
+	virtual void removeChild(Node3D* child);
 
 #pragma endregion
-	
-
-	void UpdateGVertices(DirectX::XMVECTOR newGPos);
 
 protected:
-
-	struct RenderDTO //Только брать - ничего не класть!!
-	{
-		DirectX::XMFLOAT3 GlobalPos;
-		std::vector<DirectX::XMFLOAT3> GlobalVertices;
-		std::vector<DirectX::XMFLOAT3> Normals;
-	};
 
 	//Tree
 	long m_ID;
 	std::string m_name = "default_name";
-	std::list<Node3D*> m_children; //( ´･･)ﾉ (._.`) Because vitolde100!! List for remove!
-	//3D
-	RenderDTO m_data;
+	Node3D* m_parent = nullptr;
+	std::vector<Node3D*> m_children;	//3D
 
-	std::vector<DirectX::XMFLOAT3> m_localVertices;
+	std::vector<EConst::VertexPositionColor> m_localVertices;
+	std::vector<long> m_localIndices;
 
-	DirectX::XMFLOAT3 m_offset;
+	DirectX::XMFLOAT4X4 m_localTransform;
+	DirectX::XMFLOAT4X4 m_globalTransform;
+
 	//further on comes some abstruse crap 
-	DirectX::XMFLOAT2 m_textureCoordinates;
-	
 };
