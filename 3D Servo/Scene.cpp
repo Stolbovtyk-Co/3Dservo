@@ -14,12 +14,22 @@ void Scene::Setup()
 	m_st.sceneName = "gm_Scene_Perfab";
 
 	// Load Scene Tree
-	// SETUP SHADER ON CHILD LEVEL
+	m_bufferLoader.LoadBuffer(m_com_device);
+
+	m_tree.SetName("tree");
+	
+	auto dto = m_bufferLoader.GetBuffersStaff();
+
+	m_tree.SetGPUBuffers(dto.VertexBuffer.Get(), dto.IndexBuffer.Get(), m_bufferLoader.GetIndexCount());
+	m_tree.SetPosition({ 0.0f, 0.0f, -3.0f });
+	m_tree.SetRotation({ -3.0f, -3.0f, -3.0f });
+	m_tree.SetScale({ 1.0f, 1.0f, 2.0f });
 }
 
 void Scene::Update(float delta)
 {
 }
+
 
 Scene::ShaderManager::ShaderManager(FileManager* flMgr)
 {

@@ -13,12 +13,37 @@ void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform)
 
 void Node3D::SetPosition(DirectX::XMFLOAT3 newPos)
 {
-	DirectX::XMMATRIX Translation = DirectX::XMMatrixTranslation(newPos.x, newPos.y, newPos.z);
-	DirectX::XMStoreFloat4x4(&m_localTransform, Translation);
+	m_position = std::move(newPos);
+	RebuildLocalTransform();
+}
 
-	DirectX::XMMATRIX parentGlobal = m_parent ? DirectX::XMLoadFloat4x4(&m_parent->m_globalTransform) : DirectX::XMMatrixIdentity();
+void Node3D::SetRotation(DirectX::XMFLOAT3 newRotation)
+{
+	m_rotation = std::move(newRotation);
+	RebuildLocalTransform();
+}
+
+void Node3D::SetScale(DirectX::XMFLOAT3 newScale)
+{
+	m_scale = std::move(newScale);
+	RebuildLocalTransform();
+}
+
+void Node3D::RebuildLocalTransform() {
+	DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
+
+	DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z);
+
+	DirectX::XMMATRIX transMat = DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
+
+	DirectX::XMMATRIX local = scaleMat * rotMat * transMat;
+	XMStoreFloat4x4(&m_localTransform, local);
+
+
+	DirectX::XMMATRIX parentGlobal = m_parent ? XMLoadFloat4x4(&m_parent->m_globalTransform) : DirectX::XMMatrixIdentity();
 	UpdateTransforms(parentGlobal);
 }
+
 
 void Node3D::addChild(Node3D* child)
 {
@@ -39,4 +64,3 @@ void Node3D::removeChild(Node3D* child)
 		m_children.erase(it);
 	}
 }
-	

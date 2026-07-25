@@ -6,6 +6,9 @@
 #include <memory>
 #include <string>
 
+#include "BufferLoader.h"
+#include "Node3D.h"
+
 class Scene
 {
 public:
@@ -13,6 +16,10 @@ public:
 	Scene(Microsoft::WRL::ComPtr<ID3D11Device> com_device);
 
 	 virtual void Update(float delta);
+
+	 inline const Node3D* GetTree() {
+		 return &m_tree;
+	 }
 
 	 struct SceneSettings
 	 {
@@ -46,6 +53,10 @@ public:
 protected:
 
 	virtual void Setup();
+
+	Node3D m_tree;
+
+	BufferLoader m_bufferLoader; //TODO: Change to parcer if you can (¬‿¬)
 
 	FileManager m_fileMgr;
 

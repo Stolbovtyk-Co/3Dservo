@@ -2,11 +2,13 @@
 #include <DirectXMath.h>
 #include <dxgi1_3.h>
 #include <wrl/client.h>
+#include "Node3D.h"
 
 using namespace DirectX;
 
 #pragma comment(lib, "dcomp.lib")
 
+#pragma region Initialization
 
 RenderEngine::RenderEngine(std::shared_ptr<Logger> logger, HWND hWnd, int Width, int Height)
 {
@@ -117,6 +119,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		m_logger->logHR(hr);
 		return;
 	}
+	m_context->RSSetState(m_rasterizerState.Get());
 
 	DCompositionCreateDevice(dxgiDevice.Get(), IID_PPV_ARGS(&dcompDevice));
 	dcompDevice->CreateTargetForHwnd(hWnd, TRUE, &dcompTarget);
@@ -179,120 +182,10 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		1,
 		&m_viewport
 	);
-}
-
-void RenderEngine::Clear(float r, float g, float b, float a) {
-	float clearColor[] = { r * a, g * a, b * a, a };
-
-	m_context->ClearRenderTargetView(m_pRenderTarget.Get(), clearColor);
-
-	m_context->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-}
-
-void RenderEngine::LoadSceneSettings()
-{
-	Scene::SceneSettings settings = m_currentScene.get()->GetSceneSettings();
-	m_logger.get()->log("Loaded scene: " + settings.sceneName);
-	m_clearColor = settings.clearColor;
-}
-
-void RenderEngine::Update()
-{
-	m_frameCount++;
-
-	XMMATRIX finalRotation = DirectX::XMMatrixRotationY(
-		DirectX::XMConvertToRadians(
-			(float)m_frameCount
-		)
-	) * DirectX::XMMatrixRotationX(
-		DirectX::XMConvertToRadians(
-			(float)m_frameCount
-		)
-	) * DirectX::XMMatrixRotationZ(
-		DirectX::XMConvertToRadians(
-			(float)m_frameCount / 2
-		)
-	);
-	
-	DirectX::XMStoreFloat4x4(
-		&m_constantBufferData.world,
-		finalRotation
-	);
-
-	if (m_frameCount == MAXUINT)  m_frameCount = 0;
-}
-
-void RenderEngine::Render() {
-
-	RenderEngine::Clear(m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w);
-	// Update  `m_contantBufferData`, `m_pConstantBuffer.Get()`
-	// Clear  Application::Risovat() //skip
-	// Settings `VertexPositionColor`, `m_pVertexBuffer` ,`m_pIndexBuffer`, 
-	// VertexShader ShaderLoader::Load->GetVertex(), `m_pConstantBuffer`
-	// PixelShader ShaderLoader::Load->GetPixel()
-
-	m_context->UpdateSubresource(
-		m_constantBuffer.Get(),
-		0,
-		nullptr,
-		&m_constantBufferData,
-		0,
-		0
-	);
-
-	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get());
-	
-
-	UINT stride = sizeof(BufferLoader::VertexPositionColor);
-	UINT offset = 0;
-
-	m_context->IASetVertexBuffers(
-		0,
-		1,
-		m_vertexBuffer.GetAddressOf(),
-		&stride,
-		&offset
-	);
-	
-		m_context->IASetIndexBuffer(
-		m_indexBuffer.Get(),
-		DXGI_FORMAT_R16_UINT,
-		0
-	);
 
 	m_context->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
 	);
-	
-		m_context->VSSetShader(
-		m_vertexShader.Get(),
-		nullptr,
-		0
-	);
-	
-	m_context->IASetInputLayout(m_inputLayout.Get());
-
-	m_context->VSSetConstantBuffers(
-		0,
-		1,
-		m_constantBuffer.GetAddressOf()
-	);
-	
-	m_context->PSSetShader(
-		m_pixelShader.Get(),
-		nullptr,
-		0
-	);
-
-	m_context->RSSetState(m_rasterizerState.Get());
-
-	m_context->DrawIndexed(
-		m_bufferLoader.GetIndexCount(),
-		0,
-		0
-	);
-
-	m_swapChain->Present(1, 0);
 }
 
 void RenderEngine::CreateViewAndPerspective()
@@ -328,6 +221,138 @@ void RenderEngine::CreateViewAndPerspective()
 	);
 }
 
+#pragma endregion
+
+#pragma region Update
+
+void RenderEngine::Update()
+{
+	m_frameCount++;
+
+	/*XMMATRIX finalRotation = DirectX::XMMatrixRotationY(
+		DirectX::XMConvertToRadians(
+			(float)m_frameCount
+		)
+	) * DirectX::XMMatrixRotationX(
+		DirectX::XMConvertToRadians(
+			(float)m_frameCount
+		)
+	) * DirectX::XMMatrixRotationZ(
+		DirectX::XMConvertToRadians(
+			(float)m_frameCount / 2
+		)
+	);
+	
+	DirectX::XMStoreFloat4x4(
+		&m_constantBufferData.world,
+		finalRotation
+	);*/
+
+	if (m_frameCount == MAXUINT)  m_frameCount = 0;
+}
+
+#pragma endregion
+
+#pragma region Render
+
+void RenderEngine::Clear(float r, float g, float b, float a) {
+	float clearColor[] = { r * a, g * a, b * a, a };
+
+	m_context->ClearRenderTargetView(m_pRenderTarget.Get(), clearColor);
+
+	m_context->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+}
+
+void RenderEngine::Render() {
+
+	Clear(m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w);
+
+	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get());
+	
+	const auto tree = m_currentScene->GetTree();
+	RenderNode(tree);
+
+	m_swapChain->Present(1, 0);
+}
+
+void RenderEngine::RenderNode(const Node3D* node)
+{
+	// RenderChildrens
+	// Update  `m_contantBufferData`, `m_pConstantBuffer.Get()`
+	// Settings `VertexPositionColor`, `m_pVertexBuffer` ,`m_pIndexBuffer`, 
+
+	for (const auto* child : node->GetChildren())
+	{
+		RenderNode(child);
+	}
+
+	if (!node->HasGeometry()) return;
+
+#pragma region Set stuff
+	// 1. Сохраняем матрицу в локальную переменную (теперь у неё есть адрес в памяти)
+	DirectX::XMFLOAT4X4 localGlobalTransform = node->GetGlobalTransform();
+
+	// 2. Передаем адрес этой переменной в функцию загрузки
+	DirectX::XMMATRIX globalMat = DirectX::XMLoadFloat4x4(&localGlobalTransform);
+
+	// 3. Транспонируем и записываем в константный буфер
+	DirectX::XMStoreFloat4x4(&m_constantBufferData.world, DirectX::XMMatrixTranspose(globalMat));
+
+
+
+	m_context->UpdateSubresource(
+		m_constantBuffer.Get(),
+		0,
+		nullptr,
+		&m_constantBufferData,
+		0,
+		0
+	);
+
+	UINT stride = sizeof(BufferLoader::VertexPositionColor);
+	UINT offset = 0;
+
+	ID3D11Buffer* vertexBuffer = node->GetVertexBuffer();
+
+	m_context->IASetVertexBuffers(
+		0,
+		1,
+		&vertexBuffer,
+		&stride,
+		&offset
+	);
+
+	m_context->IASetIndexBuffer(
+		node->GetIndexBuffer(),
+		DXGI_FORMAT_R16_UINT,
+		0
+	);
+
+	m_context->VSSetConstantBuffers(
+		0,
+		1,
+		m_constantBuffer.GetAddressOf()
+	);
+
+	m_context->DrawIndexed(
+		node->GetGPUIndexCount(),
+		0,
+		0
+	);
+#pragma endregion
+}
+
+#pragma endregion
+
+#pragma region Scene
+
+void RenderEngine::LoadSceneSettings()
+{
+	Scene::SceneSettings settings = m_currentScene.get()->GetSceneSettings();
+	m_logger.get()->log("Loaded scene: " + settings.sceneName);
+	m_clearColor = settings.clearColor;
+}
+
 /// <summary>
 /// Not Async ¯\_(ツ)_/¯, But Loading Shaders & Buffers
 /// </summary>
@@ -340,12 +365,27 @@ void RenderEngine::PreloadAssetsAsync() //TODO: Asynch Loading
 	m_inputLayout = ShaderDTO.inputLayout;
 	m_pixelShader = ShaderDTO.pixelShader;
 	m_constantBuffer = ShaderDTO.constantBuffer;
+
+	m_context->VSSetShader(
+		m_vertexShader.Get(),
+		nullptr,
+		0
+	);
+
+	m_context->PSSetShader(
+		m_pixelShader.Get(),
+		nullptr,
+		0
+	);
+
+	m_context->IASetInputLayout(m_inputLayout.Get());
 #pragma endregion
 
-#pragma region Buffers
+/*#pragma region Buffers
 	m_bufferLoader.LoadBuffer(m_device);
 	BufferLoader::BuffersStaffDTO BuffDTO = m_bufferLoader.GetBuffersStaff();
 	m_vertexBuffer = BuffDTO.VertexBuffer;
 	m_indexBuffer = BuffDTO.IndexBuffer;
-#pragma endregion
+#pragma endregion*/
 }
+#pragma endregion

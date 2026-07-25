@@ -36,9 +36,11 @@ private:
     void Clear(float r, float g, float b, float a);
     void LoadSceneSettings();
 
+    void RenderNode(const Node3D* node);
+
     std::unique_ptr <Scene> m_currentScene = nullptr;
 
-    EngineConstants::ConstantBufferStruct m_constantBufferData;
+    EConst::ConstantBufferStruct m_constantBufferData;
 
     float m_width;
     float m_height;
@@ -62,7 +64,7 @@ private:
 
     std::shared_ptr<Logger> m_logger;
     //Loaders
-    BufferLoader m_bufferLoader;
+    //BufferLoader m_bufferLoader;
 
     //=========================\\
     //Direct3D device resources\\
@@ -73,7 +75,4 @@ private:
     Microsoft::WRL::ComPtr<ID3D11InputLayout>       m_inputLayout;
     Microsoft::WRL::ComPtr<ID3D11PixelShader>       m_pixelShader;
     Microsoft::WRL::ComPtr<ID3D11Buffer>            m_constantBuffer;
-    //Buffers
-    Microsoft::WRL::ComPtr<ID3D11Buffer>            m_vertexBuffer;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>            m_indexBuffer;
 };

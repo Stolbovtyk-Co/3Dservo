@@ -8,15 +8,20 @@
 class Node3D
 {
 public:
-	Node3D(long id) : m_ID(id), m_parent(nullptr) {
+	Node3D(): m_parent(nullptr) {
 		DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
 		DirectX::XMStoreFloat4x4(&m_localTransform, identity);
 		DirectX::XMStoreFloat4x4(&m_globalTransform, identity);
 	}
 
-	virtual void Initialize();
+	virtual ~Node3D() {
+		if (m_pVertexBuffer) m_pVertexBuffer->Release();
+		if (m_pIndexBuffer) m_pIndexBuffer->Release();
+	}
 
-	virtual void Update();
+	virtual void Initialize() {}
+
+	virtual void Update() {}
 
 	virtual void UpdateTransforms(DirectX::FXMMATRIX parentGlobal);
 
@@ -26,7 +31,13 @@ public:
 		m_name = std::move(newName);
 	}
 
-	virtual void SetPosition(DirectX::XMFLOAT3 newPos);
+	
+	virtual void SetPosition(DirectX::XMFLOAT3 newPosition);
+
+	virtual void SetRotation(DirectX::XMFLOAT3 newRotation);
+
+	virtual void SetScale(DirectX::XMFLOAT3 newScale);
+	
 
 	inline virtual void SetLocalIndeces(std::vector<long> newInd) {
 		m_localIndices = std::move(newInd);
@@ -35,7 +46,13 @@ public:
 	inline virtual void SetLocalVertices(std::vector<EConst::VertexPositionColor> newVert) {
 		m_localVertices = std::move(newVert);
 	}
-		
+	
+
+	inline void SetGPUBuffers(ID3D11Buffer* vBuffer, ID3D11Buffer* iBuffer, long indexCount) {
+		m_pVertexBuffer = vBuffer;
+		m_pIndexBuffer = iBuffer;
+		m_gpuIndexCount = indexCount;
+	}
 #pragma endregion
 
 #pragma region Getters
@@ -56,7 +73,7 @@ public:
 		return m_localVertices;
 	}
 
-	inline std::vector<long> GetIndexBuffer() const {
+	inline std::vector<long> GetIndeces() const {
 		return m_localIndices;
 	}
 
@@ -64,6 +81,21 @@ public:
 		return static_cast<long>(m_localIndices.size());
 	}
 
+	inline long GetGPUIndexCount() const {
+		return m_gpuIndexCount;
+	}
+
+	inline ID3D11Buffer* GetVertexBuffer() const { return m_pVertexBuffer; }
+	
+	inline ID3D11Buffer* GetIndexBuffer() const { return m_pIndexBuffer; }
+	
+	inline bool HasGeometry() const {
+		return m_pVertexBuffer != nullptr && m_pIndexBuffer != nullptr;
+	}
+
+	inline std::vector<Node3D*> GetChildren() const {
+		return m_children;
+	}
 #pragma endregion
 
 #pragma region TreeTools
@@ -76,8 +108,10 @@ public:
 
 protected:
 
+	void RebuildLocalTransform();
+
 	//Tree
-	long m_ID;
+	long m_gpuIndexCount = 0;
 	std::string m_name = "default_name";
 	Node3D* m_parent = nullptr;
 	std::vector<Node3D*> m_children;	//3D
@@ -85,8 +119,15 @@ protected:
 	std::vector<EConst::VertexPositionColor> m_localVertices;
 	std::vector<long> m_localIndices;
 
+	//Stuff
+	DirectX::XMFLOAT3 m_position;
+	DirectX::XMFLOAT3 m_rotation;
+	DirectX::XMFLOAT3 m_scale;
+	//VideoCar Buffers
+	ID3D11Buffer* m_pVertexBuffer = nullptr;
+	ID3D11Buffer* m_pIndexBuffer = nullptr;
+
 	DirectX::XMFLOAT4X4 m_localTransform;
 	DirectX::XMFLOAT4X4 m_globalTransform;
-
 	//further on comes some abstruse crap 
 };
