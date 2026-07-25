@@ -4,10 +4,10 @@
 #include <wrl/client.h>
 #include "BufferLoader.h"
 #include "Logger.h"
-#include "ShaderLoader.h"
 #include "Scene.h"
 
 #include "Logger.h"
+#include "EngineConstants.h"
 #include <concepts>
 
 #pragma comment(lib, "d3d11.lib")
@@ -38,7 +38,7 @@ private:
 
     std::unique_ptr <Scene> m_currentScene = nullptr;
 
-    ShaderLoader::ConstantBufferStruct m_constantBufferData;
+    EngineConstants::ConstantBufferStruct m_constantBufferData;
 
     float m_width;
     float m_height;
@@ -62,7 +62,6 @@ private:
 
     std::shared_ptr<Logger> m_logger;
     //Loaders
-    ShaderLoader m_shaderLoader;
     BufferLoader m_bufferLoader;
 
     //=========================\\

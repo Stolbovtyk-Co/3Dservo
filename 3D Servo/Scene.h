@@ -4,7 +4,6 @@
 #include <DirectXMath.h>
 #include "FileManager.h"
 #include <memory>
-#include "ShaderLoader.h"
 #include <string>
 
 class Scene

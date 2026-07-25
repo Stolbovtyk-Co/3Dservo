@@ -148,7 +148,6 @@
     <ClCompile Include="Node3D.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="ShaderLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -160,7 +159,6 @@
     <ClInclude Include="Node3D.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="ShaderLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
