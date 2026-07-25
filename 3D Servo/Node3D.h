@@ -62,7 +62,15 @@ public:
 	}
 
 	inline virtual DirectX::XMFLOAT3 getLocalPosition() const {
-		return DirectX::XMFLOAT3(m_localTransform._41, m_localTransform._42, m_localTransform._43);
+		return m_position;
+	}
+
+	inline virtual DirectX::XMFLOAT3 getLocalRotation() const {
+		return m_rotation;
+	}
+
+	inline virtual DirectX::XMFLOAT3 getLocalScale() const {
+		return m_scale;
 	}
 
 	inline virtual DirectX::XMFLOAT4X4 GetGlobalTransform() const {
