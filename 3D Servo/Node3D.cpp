@@ -1,4 +1,5 @@
 #include "Node3D.h"
+#include "ObjParser.h"
 
 void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform)
 {
@@ -9,6 +10,14 @@ void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform)
 	for (auto child : m_children) {
 		child->UpdateTransforms(global);
 	}
+}
+
+void Node3D::SetObjFile(std::string FILE, FileManager* flMgr, Microsoft::WRL::ComPtr<ID3D11Device> com_device)
+{
+	auto unparsedLines = flMgr->ReadText(FILE);
+	ObjParser parser;
+	auto objDTO = parser.ParseLines(unparsedLines, com_device);
+	SetGPUBuffers(objDTO.vBuffer.Get(), objDTO.iBuffer.Get(), objDTO.iCount);
 }
 
 void Node3D::SetPosition(DirectX::XMFLOAT3 newPos)

@@ -309,7 +309,7 @@ void RenderEngine::RenderNode(const Node3D* node)
 		0
 	);
 
-	UINT stride = sizeof(BufferLoader::VertexPositionColor);
+	UINT stride = sizeof(EConst::VertexPositionColor);
 	UINT offset = 0;
 
 	ID3D11Buffer* vertexBuffer = node->GetVertexBuffer();

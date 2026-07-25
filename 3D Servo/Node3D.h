@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include "EngineConstants.h"
+#include "FileManager.h"
 
 class Node3D
 {
@@ -24,6 +25,8 @@ public:
 	virtual void Update() {}
 
 	virtual void UpdateTransforms(DirectX::FXMMATRIX parentGlobal);
+
+	virtual void SetObjFile(std::string FILE, FileManager* flMgr, Microsoft::WRL::ComPtr<ID3D11Device> com_device);
 
 #pragma region Setters
 

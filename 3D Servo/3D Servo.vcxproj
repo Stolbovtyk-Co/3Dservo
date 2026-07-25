@@ -146,6 +146,7 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Node3D.cpp" />
+    <ClCompile Include="ObjParser.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
@@ -157,6 +158,7 @@
     <ClInclude Include="HRErrorHandler.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Node3D.h" />
+    <ClInclude Include="ObjParser.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="Scene.h" />
   </ItemGroup>

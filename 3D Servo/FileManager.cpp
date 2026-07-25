@@ -1,7 +1,10 @@
 #include "FileManager.h"
+#include <fstream>
 
 FileManager::ReadedBytesDTO FileManager::ReadBytes(std::string PATH)
 {
+	m_logger.log("[INFO|FileManager]: Loading binary file (" + PATH + ").");
+
 	HRESULT hr = S_OK;
 	FILE* File;
 
@@ -12,7 +15,7 @@ FileManager::ReadedBytesDTO FileManager::ReadBytes(std::string PATH)
 	
 	err = fopen_s(&File, PATH.c_str(), "rb");
 	if (err != 0 || File == nullptr) {
-		MessageBoxA(nullptr, "Load Error!", "Pososal!", MB_OK);
+		m_logger.log("[FATAL|FileManager]: Cannot load binary file (" + PATH + ")." );
 		throw;
 	}
 
@@ -26,4 +29,23 @@ FileManager::ReadedBytesDTO FileManager::ReadBytes(std::string PATH)
 	fclose(File);
 
 	return Result;
+}
+
+std::vector<std::string> FileManager::ReadText(std::string PATH)
+{
+	m_logger.log("[INFO|FileManager]: Loading text file (" + PATH + ").");
+	std::ifstream file(PATH);
+	if (!file.is_open()) {
+		m_logger.log("[FATAL|FileManager]: Cannot load text file (" + PATH + ").");
+	}
+	std::vector<std::string> lines;
+	std::string line;
+
+	while (std::getline(file, line)) {
+		lines.push_back(line);
+	}
+
+	file.close();
+	
+	return lines;
 }
