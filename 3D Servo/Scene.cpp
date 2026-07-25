@@ -78,10 +78,10 @@ void Scene::ShaderManager::Setup(Microsoft::WRL::ComPtr<ID3D11Device> com_device
 		m_pixelShader.GetAddressOf()
 	);
 
-	EngineConstants eng;
+
 
 	CD3D11_BUFFER_DESC cbDesc(
-		eng.GetSizeOfConstantBufferStruct(),
+		sizeof(EConst::ConstantBufferStruct),
 		D3D11_BIND_CONSTANT_BUFFER
 	);
 

@@ -1,61 +1,42 @@
 #include "Node3D.h"
-	using namespace DirectX;
 
-void Node3D::SetOffset(DirectX::XMFLOAT3 newOffset) {
-	XMFLOAT3 vectorResult;
+void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform)
+{
+	DirectX::XMMATRIX local = DirectX::XMLoadFloat4x4(&m_localTransform);
+	DirectX::XMMATRIX global = local * parentGlobalTransform;
+	DirectX::XMStoreFloat4x4(&m_globalTransform, global);
 
-	XMVECTOR GlobalPos = XMLoadFloat3(&m_data.GlobalPos);
-	XMVECTOR vB = XMLoadFloat3(&m_offset);
-	XMVECTOR vC = XMLoadFloat3(&newOffset);
-
-	GlobalPos = GlobalPos - vB;
-	m_offset = newOffset;
-	GlobalPos = GlobalPos + vC;
-
-	XMStoreFloat3(&vectorResult, GlobalPos);
-
-	m_data.GlobalPos = vectorResult;
-	
-	UpdateGVertices(GlobalPos);
-
-	for (auto* ch : m_children)
-	{
-		ch->ChangeGPos(GlobalPos);
+	for (auto child : m_children) {
+		child->UpdateTransforms(global);
 	}
 }
 
-void Node3D::UpdateGVertices(DirectX::XMVECTOR newGPos) {
-	if (m_localVertices.begin() == m_localVertices.end()) { //TODO: Check Later
-		return;
-	}
+void Node3D::SetPosition(DirectX::XMFLOAT3 newPos)
+{
+	DirectX::XMMATRIX Translation = DirectX::XMMatrixTranslation(newPos.x, newPos.y, newPos.z);
+	DirectX::XMStoreFloat4x4(&m_localTransform, Translation);
 
-	m_data.GlobalVertices.clear();
-
-	for (auto vr : m_localVertices)
-	{
-		XMFLOAT3 Result;
-		XMVECTOR vertice = XMLoadFloat3(&vr);
-
-		XMStoreFloat3(&Result, vertice += newGPos);
-		m_data.GlobalVertices.emplace_back(Result);
-	}
+	DirectX::XMMATRIX parentGlobal = m_parent ? DirectX::XMLoadFloat4x4(&m_parent->m_globalTransform) : DirectX::XMMatrixIdentity();
+	UpdateTransforms(parentGlobal);
 }
 
-void Node3D::ChangeGPos(DirectX::XMVECTOR newParentGPos) {
-	XMFLOAT3 vectorResult;
+void Node3D::addChild(Node3D* child)
+{
+	if (!child) return;
 
-	XMVECTOR vA = XMLoadFloat3(&m_offset);
+	child->m_parent = this;
+	m_children.push_back(child);
 
-	XMVECTOR vResult = vA + newParentGPos;
+	child->UpdateTransforms(XMLoadFloat4x4(&m_globalTransform));
+}
 
-	XMStoreFloat3(&vectorResult, vResult);
-
-	m_data.GlobalPos = vectorResult;
-	
-	UpdateGVertices(vResult);
-	
-	for (auto* ch : m_children)
+void Node3D::removeChild(Node3D* child)
+{
+	auto it = std::find(m_children.begin(), m_children.end(), child);
+	if (it != m_children.end())
 	{
-		ch->ChangeGPos(vResult);
+		(*it)->m_parent = nullptr;
+		m_children.erase(it);
 	}
 }
+	
