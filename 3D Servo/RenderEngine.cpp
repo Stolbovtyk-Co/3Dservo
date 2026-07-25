@@ -304,7 +304,7 @@ void RenderEngine::CreateViewAndPerspective()
 	DirectX::XMStoreFloat4x4(
 		&m_constantBufferData.view,
 		DirectX::XMMatrixTranspose(
-			DirectX::XMMatrixLookAtLH( 
+			DirectX::XMMatrixLookAtRH( 
 				eye,
 				at,
 				up
@@ -318,7 +318,7 @@ void RenderEngine::CreateViewAndPerspective()
 	DirectX::XMStoreFloat4x4(
 		&m_constantBufferData.projection,
 		DirectX::XMMatrixTranspose(
-			DirectX::XMMatrixPerspectiveFovLH(
+			DirectX::XMMatrixPerspectiveFovRH(
 				DirectX::XMConvertToRadians(70), 
 				aspectRatioX,
 				0.01f,
