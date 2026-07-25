@@ -9,7 +9,7 @@ Scene::Scene(Microsoft::WRL::ComPtr<ID3D11Device> device)
 
 void Scene::Setup()
 {
-	m_sh = std::make_unique<ShaderManager>(&m_fileMgr, m_com_device);
+	m_sh = std::make_unique<ShaderManager>(&m_fileMgr);
 	m_st.clearColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	m_st.sceneName = "gm_Scene_Perfab";
 
@@ -21,9 +21,9 @@ void Scene::Update(float delta)
 {
 }
 
-Scene::ShaderManager::ShaderManager(FileManager* flMgr, Microsoft::WRL::ComPtr<ID3D11Device> com_device)
+Scene::ShaderManager::ShaderManager(FileManager* flMgr)
 {
-	Scene::ShaderManager::Setup(flMgr, com_device);
+	m_flMgr = flMgr;
 }
 
 Scene::ShaderManager::ShaderDTO Scene::ShaderManager::GetShaderManagerDTO()
@@ -36,7 +36,7 @@ Scene::ShaderManager::ShaderDTO Scene::ShaderManager::GetShaderManagerDTO()
 	return dto;
 }
 
-void Scene::ShaderManager::Setup(FileManager* flMgr, Microsoft::WRL::ComPtr<ID3D11Device> com_device)
+void Scene::ShaderManager::Setup(Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 {
 	ID3D11Device* device = com_device.Get();
 	HRESULT hr = S_OK;;
@@ -45,10 +45,10 @@ void Scene::ShaderManager::Setup(FileManager* flMgr, Microsoft::WRL::ComPtr<ID3D
 
 	errno_t err;
 
-	auto dto = flMgr->ReadBytes("VertexShader.hlsl");
+	auto dtoVertex = m_flMgr->ReadBytes("VertexShader.cso");
 	hr = device->CreateVertexShader(
-		dto.Bytes,
-		dto.BytesRead,
+		dtoVertex.Bytes,
+		dtoVertex.BytesRead,
 		nullptr,
 		&m_vertexShader
 	);
@@ -65,15 +65,15 @@ void Scene::ShaderManager::Setup(FileManager* flMgr, Microsoft::WRL::ComPtr<ID3D
 	hr = device->CreateInputLayout(
 		iaDesc,
 		ARRAYSIZE(iaDesc),
-		dto.Bytes,
-		dto.BytesRead,
+		dtoVertex.Bytes,
+		dtoVertex.BytesRead,
 		&m_inputLayout
 	);
 
-	dto = flMgr->ReadBytes("VertexShader.hlsl");
+	auto dtoPixels = m_flMgr->ReadBytes("PixelShader.cso");
 	hr = device->CreatePixelShader(
-		dto.Bytes,
-		dto.BytesRead,
+		dtoPixels.Bytes,
+		dtoPixels.BytesRead,
 		nullptr,
 		m_pixelShader.GetAddressOf()
 	);

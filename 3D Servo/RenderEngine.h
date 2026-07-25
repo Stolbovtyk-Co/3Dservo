@@ -28,7 +28,7 @@ public:
 
     template <std::derived_from<Scene> T>
     void LoadScene(std::unique_ptr<T> sc) {
-        m_curentScene = std::move(sc);
+        m_currentScene = std::move(sc);
     }
 
 private:
@@ -36,7 +36,7 @@ private:
     void Clear(float r, float g, float b, float a);
     void LoadSceneSettings();
 
-    std::unique_ptr <Scene> m_curentScene = nullptr;
+    std::unique_ptr <Scene> m_currentScene = nullptr;
 
     ShaderLoader::ConstantBufferStruct m_constantBufferData;
 

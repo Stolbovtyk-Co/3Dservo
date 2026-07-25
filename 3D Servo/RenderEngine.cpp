@@ -191,7 +191,7 @@ void RenderEngine::Clear(float r, float g, float b, float a) {
 
 void RenderEngine::LoadSceneSettings()
 {
-	Scene::SceneSettings settings = m_curentScene.get()->GetSceneSettings();
+	Scene::SceneSettings settings = m_currentScene.get()->GetSceneSettings();
 	m_logger.get()->log("Loaded scene: " + settings.sceneName);
 	m_clearColor = settings.clearColor;
 }
@@ -334,12 +334,12 @@ void RenderEngine::CreateViewAndPerspective()
 void RenderEngine::PreloadAssetsAsync() //TODO: Asynch Loading
 {
 #pragma region Shaders
-	m_shaderLoader.LoadShaders(m_device);
-	ShaderLoader::ShadersStuffDTO ShadeDTO = m_shaderLoader.GetShadersStuff();
-	m_vertexShader = ShadeDTO.VertexShader;
-	m_inputLayout = ShadeDTO.InputLayout;
-	m_pixelShader = ShadeDTO.PixelShader;
-	m_constantBuffer = ShadeDTO.ConstantBuffer;
+	m_currentScene.get()->GetShaderManager()->Setup(m_device);
+ 	Scene::ShaderManager::ShaderDTO ShaderDTO = m_currentScene.get()->GetShaderManager()->GetShaderManagerDTO();
+	m_vertexShader = ShaderDTO.vertexShader;
+	m_inputLayout = ShaderDTO.inputLayout;
+	m_pixelShader = ShaderDTO.pixelShader;
+	m_constantBuffer = ShaderDTO.constantBuffer;
 #pragma endregion
 
 #pragma region Buffers
