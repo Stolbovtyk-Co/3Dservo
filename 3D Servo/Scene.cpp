@@ -21,9 +21,6 @@ void Scene::Setup()
 	auto dto = m_bufferLoader.GetBuffersStaff();
 
 	m_tree.SetGPUBuffers(dto.VertexBuffer.Get(), dto.IndexBuffer.Get(), m_bufferLoader.GetIndexCount());
-	m_tree.SetPosition({ 0.0f, 0.0f, -3.0f });
-	m_tree.SetRotation({ -3.0f, -3.0f, -3.0f });
-	m_tree.SetScale({ 1.0f, 1.0f, 2.0f });
 }
 
 void Scene::Update(float delta)

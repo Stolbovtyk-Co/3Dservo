@@ -122,20 +122,21 @@ protected:
 	long m_gpuIndexCount = 0;
 	std::string m_name = "default_name";
 	Node3D* m_parent = nullptr;
-	std::vector<Node3D*> m_children;	//3D
+	std::vector<Node3D*> m_children;
 
 	std::vector<EConst::VertexPositionColor> m_localVertices;
 	std::vector<long> m_localIndices;
 
 	//Stuff
-	DirectX::XMFLOAT3 m_position;
-	DirectX::XMFLOAT3 m_rotation;
-	DirectX::XMFLOAT3 m_scale;
+	DirectX::XMFLOAT3 m_position = { 0,0,0 };
+	DirectX::XMFLOAT3 m_rotation = { 0,0,0,};
+	DirectX::XMFLOAT3 m_scale = { 1,1,1 };
+	DirectX::XMFLOAT4X4 m_localTransform;
+
 	//VideoCar Buffers
 	ID3D11Buffer* m_pVertexBuffer = nullptr;
 	ID3D11Buffer* m_pIndexBuffer = nullptr;
-
-	DirectX::XMFLOAT4X4 m_localTransform;
 	DirectX::XMFLOAT4X4 m_globalTransform;
+
 	//further on comes some abstruse crap 
 };
