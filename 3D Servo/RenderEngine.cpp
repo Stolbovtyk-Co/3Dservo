@@ -12,7 +12,9 @@ RenderEngine::RenderEngine(std::shared_ptr<Logger> logger, HWND hWnd, int Width,
 {
 	m_logger = logger;
 	Initialize(hWnd, Width, Height);
-	CreateViewAndPerspective();
+	LoadScene(std::make_unique<Scene>(m_device));
+	LoadSceneSettings();
+	CreateViewAndPerspective(); // TODO: move this to scene
 	m_frameCount = 0;
 }
 
@@ -187,6 +189,13 @@ void RenderEngine::Clear(float r, float g, float b, float a) {
 	m_context->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
+void RenderEngine::LoadSceneSettings()
+{
+	Scene::SceneSettings settings = m_curentScene.get()->GetSceneSettings();
+	m_logger.get()->log("Loaded scene: " + settings.sceneName);
+	m_clearColor = settings.clearColor;
+}
+
 void RenderEngine::Update()
 {
 	m_frameCount++;
@@ -214,6 +223,8 @@ void RenderEngine::Update()
 }
 
 void RenderEngine::Render() {
+
+	RenderEngine::Clear(m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w);
 	// Update  `m_contantBufferData`, `m_pConstantBuffer.Get()`
 	// Clear  Application::Risovat() //skip
 	// Settings `VertexPositionColor`, `m_pVertexBuffer` ,`m_pIndexBuffer`, 

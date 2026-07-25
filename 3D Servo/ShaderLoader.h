@@ -3,6 +3,11 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
+//--------------------------------------
+//	DEPRECATED
+//	TODO: Delete this class and fully migrate to scene class
+//--------------------------------------
+
 class ShaderLoader
 {
 public:

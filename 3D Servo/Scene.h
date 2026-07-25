@@ -5,6 +5,7 @@
 #include "FileManager.h"
 #include <memory>
 #include "ShaderLoader.h"
+#include <string>
 
 class Scene
 {
@@ -17,7 +18,10 @@ public:
 	 struct SceneSettings
 	 {
 		 DirectX::XMFLOAT4 clearColor;
+		 std::string sceneName;
 	 };
+
+	 virtual ~Scene() = default;
 
 protected:
 
@@ -49,7 +53,17 @@ protected:
 	SceneSettings m_st;
 
 	//---------------------------------------
-	//IMPORTED FROM RENDER ENGINE CLASSES:
+	//	IMPORTED FROM RENDER ENGINE CLASSES:
 	Microsoft::WRL::ComPtr<ID3D11Device> m_com_device;
+
+	//---------------------------------------
+	//	GETTER && SETTER ZONE
+public:
+	virtual ShaderManager* GetShaderManager() {
+		return m_sh.get();
+	}
+	SceneSettings GetSceneSettings() {
+		return m_st;
+	}
 };
 

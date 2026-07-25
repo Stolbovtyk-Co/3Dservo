@@ -47,7 +47,7 @@ void Application::Initialize() {
 void Application::Run() {
 	while (m_isRunning) {
 		Process();
-		Risovat();
+        m_renderEngine->Render();
 	}
 }
 
@@ -74,10 +74,4 @@ void Application::Process() {
         }
     }
     m_renderEngine->Update();
-}
-
-void Application::Risovat() {
-    
-    m_renderEngine->Clear(0.0f, 0.0f, 0.0f, 0.0f);
-    m_renderEngine->Render();
 }

@@ -2,10 +2,13 @@
 #include <d3d11.h>
 #include<dcomp.h>
 #include <wrl/client.h>
-
 #include "BufferLoader.h"
 #include "Logger.h"
 #include "ShaderLoader.h"
+#include "Scene.h"
+
+#include "Logger.h"
+#include <concepts>
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -14,8 +17,6 @@ public:
     RenderEngine(std::shared_ptr<Logger> logger, HWND hWnd, int Width, int Height);
 
     void Initialize(HWND hWnd, int m_width, int m_height);
-
-    void Clear(float r, float g, float b, float a);
     
     void Render();
 
@@ -25,12 +26,24 @@ public:
 
     void PreloadAssetsAsync();
 
+    template <std::derived_from<Scene> T>
+    void LoadScene(std::unique_ptr<T> sc) {
+        m_curentScene = std::move(sc);
+    }
+
 private:
+
+    void Clear(float r, float g, float b, float a);
+    void LoadSceneSettings();
+
+    std::unique_ptr <Scene> m_curentScene = nullptr;
+
     ShaderLoader::ConstantBufferStruct m_constantBufferData;
 
     float m_width;
     float m_height;
     unsigned int  m_frameCount;
+    DirectX::XMFLOAT4 m_clearColor;
 
     Microsoft::WRL::ComPtr<ID3D11Device> m_device = nullptr;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context = nullptr;
@@ -47,7 +60,7 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
-    std::shared_ptr<Logger> m_logger = nullptr;
+    std::shared_ptr<Logger> m_logger;
     //Loaders
     ShaderLoader m_shaderLoader;
     BufferLoader m_bufferLoader;

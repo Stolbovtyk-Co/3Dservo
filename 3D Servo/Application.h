@@ -23,9 +23,6 @@ public:
 	static LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 private:
 	void Initialize();
-
 	void Process();
-
-	void Risovat();
 };
 

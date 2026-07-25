@@ -9,10 +9,11 @@ Scene::Scene(Microsoft::WRL::ComPtr<ID3D11Device> device)
 
 void Scene::Setup()
 {
-
+	m_sh = std::make_unique<ShaderManager>(&m_fileMgr, m_com_device);
+	m_st.clearColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	m_st.sceneName = "gm_Scene_Perfab";
 
 	// Load Scene Tree
-
 	// SETUP SHADER ON CHILD LEVEL
 }
 
