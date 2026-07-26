@@ -16,9 +16,14 @@ public:
 
 	virtual ~Node3D() {}
 
-	virtual void Initialize() {}
+	virtual void Initialize() { Node3D::SetScale(DirectX::XMFLOAT3(0.6, 0.6, 0.6)); 
+	
+	for (auto ch : m_children) {
+		ch->Initialize();
+	}
+	}
 
-	virtual void Update() {}
+	virtual void Update(float delta);
 
 	virtual void UpdateTransforms(DirectX::FXMMATRIX parentGlobal);
 

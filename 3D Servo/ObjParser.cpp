@@ -30,7 +30,7 @@ ObjParser::ObjParserDTO ObjParser::ParseLines(std::vector<std::string> lines, Mi
         if (it != objMapKeyword.end()) {
             switch (it->second) {
             case 0: {
-                DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+                DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.5f);
                 if (sp_string.size() == 9) {
                     color.w = std::stof(sp_string[8]);
                 }
@@ -61,9 +61,19 @@ ObjParser::ObjParserDTO ObjParser::ParseLines(std::vector<std::string> lines, Mi
             }
 
             case 2: {
-                iVect.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
-                iVect.push_back(static_cast<short>(std::stoi(sp_string[2]) - 1));
-                iVect.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
+                if (sp_string.size() == 4) {
+                    iVect.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
+                    iVect.push_back(static_cast<short>(std::stoi(sp_string[2]) - 1));
+                    iVect.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
+                }
+                else if (sp_string.size() == 5) {
+                    iVect.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
+                    iVect.push_back(static_cast<short>(std::stoi(sp_string[2]) - 1));
+                    iVect.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
+                    iVect.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
+                    iVect.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
+                    iVect.push_back(static_cast<short>(std::stoi(sp_string[4]) - 1));
+                }
                 break;
             }
             };

@@ -1,6 +1,18 @@
 #include "Node3D.h"
 #include "ObjParser.h"
 
+void Node3D::Update(float delta)
+{
+	DirectX::XMFLOAT3 rot = Node3D::getLocalRotation();
+
+	float rotSpeed = 0.01;
+	Node3D::SetRotation(DirectX::XMFLOAT3(rot.x + rotSpeed, rot.y + rotSpeed, rot.z + 0.5 * rotSpeed));
+
+	for (auto ch : m_children) {
+		ch->Update(delta);
+	}
+}
+
 void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform)
 {
 	DirectX::XMMATRIX local = DirectX::XMLoadFloat4x4(&m_localTransform);

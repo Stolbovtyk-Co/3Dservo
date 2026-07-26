@@ -248,6 +248,8 @@ void RenderEngine::Update()
 		finalRotation
 	);*/
 
+	m_currentScene->Update(1);
+
 	if (m_frameCount == MAXUINT)  m_frameCount = 0;
 }
 
