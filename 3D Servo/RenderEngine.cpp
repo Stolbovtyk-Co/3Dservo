@@ -190,7 +190,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 
 void RenderEngine::CreateViewAndPerspective()
 {
-	DirectX::XMVECTOR eye = DirectX::XMVectorSet(0.0f, 0.0f, 1.5f, 0.f); 
+	DirectX::XMVECTOR eye = DirectX::XMVectorSet(0.0f, 0.0f, 1.5f, 0.f);
 	DirectX::XMVECTOR at = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.f);
 	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.f);
 
@@ -289,16 +289,11 @@ void RenderEngine::RenderNode(const Node3D* node)
 	if (!node->HasGeometry()) return;
 
 #pragma region Set stuff
-	// 1. Сохраняем матрицу в локальную переменную (теперь у неё есть адрес в памяти)
 	DirectX::XMFLOAT4X4 localGlobalTransform = node->GetGlobalTransform();
 
-	// 2. Передаем адрес этой переменной в функцию загрузки
 	DirectX::XMMATRIX globalMat = DirectX::XMLoadFloat4x4(&localGlobalTransform);
 
-	// 3. Транспонируем и записываем в константный буфер
 	DirectX::XMStoreFloat4x4(&m_constantBufferData.world, DirectX::XMMatrixTranspose(globalMat));
-
-
 
 	m_context->UpdateSubresource(
 		m_constantBuffer.Get(),
@@ -312,18 +307,16 @@ void RenderEngine::RenderNode(const Node3D* node)
 	UINT stride = sizeof(EConst::VertexPositionColor);
 	UINT offset = 0;
 
-	ID3D11Buffer* vertexBuffer = node->GetVertexBuffer();
-
 	m_context->IASetVertexBuffers(
 		0,
 		1,
-		&vertexBuffer,
+		node->GetVertexBuffer().GetAddressOf(),
 		&stride,
 		&offset
 	);
 
 	m_context->IASetIndexBuffer(
-		node->GetIndexBuffer(),
+		node->GetIndexBuffer().Get(),
 		DXGI_FORMAT_R16_UINT,
 		0
 	);
@@ -379,6 +372,7 @@ void RenderEngine::PreloadAssetsAsync() //TODO: Asynch Loading
 	);
 
 	m_context->IASetInputLayout(m_inputLayout.Get());
+	m_context->PSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
 #pragma endregion
 
 /*#pragma region Buffers

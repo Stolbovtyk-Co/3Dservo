@@ -2,7 +2,6 @@
 #include <DirectXMath.h>
 #include <vector>
 #include <string>
-#include <list>
 #include "EngineConstants.h"
 #include "FileManager.h"
 
@@ -15,10 +14,7 @@ public:
 		DirectX::XMStoreFloat4x4(&m_globalTransform, identity);
 	}
 
-	virtual ~Node3D() {
-		if (m_pVertexBuffer) m_pVertexBuffer->Release();
-		if (m_pIndexBuffer) m_pIndexBuffer->Release();
-	}
+	virtual ~Node3D() {}
 
 	virtual void Initialize() {}
 
@@ -51,7 +47,7 @@ public:
 	}
 	
 
-	inline void SetGPUBuffers(ID3D11Buffer* vBuffer, ID3D11Buffer* iBuffer, long indexCount) {
+	inline void SetGPUBuffers(Microsoft::WRL::ComPtr<ID3D11Buffer> vBuffer, Microsoft::WRL::ComPtr<ID3D11Buffer> iBuffer, long indexCount) {
 		m_pVertexBuffer = vBuffer;
 		m_pIndexBuffer = iBuffer;
 		m_gpuIndexCount = indexCount;
@@ -96,9 +92,13 @@ public:
 		return m_gpuIndexCount;
 	}
 
-	inline ID3D11Buffer* GetVertexBuffer() const { return m_pVertexBuffer; }
-	
-	inline ID3D11Buffer* GetIndexBuffer() const { return m_pIndexBuffer; }
+	inline const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetVertexBuffer() const {
+		return m_pVertexBuffer;
+	}
+
+	inline const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetIndexBuffer() const {
+		return m_pIndexBuffer;
+	}
 	
 	inline bool HasGeometry() const {
 		return m_pVertexBuffer != nullptr && m_pIndexBuffer != nullptr;
@@ -137,8 +137,8 @@ protected:
 	DirectX::XMFLOAT4X4 m_localTransform;
 
 	//VideoCar Buffers
-	ID3D11Buffer* m_pVertexBuffer = nullptr;
-	ID3D11Buffer* m_pIndexBuffer = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
 	DirectX::XMFLOAT4X4 m_globalTransform;
 
 	//further on comes some abstruse crap 

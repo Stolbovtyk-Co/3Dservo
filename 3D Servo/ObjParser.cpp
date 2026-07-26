@@ -4,6 +4,7 @@
 #include <ranges>
 #include <map>
 #include "EngineConstants.h";
+#include <iostream>
 
 ObjParser::ObjParserDTO ObjParser::ParseLines(std::vector<std::string> lines, Microsoft::WRL::ComPtr<ID3D11Device> com_device)
 {
@@ -60,25 +61,24 @@ ObjParser::ObjParserDTO ObjParser::ParseLines(std::vector<std::string> lines, Mi
             }
 
             case 2: {
-                iVect.push_back(static_cast<short>(std::stoi(sp_string[1])));
-                iVect.push_back(static_cast<short>(std::stoi(sp_string[2])));
-                iVect.push_back(static_cast<short>(std::stoi(sp_string[3])));
+                iVect.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
+                iVect.push_back(static_cast<short>(std::stoi(sp_string[2]) - 1));
+                iVect.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
                 break;
             }
             };
         }
     }
 
-    EConst::VertexPositionColor* CubeVertices = vVect.data();
 
     CD3D11_BUFFER_DESC vDesc(
-        sizeof(CubeVertices),
+        vVect.size() * sizeof(EConst::VertexPositionColor),
         D3D11_BIND_VERTEX_BUFFER
     );
 
     D3D11_SUBRESOURCE_DATA vData;
     ZeroMemory(&vData, sizeof(D3D11_SUBRESOURCE_DATA));
-    vData.pSysMem = CubeVertices;
+    vData.pSysMem = vVect.data();
     vData.SysMemPitch = 0;
     vData.SysMemSlicePitch = 0;
 
@@ -88,18 +88,16 @@ ObjParser::ObjParserDTO ObjParser::ParseLines(std::vector<std::string> lines, Mi
         &m_vertexBuffer
     );
 
-    short* CubeIndices = iVect.data();
-
-    m_indexCount = iVect.size() * sizeof(short);
+    m_indexCount = static_cast<long>(iVect.size());
 
     CD3D11_BUFFER_DESC iDesc(
-        sizeof(CubeIndices),
+        iVect.size() * sizeof(short),
         D3D11_BIND_INDEX_BUFFER
     );
 
     D3D11_SUBRESOURCE_DATA iData;
     ZeroMemory(&iData, sizeof(D3D11_SUBRESOURCE_DATA));
-    iData.pSysMem = CubeIndices;
+    iData.pSysMem = iVect.data();
     iData.SysMemPitch = 0;
     iData.SysMemSlicePitch = 0;
 
@@ -113,6 +111,11 @@ ObjParser::ObjParserDTO ObjParser::ParseLines(std::vector<std::string> lines, Mi
     outputDTO.vBuffer = m_vertexBuffer;
     outputDTO.iBuffer = m_indexBuffer;
     outputDTO.iCount = m_indexCount;
+
+    if (vVect.empty() || iVect.empty()) {
+        std::cout << "God damm";
+        return outputDTO;
+    }
 
     return outputDTO;
 }

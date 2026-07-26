@@ -23,9 +23,11 @@ VS_OUTPUT main(VS_INPUT input) // main is the default function name
     float4 pos = float4(input.vPos, 1.0f);
 
     // Transform the position from object space to homogeneous projection space
+
     pos = mul(pos, mWorld);
     pos = mul(pos, View);
     pos = mul(pos, Projection);
+
     Output.Position = pos;
 
     // Just pass through the color data
