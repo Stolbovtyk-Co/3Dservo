@@ -148,6 +148,7 @@
     <ClCompile Include="ObjParser.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="ScriptPerfab.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="ObjParser.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="ScriptPerfab.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
