@@ -57,6 +57,8 @@ protected:
 
 	//BufferLoader m_bufferLoader; //TODO: Change to parcer if you can (¬‿¬)
 
+	std::vector<std::shared_ptr<Node3D>> m_sceneObjects;
+
 	FileManager m_fileMgr;
 
 	std::unique_ptr <ShaderManager> m_sh;
