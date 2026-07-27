@@ -6,7 +6,6 @@
 #include <memory>
 #include <string>
 
-#include "BufferLoader.h"
 #include "Node3D.h"
 
 class Scene
@@ -56,7 +55,7 @@ protected:
 
 	Node3D m_tree;
 
-	BufferLoader m_bufferLoader; //TODO: Change to parcer if you can (¬‿¬)
+	//BufferLoader m_bufferLoader; //TODO: Change to parcer if you can (¬‿¬)
 
 	FileManager m_fileMgr;
 

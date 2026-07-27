@@ -14,16 +14,11 @@ void Scene::Setup()
 	m_st.sceneName = "gm_Scene_Perfab";
 
 	// Load Scene Tree
-	m_bufferLoader.LoadBuffer(m_com_device);
 
 	m_tree.SetName("tree");
-	
 	m_tree.SetObjFile("Scene.obj", &m_fileMgr, m_com_device);
-	auto dto = m_bufferLoader.GetBuffersStaff();
 
 	m_tree.Initialize();
-
-	//m_tree.SetGPUBuffers(dto.VertexBuffer.Get(), dto.IndexBuffer.Get(), m_bufferLoader.GetIndexCount());
 }
 
 void Scene::Update(float delta)

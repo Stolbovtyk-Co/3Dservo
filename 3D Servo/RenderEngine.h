@@ -2,7 +2,6 @@
 #include <d3d11.h>
 #include<dcomp.h>
 #include <wrl/client.h>
-#include "BufferLoader.h"
 #include "Logger.h"
 #include "Scene.h"
 
