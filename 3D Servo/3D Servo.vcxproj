@@ -148,7 +148,6 @@
     <ClCompile Include="ObjParser.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="ScriptPerfab.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
