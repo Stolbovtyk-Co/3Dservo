@@ -144,7 +144,9 @@
     <ClCompile Include="HRErrorHandler.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MeshInstance3D.cpp" />
     <ClCompile Include="Node3D.cpp" />
+    <ClCompile Include="NodeFactory.cpp" />
     <ClCompile Include="ObjParser.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -155,7 +157,9 @@
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="HRErrorHandler.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="MeshInstance3D.h" />
     <ClInclude Include="Node3D.h" />
+    <ClInclude Include="NodeFactory.h" />
     <ClInclude Include="ObjParser.h" />
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="Scene.h" />

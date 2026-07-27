@@ -1,5 +1,4 @@
 #include "Node3D.h"
-#include "ObjParser.h"
 
 void Node3D::Update(float delta)
 {
@@ -13,7 +12,7 @@ void Node3D::Update(float delta)
 	}
 }
 
-void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform)
+void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform) //TODO: Set call in Scene.cpp
 {
 	DirectX::XMMATRIX local = DirectX::XMLoadFloat4x4(&m_localTransform);
 	DirectX::XMMATRIX global = local * parentGlobalTransform;
@@ -22,14 +21,6 @@ void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform)
 	for (auto child : m_children) {
 		child->UpdateTransforms(global);
 	}
-}
-
-void Node3D::SetObjFile(std::string FILE, FileManager* flMgr, Microsoft::WRL::ComPtr<ID3D11Device> com_device)
-{
-	auto unparsedLines = flMgr->ReadText(FILE);
-	ObjParser parser;
-	auto objDTO = parser.ParseLines(unparsedLines, com_device);
-	SetGPUBuffers(objDTO.vBuffer.Get(), objDTO.iBuffer.Get(), objDTO.iCount);
 }
 
 void Node3D::SetPosition(DirectX::XMFLOAT3 newPos)
@@ -62,7 +53,7 @@ void Node3D::RebuildLocalTransform() {
 
 
 	DirectX::XMMATRIX parentGlobal = m_parent ? XMLoadFloat4x4(&m_parent->m_globalTransform) : DirectX::XMMatrixIdentity();
-	UpdateTransforms(parentGlobal);
+	MarkDirty();
 }
 
 
@@ -72,8 +63,7 @@ void Node3D::addChild(Node3D* child)
 
 	child->m_parent = this;
 	m_children.push_back(child);
-
-	child->UpdateTransforms(XMLoadFloat4x4(&m_globalTransform));
+	MarkDirty();
 }
 
 void Node3D::removeChild(Node3D* child)

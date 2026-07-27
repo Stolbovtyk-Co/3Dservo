@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include "EngineConstants.h"
-#include "FileManager.h"
 
 class Node3D
 {
@@ -17,24 +16,20 @@ public:
 	virtual ~Node3D() {}
 
 	virtual void Initialize() { Node3D::SetScale(DirectX::XMFLOAT3(0.6, 0.6, 0.6)); 
-	
-	for (auto ch : m_children) {
-		ch->Initialize();
-	}
+		for (auto ch : m_children) {
+			ch->Initialize();
+		}
 	}
 
 	virtual void Update(float delta);
 
 	virtual void UpdateTransforms(DirectX::FXMMATRIX parentGlobal);
 
-	virtual void SetObjFile(std::string FILE, FileManager* flMgr, Microsoft::WRL::ComPtr<ID3D11Device> com_device);
-
 #pragma region Setters
 
 	inline virtual void SetName(std::string newName) {
 		m_name = std::move(newName);
 	}
-
 	
 	virtual void SetPosition(DirectX::XMFLOAT3 newPosition);
 
@@ -42,20 +37,12 @@ public:
 
 	virtual void SetScale(DirectX::XMFLOAT3 newScale);
 	
-
-	inline virtual void SetLocalIndeces(std::vector<long> newInd) {
-		m_localIndices = std::move(newInd);
+	virtual inline void MarkDirty() {
+		m_dirty = true;
 	}
 
-	inline virtual void SetLocalVertices(std::vector<EConst::VertexPositionColor> newVert) {
-		m_localVertices = std::move(newVert);
-	}
-	
-
-	inline void SetGPUBuffers(Microsoft::WRL::ComPtr<ID3D11Buffer> vBuffer, Microsoft::WRL::ComPtr<ID3D11Buffer> iBuffer, long indexCount) {
-		m_pVertexBuffer = vBuffer;
-		m_pIndexBuffer = iBuffer;
-		m_gpuIndexCount = indexCount;
+	virtual inline void ClearDirty() {
+		m_dirty = false;
 	}
 #pragma endregion
 
@@ -81,37 +68,14 @@ public:
 		return m_globalTransform;
 	}
 
-	inline const std::vector<EConst::VertexPositionColor>& GetVertexPositionColor() const {
-		return m_localVertices;
-	}
-
-	inline std::vector<long> GetIndeces() const {
-		return m_localIndices;
-	}
-
-	inline long GetIndexCount() const {
-		return static_cast<long>(m_localIndices.size());
-	}
-
-	inline long GetGPUIndexCount() const {
-		return m_gpuIndexCount;
-	}
-
-	inline const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetVertexBuffer() const {
-		return m_pVertexBuffer;
-	}
-
-	inline const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetIndexBuffer() const {
-		return m_pIndexBuffer;
-	}
-	
-	inline bool HasGeometry() const {
-		return m_pVertexBuffer != nullptr && m_pIndexBuffer != nullptr;
-	}
-
 	inline std::vector<Node3D*> GetChildren() const {
 		return m_children;
 	}
+
+	inline Node3D* GetParent() const {
+		return m_parent;
+	}
+
 #pragma endregion
 
 #pragma region TreeTools
@@ -120,6 +84,9 @@ public:
 
 	virtual void removeChild(Node3D* child);
 
+	virtual inline bool isDirty() {
+		return m_dirty;
+	}
 #pragma endregion
 
 protected:
@@ -127,10 +94,10 @@ protected:
 	void RebuildLocalTransform();
 
 	//Tree
-	long m_gpuIndexCount = 0;
 	std::string m_name = "default_name";
 	Node3D* m_parent = nullptr;
 	std::vector<Node3D*> m_children;
+	bool m_dirty = true; //If true should call UpdateTransforms for all childrens
 
 	std::vector<EConst::VertexPositionColor> m_localVertices;
 	std::vector<long> m_localIndices;
@@ -140,11 +107,7 @@ protected:
 	DirectX::XMFLOAT3 m_rotation = { 0,0,0,};
 	DirectX::XMFLOAT3 m_scale = { 1,1,1 };
 	DirectX::XMFLOAT4X4 m_localTransform;
-
-	//VideoCar Buffers
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer = nullptr;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
 	DirectX::XMFLOAT4X4 m_globalTransform;
 
-	//further on comes some abstruse crap 
+
 };

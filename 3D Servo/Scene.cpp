@@ -16,7 +16,6 @@ void Scene::Setup()
 	// Load Scene Tree
 
 	m_tree.SetName("tree");
-	m_tree.SetObjFile("Scene.obj", &m_fileMgr, m_com_device);
 
 	m_tree.Initialize();
 }
