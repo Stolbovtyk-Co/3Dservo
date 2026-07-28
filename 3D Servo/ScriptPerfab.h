@@ -8,6 +8,8 @@ public:
 	virtual void OnUpdate(float delta) {};
 	virtual void OnChildAdded(Node3D* child) {};
 	virtual void OnChildRemoved(Node3D* child) {};
+	virtual void OnTagAdded(std::string tag) {};
+	virtual void OnTagRemoved(std::string tag) {};
 	virtual ~ScriptPerfab() = default;
 protected:
 	Node3D* m_controlledNode;

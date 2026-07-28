@@ -53,6 +53,30 @@ void Node3D::SetScale(DirectX::XMFLOAT3 newScale)
 	RebuildLocalTransform();
 }
 
+void Node3D::AddTag(std::string tag)
+{
+	m_attachedTags.push_back(tag);
+	for (auto& sc : m_attachedScripts) {
+		if (sc) {
+			sc->OnTagAdded(tag);
+		}
+	}
+}
+
+void Node3D::RemoveTag(std::string tag)
+{
+	auto it = std::find(m_attachedTags.begin(), m_attachedTags.end(), tag);
+	if (it != m_attachedTags.end())
+	{
+		for (auto& sc : m_attachedScripts) {
+			if (sc) {
+				sc->OnTagRemoved(tag);
+			}
+		}
+		m_attachedTags.erase(it);
+	}
+}
+
 void Node3D::RebuildLocalTransform() {
 	DirectX::XMMATRIX scaleMat = DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
 

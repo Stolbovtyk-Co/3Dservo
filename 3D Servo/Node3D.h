@@ -57,6 +57,10 @@ public:
 		}
 	}
 
+	virtual void AddTag(std::string tag);
+
+	virtual void RemoveTag(std::string tag);
+
 #pragma endregion
 
 #pragma region Getters
@@ -89,6 +93,19 @@ public:
 		return m_parent;
 	}
 
+	inline std::vector<std::string> GetTags() {
+		return m_attachedTags;
+	}
+
+	inline bool HasTag(std::string tag) {
+		auto it = std::find(m_attachedTags.begin(), m_attachedTags.end(), tag);
+		if (it != m_attachedTags.end())
+		{
+			return true;
+		}
+		return false;
+	}
+
 #pragma endregion
 
 #pragma region TreeTools
@@ -113,6 +130,7 @@ protected:
 	bool m_dirty = true; //If true should call UpdateTransforms for all childrens TODO:fix
 
 	std::vector<std::shared_ptr<ScriptPerfab>> m_attachedScripts;
+	std::vector<std::string> m_attachedTags;
 
 	std::vector<EConst::VertexPositionColor> m_localVertices;
 	std::vector<long> m_localIndices;
