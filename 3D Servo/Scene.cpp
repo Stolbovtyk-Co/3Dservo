@@ -9,6 +9,7 @@ Scene::Scene(Microsoft::WRL::ComPtr<ID3D11Device> device)
 
 void Scene::Setup()
 {
+	//TODO: rework (100 %);
 	m_sh = std::make_unique<ShaderManager>(&m_fileMgr);
 	m_st.clearColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	m_st.sceneName = "gm_Scene_Perfab";
@@ -22,6 +23,7 @@ void Scene::Setup()
 
 void Scene::Update(float delta)
 {
+	m_tree.ProcessPendingChanges();
 	m_tree.Update(delta);
 }
 

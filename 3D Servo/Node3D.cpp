@@ -2,11 +2,6 @@
 
 void Node3D::Initialize()
 {
-	for (auto& sc : m_attachedScripts) {
-		if (sc) {
-			sc->OnLoad();
-		}
-	}
 	for (auto ch : m_children) {
 		ch->Initialize();
 	}
@@ -99,7 +94,7 @@ void Node3D::Update(float delta)
 			sc->OnUpdate(delta);
 		}
 	}
-	for (auto ch : m_children) { // TODO: rework update calls
+	for (auto ch : m_children) { 
 		ch->Update(delta);
 	}
 }
