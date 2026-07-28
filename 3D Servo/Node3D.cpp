@@ -50,7 +50,7 @@ void Node3D::ProcessPendingChanges()
 		}
 	}
 	if (m_dirty) {
-		UpdateTransforms(DirectX::XMLoadFloat4x4(&(m_parent->m_globalTransform)));
+		//UpdateTransforms(DirectX::XMLoadFloat4x4(&(m_parent->m_globalTransform)));
 		ClearDirty();
 	}
 	m_childrenToAdd.clear();

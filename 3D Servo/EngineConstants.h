@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
+#include <string>
 
 namespace EConst {
 	typedef struct _vertexPositionColor
@@ -35,6 +36,7 @@ namespace EConst {
 		Microsoft::WRL::ComPtr < ID3D11Buffer> vBuffer;
 		Microsoft::WRL::ComPtr < ID3D11Buffer> iBuffer;
 		long iCount;
+		DirectX::BoundingBox bounds;
 	};
 
 	struct SubMesh {
@@ -44,10 +46,10 @@ namespace EConst {
 		long indexCount = 0;
 
 		//Dynamic Mesh
-		std::vector<EConst::VertexPositionColor> vertices;
-		std::vector<short> indices;
+		std::vector<EConst::VertexPositionColor> Vertices;
+		std::vector<short> Indices;
 
-		//
+		//For Queue
 		DirectX::BoundingBox box;
 	}; 
 

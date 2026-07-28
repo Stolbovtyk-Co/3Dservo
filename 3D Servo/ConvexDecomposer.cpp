@@ -1,3 +1,4 @@
+#define NOMINMAX 1 
 #include "ConvexDecomposer.h"
 
 #define ENABLE_VHACD_IMPLEMENTATION 1
@@ -33,7 +34,15 @@ std::vector<EConst::CpuMeshDTO> ConvexDecomposer::runConvexDecomposition(EConst:
             partDto.Name = dto.Name + "_hull_" + std::to_string(i);
 
             result.push_back(partDto);
+
+            if (hull.m_points.empty() || hull.m_triangles.empty()) {
+                std::cout << "[Warning] V-HACD generated an empty hull, skipping...\n";
+                continue;
+            }
         }
+    }
+    else {
+        std::cout << "Пашёл нахуй козлина";
     }
 
     interfaceVHACD->Clean();

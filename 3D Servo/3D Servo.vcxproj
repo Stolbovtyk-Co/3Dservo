@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="ConvexDecomposer.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="HRErrorHandler.cpp" />
     <ClCompile Include="Logger.cpp" />
@@ -153,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="ConvexDecomposer.h" />
     <ClInclude Include="EngineConstants.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="HRErrorHandler.h" />
@@ -165,7 +167,6 @@
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ScriptPerfab.h" />
-    <ClInclude Include="VHACD.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">

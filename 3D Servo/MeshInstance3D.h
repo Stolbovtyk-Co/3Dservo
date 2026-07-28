@@ -7,24 +7,13 @@ class MeshInstance3D : public Node3D
 public:
 	MeshInstance3D() : Node3D() { }
 
-	MeshInstance3D(EConst::GpuMeshDTO Mesh) : Node3D() {
-		SetName(Mesh.Name);
-		SetGPUBuffers(Mesh.vBuffer, Mesh.iBuffer, Mesh.iCount);
+	MeshInstance3D(std::vector<EConst::SubMesh> subMeshes) : Node3D() {
+		SetSubMeshes(subMeshes);
 	}
 
 #pragma region Setters
-	inline virtual void SetLocalIndeces(std::vector<long> newInd) {
-		m_localIndices = std::move(newInd);
-	}
-
-	inline virtual void SetLocalVertices(std::vector<EConst::VertexPositionColor> newVert) {
-		m_localVertices = std::move(newVert);
-	}
-
-	inline void SetGPUBuffers(Microsoft::WRL::ComPtr<ID3D11Buffer> vBuffer, Microsoft::WRL::ComPtr<ID3D11Buffer> iBuffer, long indexCount) {
-		m_pVertexBuffer = vBuffer;
-		m_pIndexBuffer = iBuffer;
-		m_gpuIndexCount = indexCount;
+	inline void SetSubMeshes(std::vector<EConst::SubMesh> subMeshes) {
+		m_subMeshes = std::move(subMeshes);
 	}
 #pragma endregion
 
@@ -35,22 +24,6 @@ public:
 
 	inline std::vector<long> GetIndeces() const {
 		return m_localIndices;
-	}
-
-	inline long GetIndexCount() const {
-		return static_cast<long>(m_localIndices.size());
-	}
-
-	inline long GetGPUIndexCount() const {
-		return m_gpuIndexCount;
-	}
-
-	inline const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetVertexBuffer() const {
-		return m_pVertexBuffer;
-	}
-
-	inline const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetIndexBuffer() const {
-		return m_pIndexBuffer;
 	}
 
 	inline bool HasGeometry() const {
@@ -78,3 +51,36 @@ protected:
 	std::vector<EConst::SubMesh> m_subMeshes;
 };
 
+/*
+⣿⣿⠇⡄⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⡿⠀⣷⣀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⡇⣴⣿⣿⣷⣄⠀⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣟⣿⣿⣯⣹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⢠⣿⣿⣿⣿⣿⣷⣤⡀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⠉⠉⠉⠉⠛⠛⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⢏⠀⢻⣿⣿⣿⡏⠉⠉⢈⣤⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⠀⠀⠈⠿⣿⡏⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⢠⣤⣤⣤⣀⣤⣠⣀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣷⣄⠀⠀⠈⣷⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠉⠙⠛⠉⠘⠛⠛⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣆⣰⡿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⡷⡄⠀⠀⢠⣤⣀⠆⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⢡⡈⠻⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢧⠐⡀⠀⣀⠨⣡⣀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⡏⠾⢛⠡⠌⠹⣿⣿⣿⣿⣿⣿⣿⣿⡛⣌⢳⣼⡀⠘⠛⠛⣸⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣧⠖⢁⠴⠖⠒⢻⣿⣿⣿⣿⣿⣿⣿⠃⠈⠹⢿⣿⣶⣶⠞⠁⡛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣷⣠⣴⣾⣿⣍⠛⣛⡭⠝⠓⠿⠚⢄⠀⣠⣼⢿⣭⣡⡀⡰⣶⠏⠉⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣄⠣⠀⠀⠀⠀⠀⠉⠉⠉⠉⢺⡃⢸⠀⢠⠆⠀⠀⠀⠀⠀⠉⠛⢿⣿⣿⣿⣿
+⣿⣿⠟⣻⣿⡿⣿⣿⣿⠿⣻⣿⣆⠡⡂⠀⠀⠀⠀⠀⠀⠀⡼⠀⢹⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿
+⣿⡏⠒⠙⠻⢿⢦⣴⣶⣿⣿⡅⢿⣧⡐⡀⠀⠀⠀⠀⠀⠀⡇⠀⢸⠈⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡿⣿⣿
+⣿⡷⡀⠀⠀⠀⠈⠉⣿⣟⣹⣥⣶⠙⣷⡈⠄⠀⠀⠀⠀⠀⡗⠂⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡜⢸⠇⢹⣿
+⡟⠀⠰⡌⠀⠀⢀⣴⡾⢱⣾⣭⢵⠀⠘⣿⣌⢂⡐⠀⠀⢰⡇⠀⢸⠀⠀⠀⡀⠀⠀⠀⠀⠀⢘⠤⣬⠀⠈⣿
+⠀⠀⠀⠈⠀⠀⠉⣲⢯⣿⡿⣿⣾⡤⠸⠘⢿⣆⠣⠀⠀⣸⣇⠄⠈⠀⠀⠀⠀⠂⠀⠀⠀⢠⠁⣴⠟⠀⠀⣿
+⠀⠀⠀⣀⡤⠔⢻⠋⠈⣿⢻⣿⡧⢑⠀⠀⠘⣿⣆⠱⡆⣿⡄⠀⠀⠀⠀⠀⠀⠂⠀⠀⠀⢆⢴⠁⠈⠃⠀⣿
+⠀⠀⠢⡈⠁⠂⠺⡄⣠⣿⣿⣿⠁⣼⠀⠀⠀⠘⢿⣧⡑⣏⠁⠀⢠⠀⠀⡜⠀⠀⠀⠀⠐⢀⣲⠳⠀⠄⠀⣿
+⠸⠀⠀⠈⠀⠀⢼⣿⣿⠿⠛⢿⠀⡇⠀⠀⠀⠀⠈⢿⣷⡘⢇⠀⠸⠀⠈⠀⠀⠀⠐⢠⢃⣲⣁⡤⠀⠠⠀⢻
+⠄⠀⠀⢀⣠⠔⣊⣭⣿⠀⠈⠀⠀⠀⠀⠀⠀⠀⡈⠀⠻⣷⡌⠄⠀⠀⢀⣀⠀⢀⠀⣼⣼⣿⣋⠀⢀⡀⠀⠘
+⣜⣀⣰⣭⣿⣿⣿⣿⣇⠀⠀⠀⣶⠀⠀⠀⡄⠰⠀⢠⢆⣻⣿⡾⠊⠀⡀⠻⣧⡈⣼⣿⡿⠋⣥⣤⡐⠂⠐⡄
+⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀⢀⡀⢹⡀⠀⠐⠀⠀⠠⠁⡟⣿⣿⣿⡖⠈⠡⠐⠛⠀⠁⠀⠀⠠⡄⠉⢫⡷⢦⢠
+⣿⣿⣿⣿⣿⣿⣿⣿⣧⣤⣀⣀⣼⡁⠠⠦⠀⠀⠀⠀⡇⣷⠛⣿⣿⣃⡠⠀⠀⡄⠀⠀⠀⠀⠀⠀⠀⢄⠁⣼
+⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠇⠀⢀⣧⢻⠐⣿⡿⣿⣽⡗⢻⡇⠀⠀⠀⠀⠀⠀⠀⢀⠁⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⡤⠤⣄⣀⡤⠔⠀⠀⠈⠀⠀⢸⠸⢸⠀⣿⡇⣹⡿⣷⣄⠙⢧⡀⠀⠀⠄⠀⠀⢀⣠⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠌⠀⠀⠀⠀⠀⠀⠀⠇⠁⢸⡄⣿⣿⣿⣿⡿⣿⣷⣤⣿⣆⣀⣤⣶⣾⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⢸⠃⠙⣯⣙⡋⠸⣛⣿⣿⣿⡿⢹⡇⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⢠⠃⠀⠀⠈⠁⠀⡍⠉⠓⠋⢻⣄⠈⠁⢠⡞⠁⢸⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⢠⠃⠀⠀⠀⢸⡆⠀⠇⠀⠀⠀⠀⠉⠓⠒⠋⠀⠀⢸⣿⣿⣿⣿
+*/

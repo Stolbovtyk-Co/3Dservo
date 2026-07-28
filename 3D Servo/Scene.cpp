@@ -15,11 +15,14 @@ void Scene::Setup()
 	m_st.sceneName = "gm_Scene_Perfab";
 
 	m_MeshFactory = std::make_unique<MeshFactory>(m_com_device, &m_fileMgr, nullptr);
-
-	m_MeshFactory->CreateStaticInstance("Scene.obj");
-	m_tree.SetName("tree");
+	
+	std::shared_ptr<Node3D> sceneMesh = m_MeshFactory->CreateStaticInstance("Scene.obj");
+	int i = m_sceneObjects.size();
+	m_sceneObjects.push_back(sceneMesh);
+	m_tree.addChild(m_sceneObjects[i].get());
 
 	m_tree.Initialize();
+
 }
 
 void Scene::Update(float delta)
