@@ -17,19 +17,19 @@ namespace EConst {
 		DirectX::XMFLOAT4X4 projection;
 	} ConstantBufferStruct;
 
-	typedef struct RawMeshDTO {
+	 struct RawMeshDTO {
 		std::string Name = "default_name";
 		std::vector<float> Vertices;
 		std::vector<short> Indices;
 	};
 
-	typedef struct CpuMeshDTO {
+	 struct CpuMeshDTO {
 		std::string Name = "default_name";
 		std::vector<EConst::VertexPositionColor> Vertices;
 		std::vector<short> Indices;
 	};
 
-	typedef struct GpuMeshDTO
+	struct GpuMeshDTO
 	{
 		std::string Name;
 		Microsoft::WRL::ComPtr < ID3D11Buffer> vBuffer;

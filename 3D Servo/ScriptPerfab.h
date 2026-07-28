@@ -1,5 +1,8 @@
-#include "Node3D.h";
 #pragma once
+#include <string>
+
+class Node3D;
+
 class ScriptPerfab
 {
 public:

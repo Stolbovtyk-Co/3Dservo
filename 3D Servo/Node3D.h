@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 #include "EngineConstants.h"
-#include "ScriptPerfab.h";
+#include "ScriptPerfab.h"
 
 //TODO: m_children should be shared_ptr
 

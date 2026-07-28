@@ -14,7 +14,7 @@ void Scene::Setup()
 	m_st.clearColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	m_st.sceneName = "gm_Scene_Perfab";
 
-	m_MeshFactory = std::make_unique<MeshFactory>(m_com_device, m_fileMgr, nullptr);
+	m_MeshFactory = std::make_unique<MeshFactory>(m_com_device, &m_fileMgr, nullptr);
 
 	m_MeshFactory->CreateStaticInstance("Scene.obj");
 	m_tree.SetName("tree");

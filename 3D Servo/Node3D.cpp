@@ -24,7 +24,7 @@ void Node3D::ProcessPendingChanges()
 	}
 	m_scriptsToAdd.clear();
 	//Remove children
-	for (const auto& child : m_childrenToRemove) {
+	for (auto& child : m_childrenToRemove) {
 		auto it = std::find(m_children.begin(), m_children.end(), child);
 		if (it != m_children.end()) {
 			// Call event
@@ -38,7 +38,7 @@ void Node3D::ProcessPendingChanges()
 	}
 	m_childrenToRemove.clear();
 	//Add children
-	for (const auto& child : m_childrenToAdd) {
+	for (auto& child : m_childrenToAdd) {
 		m_children.push_back(child);
 		child->ProcessPendingChanges();
 		child->UpdateTransforms(DirectX::XMLoadFloat4x4(&m_globalTransform));
