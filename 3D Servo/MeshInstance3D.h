@@ -1,9 +1,17 @@
 #pragma once
 #include "Node3D.h"
+#include "EngineConstants.h"
 
 class MeshInstance3D : public Node3D
 {
 public:
+	MeshInstance3D() : Node3D() { }
+
+	MeshInstance3D(EConst::GpuMeshDTO Mesh) : Node3D() {
+		SetName(Mesh.Name);
+		SetGPUBuffers(Mesh.vBuffer, Mesh.iBuffer, Mesh.iCount);
+	}
+
 #pragma region Setters
 	inline virtual void SetLocalIndeces(std::vector<long> newInd) {
 		m_localIndices = std::move(newInd);
@@ -52,7 +60,7 @@ public:
 
 protected:
 	long m_gpuIndexCount = 0;
-	//VideoCar Buffers
+	//VideoCar Mesh
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
 };

@@ -7,6 +7,9 @@
 #include <string>
 
 #include "Node3D.h"
+#include "MeshFactory.h"
+
+class MeshFactory;
 
 class Scene
 {
@@ -55,7 +58,7 @@ protected:
 
 	Node3D m_tree;
 
-	//BufferLoader m_bufferLoader; //TODO: Change to parcer if you can (¬‿¬)
+	std::unique_ptr<MeshFactory> m_MeshFactory;
 
 	std::vector<std::shared_ptr<Node3D>> m_sceneObjects;
 

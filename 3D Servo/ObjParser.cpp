@@ -6,10 +6,8 @@
 #include "EngineConstants.h";
 #include <iostream>
 
-ObjParser::ObjParserDTO ObjParser::ParseLines(std::vector<std::string> lines, Microsoft::WRL::ComPtr<ID3D11Device> com_device)
+ObjParser::CpuMeshDTO ObjParser::ParseLines(std::vector<std::string> lines)
 {
-    ID3D11Device* device = com_device.Get();
-
     std::map<std::string, int> objMapKeyword = {
         { "s", -1},
         { "v", 0 },
@@ -18,10 +16,7 @@ ObjParser::ObjParserDTO ObjParser::ParseLines(std::vector<std::string> lines, Mi
         { "f", 2 }
     };
 
-    ObjParser::ObjParserDTO outputDTO;
-    std::vector<EConst::VertexPositionColor> vVect;
-    std::vector<short> iVect;
-    std::string oName = "unset";
+    ObjParser::CpuMeshDTO outputDTO;
     
     for (auto text : lines) {
         std::vector<std::string> sp_string = Split(text, ' ');
@@ -51,80 +46,33 @@ ObjParser::ObjParserDTO ObjParser::ParseLines(std::vector<std::string> lines, Mi
                 EConst::VertexPositionColor cV;
                 cV.color = color;
                 cV.pos = cord;
-                vVect.push_back(cV);
+                outputDTO.Vertices.push_back(cV);
                 break;
             }
 
             case 1: {
-                oName = sp_string[1];
+                outputDTO.Name = sp_string[1];
                 break;
             }
 
             case 2: {
                 if (sp_string.size() == 4) {
-                    iVect.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
-                    iVect.push_back(static_cast<short>(std::stoi(sp_string[2]) - 1));
-                    iVect.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
+                    outputDTO.Indices.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
+                    outputDTO.Indices.push_back(static_cast<short>(std::stoi(sp_string[2]) - 1));
+                    outputDTO.Indices.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
                 }
                 else if (sp_string.size() == 5) {
-                    iVect.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
-                    iVect.push_back(static_cast<short>(std::stoi(sp_string[2]) - 1));
-                    iVect.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
-                    iVect.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
-                    iVect.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
-                    iVect.push_back(static_cast<short>(std::stoi(sp_string[4]) - 1));
+                    outputDTO.Indices.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
+                    outputDTO.Indices.push_back(static_cast<short>(std::stoi(sp_string[2]) - 1));
+                    outputDTO.Indices.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
+                    outputDTO.Indices.push_back(static_cast<short>(std::stoi(sp_string[1]) - 1));
+                    outputDTO.Indices.push_back(static_cast<short>(std::stoi(sp_string[3]) - 1));
+                    outputDTO.Indices.push_back(static_cast<short>(std::stoi(sp_string[4]) - 1));
                 }
                 break;
             }
             };
         }
-    }
-
-
-    CD3D11_BUFFER_DESC vDesc(
-        vVect.size() * sizeof(EConst::VertexPositionColor),
-        D3D11_BIND_VERTEX_BUFFER
-    );
-
-    D3D11_SUBRESOURCE_DATA vData;
-    ZeroMemory(&vData, sizeof(D3D11_SUBRESOURCE_DATA));
-    vData.pSysMem = vVect.data();
-    vData.SysMemPitch = 0;
-    vData.SysMemSlicePitch = 0;
-
-    HRESULT hr = device->CreateBuffer(
-        &vDesc,
-        &vData,
-        &m_vertexBuffer
-    );
-
-    m_indexCount = static_cast<long>(iVect.size());
-
-    CD3D11_BUFFER_DESC iDesc(
-        iVect.size() * sizeof(short),
-        D3D11_BIND_INDEX_BUFFER
-    );
-
-    D3D11_SUBRESOURCE_DATA iData;
-    ZeroMemory(&iData, sizeof(D3D11_SUBRESOURCE_DATA));
-    iData.pSysMem = iVect.data();
-    iData.SysMemPitch = 0;
-    iData.SysMemSlicePitch = 0;
-
-    hr = device->CreateBuffer(
-        &iDesc,
-        &iData,
-        &m_indexBuffer
-    );
-    
-    outputDTO.name = oName;
-    outputDTO.vBuffer = m_vertexBuffer;
-    outputDTO.iBuffer = m_indexBuffer;
-    outputDTO.iCount = m_indexCount;
-
-    if (vVect.empty() || iVect.empty()) {
-        std::cout << "God damm";
-        return outputDTO;
     }
 
     return outputDTO;
