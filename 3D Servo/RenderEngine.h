@@ -34,8 +34,9 @@ private:
 
     void Clear(float r, float g, float b, float a);
     void LoadSceneSettings();
+    EConst::GPUIstructionsDTO GetFinalGPUInstructions(std::vector<EConst::Instruction> nodeInstructions);
 
-    void RenderNode(const Node3D* node);
+    void RenderGPUBuffers(EConst::GPUBuffers g);
 
     std::unique_ptr <Scene> m_currentScene = nullptr;
 

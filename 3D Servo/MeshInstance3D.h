@@ -56,6 +56,17 @@ public:
 	inline bool HasGeometry() const {
 		return m_pVertexBuffer != nullptr && m_pIndexBuffer != nullptr;
 	}
+
+	inline bool HasSubMeshes() { return m_subMeshes.size() > 0; }
+
+	inline EConst::Instruction GetGPUInstruction() {
+		EConst::Instruction inst;
+		inst.subMeshes = m_subMeshes;
+		inst.SV_TRANSPARENT = HasTag("SV_TRANSPARENT");
+		inst.world = GetGlobalTransform();
+		return inst;
+	}
+
 #pragma endregion
 
 protected:

@@ -50,4 +50,22 @@ namespace EConst {
 		//
 		DirectX::BoundingBox box;
 	}; 
+
+	struct Instruction {
+		bool SV_TRANSPARENT;
+		std::vector<SubMesh> subMeshes;
+		DirectX::XMFLOAT4X4 world;
+	};
+
+	struct GPUBuffers {
+		Microsoft::WRL::ComPtr<ID3D11Buffer> vBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> iBuffer;
+		DirectX::XMMATRIX worldMatrix;
+		long indexCount;
+		float cDistSqr;
+	};
+	struct GPUIstructionsDTO {
+		std::vector<GPUBuffers> regular;
+		std::vector<GPUBuffers> transparent;
+	};
 }

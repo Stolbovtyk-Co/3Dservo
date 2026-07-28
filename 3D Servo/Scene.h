@@ -7,6 +7,8 @@
 #include <string>
 
 #include "Node3D.h"
+
+#include "MeshInstance3D.h"
 #include "MeshFactory.h"
 
 class MeshFactory;
@@ -28,6 +30,8 @@ public:
 		 DirectX::XMFLOAT4 clearColor;
 		 std::string sceneName;
 	 };
+
+	 virtual std::vector<EConst::Instruction> GetGPUInstructions();
 
 	 virtual ~Scene() = default;
 

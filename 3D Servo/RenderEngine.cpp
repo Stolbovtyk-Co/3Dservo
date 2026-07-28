@@ -3,6 +3,7 @@
 #include <dxgi1_3.h>
 #include <wrl/client.h>
 #include "Node3D.h"
+#include <algorithm> 
 
 using namespace DirectX;
 
@@ -268,35 +269,24 @@ void RenderEngine::Clear(float r, float g, float b, float a) {
 void RenderEngine::Render() {
 
 	Clear(m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w);
+	auto renderDTO = GetFinalGPUInstructions(m_currentScene->GetGPUInstructions());
 
 	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get());
 	
-	const auto tree = m_currentScene->GetTree();
-	RenderNode(tree);
+	for (auto i : renderDTO.regular) {
+		RenderGPUBuffers(i);
+	}
+	for (auto i : renderDTO.transparent) {
+		RenderGPUBuffers(i);
+	}
 
 	m_swapChain->Present(1, 0);
 }
 
-void RenderEngine::RenderNode(const Node3D* node)
+void RenderEngine::RenderGPUBuffers(EConst::GPUBuffers g)
 {
-	// RenderChildrens
-	// Update  `m_contantBufferData`, `m_pConstantBuffer.Get()`
-	// Settings `VertexPositionColor`, `m_pVertexBuffer` ,`m_pIndexBuffer`, 
-
-	for (const auto* child : node->GetChildren())
-	{
-		RenderNode(child);
-	}
-
-	if (!node->HasGeometry()) return;
-
-#pragma region Set stuff
-	DirectX::XMFLOAT4X4 localGlobalTransform = node->GetGlobalTransform();
-
-	DirectX::XMMATRIX globalMat = DirectX::XMLoadFloat4x4(&localGlobalTransform);
-
+	DirectX::XMMATRIX globalMat = g.worldMatrix;
 	DirectX::XMStoreFloat4x4(&m_constantBufferData.world, DirectX::XMMatrixTranspose(globalMat));
-
 	m_context->UpdateSubresource(
 		m_constantBuffer.Get(),
 		0,
@@ -305,36 +295,30 @@ void RenderEngine::RenderNode(const Node3D* node)
 		0,
 		0
 	);
-
 	UINT stride = sizeof(EConst::VertexPositionColor);
 	UINT offset = 0;
-
 	m_context->IASetVertexBuffers(
 		0,
 		1,
-		node->GetVertexBuffer().GetAddressOf(),
+		g.vBuffer.GetAddressOf(),
 		&stride,
 		&offset
 	);
-
 	m_context->IASetIndexBuffer(
-		node->GetIndexBuffer().Get(),
+		g.iBuffer.Get(),
 		DXGI_FORMAT_R16_UINT,
 		0
 	);
-
 	m_context->VSSetConstantBuffers(
 		0,
 		1,
 		m_constantBuffer.GetAddressOf()
 	);
-
 	m_context->DrawIndexed(
-		node->GetGPUIndexCount(),
+		g.indexCount,
 		0,
 		0
 	);
-#pragma endregion
 }
 
 #pragma endregion
@@ -346,6 +330,50 @@ void RenderEngine::LoadSceneSettings()
 	Scene::SceneSettings settings = m_currentScene.get()->GetSceneSettings();
 	m_logger.get()->log("Loaded scene: " + settings.sceneName);
 	m_clearColor = settings.clearColor;
+}
+
+EConst::GPUIstructionsDTO RenderEngine::GetFinalGPUInstructions(std::vector<EConst::Instruction> nodeInstructions)
+{
+	EConst::GPUIstructionsDTO dto;
+	DirectX::BoundingFrustum frustum;
+	DirectX::BoundingFrustum::CreateFromMatrix(frustum, DirectX::XMLoadFloat4x4(&(m_constantBufferData.projection)), true);
+	auto invViewMatrix = DirectX::XMMatrixInverse(nullptr, DirectX::XMLoadFloat4x4(&(m_constantBufferData.view)));
+	frustum.Transform(frustum, invViewMatrix);
+	DirectX::XMVECTOR cameraPos = invViewMatrix.r[3];
+	
+	for (auto inst : nodeInstructions) {
+		auto cWorldMatrix = DirectX::XMLoadFloat4x4(&(inst.world));
+		auto cTransparent = inst.SV_TRANSPARENT;
+		for (auto mesh : inst.subMeshes) {
+			DirectX::BoundingBox worldBox;
+			mesh.box.Transform(worldBox, cWorldMatrix);
+			if (frustum.Contains(worldBox) == DirectX::DISJOINT) {
+				continue; 
+			}
+			DirectX::XMVECTOR boxCenter = DirectX::XMLoadFloat3(&worldBox.Center);
+			float distSq = DirectX::XMVectorGetX(DirectX::XMVector3LengthSq(DirectX::XMVectorSubtract(boxCenter, cameraPos)));
+			EConst::GPUBuffers gBuff;
+			gBuff.indexCount = mesh.indexCount;
+			gBuff.cDistSqr = distSq;
+			gBuff.iBuffer = mesh.iBuffer;
+			gBuff.vBuffer = mesh.vBuffer;
+			gBuff.worldMatrix = cWorldMatrix;
+			if (cTransparent) {
+				dto.transparent.push_back(gBuff);
+			}
+			else {
+				dto.regular.push_back(gBuff);
+			}
+		}
+	}
+
+	std::sort(dto.regular.begin(), dto.regular.end(), [](const EConst::GPUBuffers& a, const EConst::GPUBuffers& b) {
+		return a.cDistSqr < b.cDistSqr;
+		});
+	std::sort(dto.transparent.begin(), dto.transparent.end(), [](const EConst::GPUBuffers& a, const EConst::GPUBuffers& b) {
+		return a.cDistSqr > b.cDistSqr;
+		});
+	return dto;
 }
 
 /// <summary>

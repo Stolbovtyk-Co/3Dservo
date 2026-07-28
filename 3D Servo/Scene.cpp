@@ -28,6 +28,21 @@ void Scene::Update(float delta)
 	m_tree.Update(delta);
 }
 
+std::vector<EConst::Instruction> Scene::GetGPUInstructions()
+{
+	std::vector<EConst::Instruction> insts;
+	for (auto& node : m_sceneObjects) {
+		if (node->GetParent() != nullptr) {
+			if (auto meshNode = std::dynamic_pointer_cast<MeshInstance3D>(node)) {
+				if (meshNode->HasSubMeshes()) {
+					insts.push_back(meshNode->GetGPUInstruction());
+				}
+			}
+		}
+	}
+	return insts;
+}
+
 
 Scene::ShaderManager::ShaderManager(FileManager* flMgr)
 {
