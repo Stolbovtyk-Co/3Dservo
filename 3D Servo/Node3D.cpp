@@ -99,7 +99,7 @@ void Node3D::Update(float delta)
 	}
 }
 
-void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform) //TODO: Set call in Scene.cpp
+void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform)
 {
 	DirectX::XMMATRIX local = DirectX::XMLoadFloat4x4(&m_localTransform);
 	DirectX::XMMATRIX global = local * parentGlobalTransform;

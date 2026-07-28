@@ -16,7 +16,7 @@ RenderEngine::RenderEngine(std::shared_ptr<Logger> logger, HWND hWnd, int Width,
 	Initialize(hWnd, Width, Height);
 	LoadScene(std::make_unique<Scene>(m_device));
 	LoadSceneSettings();
-	CreateViewAndPerspective(); // TODO: move this to scene
+	CreateViewAndPerspective(); // TODO: move this to scene maybe
 	m_frameCount = 0;
 }
 
@@ -351,7 +351,7 @@ void RenderEngine::LoadSceneSettings()
 /// <summary>
 /// Not Async ¯\_(ツ)_/¯, But Loading Shaders & Buffers
 /// </summary>
-void RenderEngine::PreloadAssetsAsync() //TODO: Asynch Loading
+void RenderEngine::PreloadAssetsAsync()
 {
 #pragma region Shaders
 	m_currentScene.get()->GetShaderManager()->Setup(m_device);
