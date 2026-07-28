@@ -63,5 +63,7 @@ protected:
 	//VideoCar Mesh
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
+
+	std::vector<EConst::SubMesh> m_subMeshes;
 };
 
