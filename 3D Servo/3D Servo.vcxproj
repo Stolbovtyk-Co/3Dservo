@@ -165,6 +165,7 @@
     <ClInclude Include="RenderEngine.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ScriptPerfab.h" />
+    <ClInclude Include="VHACD.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
