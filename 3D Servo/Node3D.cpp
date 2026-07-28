@@ -12,6 +12,86 @@ void Node3D::Initialize()
 	}
 }
 
+void Node3D::ProcessPendingChanges()
+{
+	// Remove scripts
+	for (const auto& script : m_scriptsToRemove) {
+		auto it = std::find(m_attachedScripts.begin(), m_attachedScripts.end(), script);
+		if (it != m_attachedScripts.end()) {
+			m_attachedScripts.erase(it);
+		}
+	}
+	m_scriptsToRemove.clear();
+	//Add scripts
+	for (const auto& script : m_scriptsToAdd) {
+		m_attachedScripts.push_back(script);
+		script->OnLoad();
+	}
+	m_scriptsToAdd.clear();
+	//Remove children
+	for (const auto& child : m_childrenToRemove) {
+		auto it = std::find(m_children.begin(), m_children.end(), child);
+		if (it != m_children.end()) {
+			// Call event
+			for (auto& sc : m_attachedScripts) {
+				if (sc) {
+					sc->OnChildRemoved(child);
+				}
+			}
+			m_children.erase(it);
+		}
+	}
+	m_childrenToRemove.clear();
+	//Add children
+	for (const auto& child : m_childrenToAdd) {
+		m_children.push_back(child);
+		child->ProcessPendingChanges();
+		child->UpdateTransforms(DirectX::XMLoadFloat4x4(&m_globalTransform));
+		// Call event
+		for (auto& sc : m_attachedScripts) {
+			if (sc) {
+				sc->OnChildAdded(child);
+			}
+		}
+	}
+	if (m_dirty) {
+		UpdateTransforms(DirectX::XMLoadFloat4x4(&(m_parent->m_globalTransform)));
+		ClearDirty();
+	}
+	m_childrenToAdd.clear();
+	//Remove tags
+	for (const auto& tag : m_tagsToRemove) {
+		auto it = std::find(m_attachedTags.begin(), m_attachedTags.end(), tag);
+		if (it != m_tagsToRemove.end()) {
+			// Call event
+			for (auto& sc : m_attachedScripts) {
+				if (sc) {
+					sc->OnTagRemoved(tag);
+				}
+			}
+			m_attachedTags.erase(it);
+		}
+	}
+	m_tagsToRemove.clear();
+	//Add tags
+	for (const auto& tag : m_tagsToAdd) {
+		m_attachedTags.push_back(tag);
+		//Call event
+		for (auto& sc : m_attachedScripts) {
+			if (sc) {
+				sc->OnTagAdded(tag);
+			}
+		}
+	}
+	m_tagsToAdd.clear();
+	//Call ProcessPendingChanges() in children;
+	for (auto& child : m_children) {
+		if (child) {
+			child->ProcessPendingChanges();
+		}
+	}
+}
+
 void Node3D::Update(float delta)
 {
 	for (auto& sc : m_attachedScripts) {
@@ -55,26 +135,12 @@ void Node3D::SetScale(DirectX::XMFLOAT3 newScale)
 
 void Node3D::AddTag(std::string tag)
 {
-	m_attachedTags.push_back(tag);
-	for (auto& sc : m_attachedScripts) {
-		if (sc) {
-			sc->OnTagAdded(tag);
-		}
-	}
+	m_tagsToAdd.push_back(tag);
 }
 
 void Node3D::RemoveTag(std::string tag)
 {
-	auto it = std::find(m_attachedTags.begin(), m_attachedTags.end(), tag);
-	if (it != m_attachedTags.end())
-	{
-		for (auto& sc : m_attachedScripts) {
-			if (sc) {
-				sc->OnTagRemoved(tag);
-			}
-		}
-		m_attachedTags.erase(it);
-	}
+	m_tagsToRemove.push_back(tag);
 }
 
 void Node3D::RebuildLocalTransform() {
@@ -87,8 +153,6 @@ void Node3D::RebuildLocalTransform() {
 	DirectX::XMMATRIX local = scaleMat * rotMat * transMat;
 	XMStoreFloat4x4(&m_localTransform, local);
 
-
-	DirectX::XMMATRIX parentGlobal = m_parent ? XMLoadFloat4x4(&m_parent->m_globalTransform) : DirectX::XMMatrixIdentity();
 	MarkDirty();
 }
 
@@ -96,29 +160,12 @@ void Node3D::addChild(Node3D* child)
 {
 	if (!child) return;
 
-	child->m_parent = this;
-	m_children.push_back(child);
-
-	for (auto& sc : m_attachedScripts) {
-		if (sc) {
-			sc->OnChildAdded(child);
-		}
-	}
-
-	MarkDirty();
+	m_childrenToAdd.push_back(child);
 }
 
 void Node3D::removeChild(Node3D* child)
 {
-	auto it = std::find(m_children.begin(), m_children.end(), child);
-	if (it != m_children.end())
-	{
-		for (auto& sc : m_attachedScripts) {
-			if (sc) {
-				sc->OnChildRemoved(child);
-			}
-		}
-		(*it)->m_parent = nullptr;
-		m_children.erase(it);
-	}
+	if (!child) return;
+
+	m_childrenToRemove.push_back(child);
 }

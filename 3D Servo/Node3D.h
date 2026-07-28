@@ -6,6 +6,8 @@
 #include "EngineConstants.h"
 #include "ScriptPerfab.h";
 
+//TODO: m_children should be shared_ptr
+
 class Node3D
 {
 public:
@@ -18,6 +20,8 @@ public:
 	virtual ~Node3D() {}
 
 	virtual void Initialize();
+
+	void ProcessPendingChanges();
 
 	virtual void Update(float delta);
 
@@ -45,16 +49,11 @@ public:
 
 	template <std::derived_from<ScriptPerfab> T>
 	void AddScript(T script) {
-		m_attachedScripts.push_back(std::make_shared<T>(&this));
+		m_scriptsToAdd.push_back(std::make_shared<T>(&this));
 	}
 
-	template <std::derived_from<ScriptPerfab> T>
-	void RemoveScript(T script) {
-		auto it = std::find(m_attachedScripts.begin(), m_attachedScripts.end(), script);
-		if (it != m_attachedScripts.end())
-		{
-			m_attachedScripts.erase(it);
-		}
+	void RemoveScript(std::shared_ptr<ScriptPerfab> script) {
+		m_scriptsToRemove.push_back(script);
 	}
 
 	virtual void AddTag(std::string tag);
@@ -93,6 +92,10 @@ public:
 		return m_parent;
 	}
 
+	inline bool HasScripts() {
+		return m_attachedScripts.size() > 0;
+	}
+
 	inline std::vector<std::string> GetTags() {
 		return m_attachedTags;
 	}
@@ -126,11 +129,8 @@ protected:
 	//Tree
 	std::string m_name = "default_name";
 	Node3D* m_parent = nullptr;
-	std::vector<Node3D*> m_children;
 	bool m_dirty = true; //If true should call UpdateTransforms for all childrens TODO:fix
 
-	std::vector<std::shared_ptr<ScriptPerfab>> m_attachedScripts;
-	std::vector<std::string> m_attachedTags;
 
 	std::vector<EConst::VertexPositionColor> m_localVertices;
 	std::vector<long> m_localIndices;
@@ -142,5 +142,20 @@ protected:
 	DirectX::XMFLOAT4X4 m_localTransform;
 	DirectX::XMFLOAT4X4 m_globalTransform;
 
+	//PendingChangesArrays
+	std::vector<std::shared_ptr<ScriptPerfab>> m_scriptsToAdd;
+	std::vector<std::shared_ptr<ScriptPerfab>> m_scriptsToRemove;
 
+	std::vector<Node3D*> m_childrenToAdd;
+	std::vector<Node3D*> m_childrenToRemove;
+
+	std::vector<std::string> m_tagsToAdd;
+	std::vector<std::string> m_tagsToRemove;
+
+	//======================================
+	//WARNING! DO NOT CHANGE THESE DIRECTLY!
+	//======================================
+	std::vector<Node3D*> m_children;
+	std::vector<std::shared_ptr<ScriptPerfab>> m_attachedScripts;
+	std::vector<std::string> m_attachedTags;
 };
