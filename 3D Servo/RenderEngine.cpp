@@ -376,12 +376,5 @@ void RenderEngine::PreloadAssetsAsync()
 	m_context->IASetInputLayout(m_inputLayout.Get());
 	m_context->PSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
 #pragma endregion
-
-/*#pragma region Buffers
-	m_bufferLoader.LoadBuffer(m_device);
-	BufferLoader::BuffersStaffDTO BuffDTO = m_bufferLoader.GetBuffersStaff();
-	m_vertexBuffer = BuffDTO.VertexBuffer;
-	m_indexBuffer = BuffDTO.IndexBuffer;
-#pragma endregion*/
 }
 #pragma endregion

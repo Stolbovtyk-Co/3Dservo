@@ -6,7 +6,7 @@
 #include "EngineConstants.h";
 #include <iostream>
 
-ObjParser::CpuMeshDTO ObjParser::ParseLines(std::vector<std::string> lines)
+EConst::CpuMeshDTO ObjParser::ParseLines(std::vector<std::string> lines)
 {
     std::map<std::string, int> objMapKeyword = {
         { "s", -1},
@@ -16,7 +16,7 @@ ObjParser::CpuMeshDTO ObjParser::ParseLines(std::vector<std::string> lines)
         { "f", 2 }
     };
 
-    ObjParser::CpuMeshDTO outputDTO;
+    EConst::CpuMeshDTO outputDTO;
     
     for (auto text : lines) {
         std::vector<std::string> sp_string = Split(text, ' ');
