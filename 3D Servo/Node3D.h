@@ -2,7 +2,9 @@
 #include <DirectXMath.h>
 #include <vector>
 #include <string>
+#include <memory>
 #include "EngineConstants.h"
+#include "ScriptPerfab.h";
 
 class Node3D
 {
@@ -15,11 +17,7 @@ public:
 
 	virtual ~Node3D() {}
 
-	virtual void Initialize() { Node3D::SetScale(DirectX::XMFLOAT3(0.6, 0.6, 0.6)); 
-		for (auto ch : m_children) {
-			ch->Initialize();
-		}
-	}
+	virtual void Initialize();
 
 	virtual void Update(float delta);
 
@@ -44,6 +42,21 @@ public:
 	virtual inline void ClearDirty() {
 		m_dirty = false;
 	}
+
+	template <std::derived_from<ScriptPerfab> T>
+	void AddScript(T script) {
+		m_attachedScripts.push_back(std::make_shared<T>(&this));
+	}
+
+	template <std::derived_from<ScriptPerfab> T>
+	void RemoveScript(T script) {
+		auto it = std::find(m_attachedScripts.begin(), m_attachedScripts.end(), script);
+		if (it != m_attachedScripts.end())
+		{
+			m_attachedScripts.erase(it);
+		}
+	}
+
 #pragma endregion
 
 #pragma region Getters
@@ -97,7 +110,9 @@ protected:
 	std::string m_name = "default_name";
 	Node3D* m_parent = nullptr;
 	std::vector<Node3D*> m_children;
-	bool m_dirty = true; //If true should call UpdateTransforms for all childrens
+	bool m_dirty = true; //If true should call UpdateTransforms for all childrens TODO:fix
+
+	std::vector<std::shared_ptr<ScriptPerfab>> m_attachedScripts;
 
 	std::vector<EConst::VertexPositionColor> m_localVertices;
 	std::vector<long> m_localIndices;

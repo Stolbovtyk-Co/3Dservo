@@ -1,13 +1,25 @@
 #include "Node3D.h"
 
+void Node3D::Initialize()
+{
+	for (auto& sc : m_attachedScripts) {
+		if (sc) {
+			sc->OnLoad();
+		}
+	}
+	for (auto ch : m_children) {
+		ch->Initialize();
+	}
+}
+
 void Node3D::Update(float delta)
 {
-	DirectX::XMFLOAT3 rot = Node3D::getLocalRotation();
-
-	float rotSpeed = 0.01;
-	Node3D::SetRotation(DirectX::XMFLOAT3(rot.x + rotSpeed, rot.y + rotSpeed, rot.z + 0.5 * rotSpeed));
-
-	for (auto ch : m_children) {
+	for (auto& sc : m_attachedScripts) {
+		if (sc) {
+			sc->OnUpdate(delta);
+		}
+	}
+	for (auto ch : m_children) { // TODO: rework update calls
 		ch->Update(delta);
 	}
 }
@@ -56,13 +68,19 @@ void Node3D::RebuildLocalTransform() {
 	MarkDirty();
 }
 
-
 void Node3D::addChild(Node3D* child)
 {
 	if (!child) return;
 
 	child->m_parent = this;
 	m_children.push_back(child);
+
+	for (auto& sc : m_attachedScripts) {
+		if (sc) {
+			sc->OnChildAdded(child);
+		}
+	}
+
 	MarkDirty();
 }
 
@@ -71,6 +89,11 @@ void Node3D::removeChild(Node3D* child)
 	auto it = std::find(m_children.begin(), m_children.end(), child);
 	if (it != m_children.end())
 	{
+		for (auto& sc : m_attachedScripts) {
+			if (sc) {
+				sc->OnChildRemoved(child);
+			}
+		}
 		(*it)->m_parent = nullptr;
 		m_children.erase(it);
 	}
