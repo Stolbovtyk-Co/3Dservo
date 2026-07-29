@@ -348,7 +348,8 @@ EConst::GPUIstructionsDTO RenderEngine::GetFinalGPUInstructions(std::vector<ECon
 			DirectX::BoundingBox worldBox;
 			mesh.box.Transform(worldBox, cWorldMatrix);
 			if (frustum.Contains(worldBox) == DirectX::DISJOINT) {
-				continue; 
+			// WARNING! VIEW CLIPPING COUNTED WRONG! TODO: fix
+			//	continue; 
 			}
 			DirectX::XMVECTOR boxCenter = DirectX::XMLoadFloat3(&worldBox.Center);
 			float distSq = DirectX::XMVectorGetX(DirectX::XMVector3LengthSq(DirectX::XMVectorSubtract(boxCenter, cameraPos)));

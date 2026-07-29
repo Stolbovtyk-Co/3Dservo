@@ -3,6 +3,7 @@
 
 #define ENABLE_VHACD_IMPLEMENTATION 1
 #include <VHACD.h> 
+#include <random>
 
 std::vector<EConst::CpuMeshDTO> ConvexDecomposer::runConvexDecomposition(EConst::CpuMeshDTO dto)
 {
@@ -77,13 +78,19 @@ EConst::CpuMeshDTO ConvexDecomposer::ConvertToMesh(void* hullPtr)
     auto* hull = static_cast<VHACD::IVHACD::ConvexHull*>(hullPtr);
 
     partDto.Vertices.reserve(hull->m_points.size());
+    
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(0.0, 1.0);
+    auto col = DirectX::XMFLOAT4(dis(gen), dis(gen), dis(gen), 0.5f);
+
     for (const auto& hPoint : hull->m_points) {
         EConst::VertexPositionColor vpc;
 
         vpc.pos.x = static_cast<float>(hPoint.mX);
         vpc.pos.y = static_cast<float>(hPoint.mY);
         vpc.pos.z = static_cast<float>(hPoint.mZ);
-        vpc.color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+        vpc.color = col;
 
         partDto.Vertices.push_back(vpc);
     }

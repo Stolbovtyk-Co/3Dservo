@@ -1,6 +1,6 @@
 #include "MeshFactory.h"
 #include <DirectXCollision.h>
-
+#include <iostream>;
 #include "ObjParser.h"
 #include "FileManager.h"
 
@@ -41,6 +41,10 @@ std::vector<EConst::SubMesh> MeshFactory::CreateSubMeshes(EConst::CpuMeshDTO cpu
     std::vector<EConst::SubMesh> result;
 
     std::vector<EConst::CpuMeshDTO> hulls = m_decomposer->runConvexDecomposition(cpu);
+    //TODO: FIX THIS! IMPORTANT! IMPORTANT!
+    //hulls neded for collisions and hit computations
+    //You need to send original model to render!
+    //VHACD results should be stored separatly and do not be used for render
 
     std::vector<EConst::GpuMeshDTO> gpuCacheList;
     gpuCacheList.reserve(hulls.size());
@@ -48,6 +52,12 @@ std::vector<EConst::SubMesh> MeshFactory::CreateSubMeshes(EConst::CpuMeshDTO cpu
 
     for (const auto& hull : hulls)
     {
+        //std::cout << ">>>>> " << hull.Name << '\n';
+        //for (const auto& v : hull.Vertices) {
+        //    std::cout << v.pos.x << " " << v.pos.y << " " << v.pos.z << " "
+        //        << v.color.x << " " << v.color.y << " " << v.color.z << " " << v.color.w << '\n';
+        //}
+
         EConst::GpuMeshDTO gpu;
 
         CD3D11_BUFFER_DESC vDesc(

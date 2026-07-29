@@ -39,6 +39,7 @@ void Node3D::ProcessPendingChanges()
 	m_childrenToRemove.clear();
 	//Add children
 	for (auto& child : m_childrenToAdd) {
+		child->SetParent(this);
 		m_children.push_back(child);
 		child->ProcessPendingChanges();
 		child->UpdateTransforms(DirectX::XMLoadFloat4x4(&m_globalTransform));
@@ -50,7 +51,14 @@ void Node3D::ProcessPendingChanges()
 		}
 	}
 	if (m_dirty) {
-		//UpdateTransforms(DirectX::XMLoadFloat4x4(&(m_parent->m_globalTransform)));
+		if (m_parent != nullptr) {
+			RebuildLocalTransform();
+			m_parent->UpdateChildTransforms();
+		}
+		else {
+			RebuildLocalTransform();
+			UpdateTransforms(DirectX::XMMatrixScaling(1, 1, 1));
+		}
 		ClearDirty();
 	}
 	m_childrenToAdd.clear();
@@ -110,22 +118,31 @@ void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform)
 	}
 }
 
+void Node3D::UpdateChildTransforms()
+{
+	DirectX::XMMATRIX global = XMLoadFloat4x4(&m_globalTransform);
+
+	for (auto child : m_children) {
+		child->UpdateTransforms(global);
+	}
+}
+
 void Node3D::SetPosition(DirectX::XMFLOAT3 newPos)
 {
 	m_position = std::move(newPos);
-	RebuildLocalTransform();
+	MarkDirty();
 }
 
 void Node3D::SetRotation(DirectX::XMFLOAT3 newRotation)
 {
 	m_rotation = std::move(newRotation);
-	RebuildLocalTransform();
+	MarkDirty();
 }
 
 void Node3D::SetScale(DirectX::XMFLOAT3 newScale)
 {
 	m_scale = std::move(newScale);
-	RebuildLocalTransform();
+	MarkDirty();
 }
 
 void Node3D::AddTag(std::string tag)

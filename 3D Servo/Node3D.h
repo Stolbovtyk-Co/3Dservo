@@ -27,6 +27,8 @@ public:
 
 	virtual void UpdateTransforms(DirectX::FXMMATRIX parentGlobal);
 
+	virtual void UpdateChildTransforms();
+
 #pragma region Setters
 
 	inline virtual void SetName(std::string newName) {
@@ -47,9 +49,15 @@ public:
 		m_dirty = false;
 	}
 
-	template <std::derived_from<ScriptPerfab> T>
-	void AddScript(T script) {
-		m_scriptsToAdd.push_back(std::make_shared<T>(&this));
+	template <typename T>
+	void AddScript() requires std::is_base_of_v<ScriptPerfab, T> {
+		m_scriptsToAdd.push_back(std::make_shared<T>(this));
+	}
+
+	virtual void SetParent(Node3D* parent) {
+		if (m_parent == nullptr && parent != nullptr) {
+			m_parent = parent;
+		}
 	}
 
 	void RemoveScript(std::shared_ptr<ScriptPerfab> script) {

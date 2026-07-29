@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "EngineConstants.h"
+#include "RotateScript.h"
 
 Scene::Scene(Microsoft::WRL::ComPtr<ID3D11Device> device)
 {
@@ -15,14 +16,16 @@ void Scene::Setup()
 	m_st.sceneName = "gm_Scene_Perfab";
 
 	m_MeshFactory = std::make_unique<MeshFactory>(m_com_device, &m_fileMgr, nullptr);
-	
+
 	std::shared_ptr<Node3D> sceneMesh = m_MeshFactory->CreateStaticInstance("Scene.obj");
 	int i = m_sceneObjects.size();
 	m_sceneObjects.push_back(sceneMesh);
-	m_tree.addChild(m_sceneObjects[i].get());
-
+	m_sceneObjects[i].get()->SetParent(&m_tree);
+	m_sceneObjects[i].get()->AddTag("SV_TRANSPARENT");
 	m_tree.Initialize();
-
+	m_tree.addChild(m_sceneObjects[i].get());
+	m_tree.SetScale({ 0.3, 0.3, 0.3 });
+	m_tree.AddScript<RotateScript>();
 }
 
 void Scene::Update(float delta)
