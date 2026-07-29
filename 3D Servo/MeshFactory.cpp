@@ -11,12 +11,17 @@
 #include "EngineConstants.h"
 #include <d3d11.h>
 
-std::shared_ptr<Node3D> MeshFactory::CreateStaticInstance(std::string PATH)
+std::shared_ptr<Node3D> MeshFactory::CreateStaticInstance(std::string PATH, bool doCollisionMeshes)
 {
-    //TODO: ASYNCH HERE!!! 
-    std::vector<EConst::SubMesh> hulls = GetStaticSubMeshes(PATH);
+    std::vector<EConst::SubMesh> VisualHulls; //TODO:load obj properly
+    auto newInstance = std::make_shared<MeshInstance3D>(VisualHulls);
 
-    std::shared_ptr<Node3D> newInstance = std::make_shared<MeshInstance3D>(hulls);
+    if (doCollisionMeshes) {
+        //TODO: ASYNCH HERE!!! 
+        std::vector<EConst::SubMesh> CollisionHulls = GetStaticSubMeshes(PATH);
+        newInstance->SetCollisionSubMeshes(CollisionHulls);
+    }
+
     return newInstance;
 }
 
@@ -45,10 +50,6 @@ std::vector<EConst::SubMesh> MeshFactory::CreateSubMeshes(EConst::CpuMeshDTO cpu
     std::vector<EConst::SubMesh> result;
 
     std::vector<EConst::CpuMeshDTO> hulls = m_decomposer->runConvexDecomposition(cpu);
-    //TODO: FIX THIS! IMPORTANT! IMPORTANT!
-    //hulls neded for collisions and hit computations
-    //You need to send original model to render!
-    //VHACD results should be stored separatly and do not be used for render
 
     std::vector<EConst::GpuMeshDTO> gpuCacheList;
     gpuCacheList.reserve(hulls.size());

@@ -25,7 +25,7 @@ public:
 
 	~MeshFactory() = default;
 
-	std::shared_ptr<Node3D> CreateStaticInstance(std::string PATH);
+	std::shared_ptr<Node3D> CreateStaticInstance(std::string PATH, bool doCollisionMeshes = false);
 
 	std::shared_ptr<Node3D> CreateDynamicInstance(std::string PATH) {} //TODO: Write Later cpuBufferSystem needed
 

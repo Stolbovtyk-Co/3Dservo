@@ -15,6 +15,9 @@ public:
 	inline void SetSubMeshes(std::vector<EConst::SubMesh> subMeshes) {
 		m_subMeshes = std::move(subMeshes);
 	}
+	inline void SetCollisionSubMeshes(std::vector<EConst::SubMesh> subMeshes) {
+		m_subMeshes_collision = std::move(subMeshes);
+	}
 #pragma endregion
 
 #pragma region Getters
@@ -49,6 +52,7 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
 
 	std::vector<EConst::SubMesh> m_subMeshes;
+	std::vector<EConst::SubMesh> m_subMeshes_collision;
 };
 
 /*
