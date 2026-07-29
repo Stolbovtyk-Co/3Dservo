@@ -2,8 +2,22 @@
 #include <DirectXMath.h>
 #include <dxgi1_3.h>
 #include <wrl/client.h>
-#include "Node3D.h"
 #include <algorithm> 
+#include <memory>
+#include "Logger.h"
+#include "Scene.h"
+#include <d3dcommon.h>
+#include <d3d11.h>
+#include <dxgi1_2.h>
+#include <dxgiformat.h>
+#include <dxgi.h>
+#include <dcomp.h>
+#include <DirectXMathVector.inl>
+#include <DirectXMathConvert.inl>
+#include <DirectXMathMatrix.inl> 
+#include "EngineConstants.h"
+#include <vector>
+#include <DirectXCollision.h>
 
 using namespace DirectX;
 
@@ -25,8 +39,8 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 {
 	HRESULT hr = S_OK;
 
-	m_width = Width;
-	m_height = Height;
+	m_width = static_cast<float>(Width);
+	m_height = static_cast<float>(Height);
 
 	D3D_FEATURE_LEVEL levels[] = {
 	D3D_FEATURE_LEVEL_11_1,
@@ -71,8 +85,8 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 	context.As(&m_context);
 
 	DXGI_SWAP_CHAIN_DESC1 scd = {};
-	scd.Width = m_width;                             // Moved out of BufferDesc
-	scd.Height = m_height;                            // Moved out of BufferDesc
+	scd.Width = static_cast<UINT>(m_width);                             // Moved out of BufferDesc
+	scd.Height = static_cast<UINT>(m_height);                            // Moved out of BufferDesc
 	scd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;       // Moved out of BufferDesc
 	scd.Stereo = FALSE;                          // New: Must be explicitly set
 	scd.SampleDesc.Count = 1;
@@ -273,10 +287,10 @@ void RenderEngine::Render() {
 
 	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get());
 	
-	for (auto i : renderDTO.regular) {
+	for (auto &i : renderDTO.regular) {
 		RenderGPUBuffers(i);
 	}
-	for (auto i : renderDTO.transparent) {
+	for (auto &i : renderDTO.transparent) {
 		RenderGPUBuffers(i);
 	}
 
@@ -341,10 +355,10 @@ EConst::GPUIstructionsDTO RenderEngine::GetFinalGPUInstructions(std::vector<ECon
 	frustum.Transform(frustum, invViewMatrix);
 	DirectX::XMVECTOR cameraPos = invViewMatrix.r[3];
 	
-	for (auto inst : nodeInstructions) {
+	for (auto &inst : nodeInstructions) {
 		auto cWorldMatrix = DirectX::XMLoadFloat4x4(&(inst.world));
 		auto cTransparent = inst.SV_TRANSPARENT;
-		for (auto mesh : inst.subMeshes) {
+		for (auto &mesh : inst.subMeshes) {
 			DirectX::BoundingBox worldBox;
 			mesh.box.Transform(worldBox, cWorldMatrix);
 			if (frustum.Contains(worldBox) == DirectX::DISJOINT) {

@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "EngineConstants.h"
 #include "RotateScript.h"
+#include "MeshFactory.h"
+#include "MeshInstance3D.h"
 
 Scene::Scene(Microsoft::WRL::ComPtr<ID3D11Device> device)
 {
@@ -18,13 +20,13 @@ void Scene::Setup()
 	m_MeshFactory = std::make_unique<MeshFactory>(m_com_device, &m_fileMgr, nullptr);
 
 	std::shared_ptr<Node3D> sceneMesh = m_MeshFactory->CreateStaticInstance("Scene.obj");
-	int i = m_sceneObjects.size();
+	std::size_t i = m_sceneObjects.size();
 	m_sceneObjects.push_back(sceneMesh);
 	m_sceneObjects[i].get()->SetParent(&m_tree);
 	m_sceneObjects[i].get()->AddTag("SV_TRANSPARENT");
 	m_tree.Initialize();
 	m_tree.addChild(m_sceneObjects[i].get());
-	m_tree.SetScale({ 0.3, 0.3, 0.3 });
+	m_tree.SetScale({ 0.3f, 0.3f, 0.3f });
 	m_tree.AddScript<RotateScript>();
 }
 
@@ -69,10 +71,6 @@ void Scene::ShaderManager::Setup(Microsoft::WRL::ComPtr<ID3D11Device> com_device
 {
 	ID3D11Device* device = com_device.Get();
 	HRESULT hr = S_OK;;
-
-	FILE* vShader, * pShader;
-
-	errno_t err;
 
 	auto dtoVertex = m_flMgr->ReadBytes("VertexShader.cso");
 	hr = device->CreateVertexShader(

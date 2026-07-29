@@ -1,11 +1,15 @@
 #include "MeshFactory.h"
 #include <DirectXCollision.h>
-#include <iostream>;
 #include "ObjParser.h"
 #include "FileManager.h"
-
 #include "MeshInstance3D.h"
 #include "ConvexDecomposer.h"
+#include <memory>
+#include "Node3D.h"
+#include <string>
+#include <vector>
+#include "EngineConstants.h"
+#include <d3d11.h>
 
 std::shared_ptr<Node3D> MeshFactory::CreateStaticInstance(std::string PATH)
 {
@@ -61,7 +65,7 @@ std::vector<EConst::SubMesh> MeshFactory::CreateSubMeshes(EConst::CpuMeshDTO cpu
         EConst::GpuMeshDTO gpu;
 
         CD3D11_BUFFER_DESC vDesc(
-            hull.Vertices.size() * sizeof(EConst::VertexPositionColor),
+            static_cast<UINT>(hull.Vertices.size() * sizeof(EConst::VertexPositionColor)),
             D3D11_BIND_VERTEX_BUFFER
         );
 
@@ -72,7 +76,7 @@ std::vector<EConst::SubMesh> MeshFactory::CreateSubMeshes(EConst::CpuMeshDTO cpu
         vData.SysMemSlicePitch = 0;
 
         CD3D11_BUFFER_DESC iDesc(
-            hull.Indices.size() * sizeof(short),
+            static_cast<UINT>(hull.Indices.size() * sizeof(short)),
             D3D11_BIND_INDEX_BUFFER
         );
 

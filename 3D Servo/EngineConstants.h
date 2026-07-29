@@ -35,7 +35,7 @@ namespace EConst {
 		std::string Name;
 		Microsoft::WRL::ComPtr < ID3D11Buffer> vBuffer;
 		Microsoft::WRL::ComPtr < ID3D11Buffer> iBuffer;
-		long iCount;
+		long iCount = 0;
 		DirectX::BoundingBox bounds;
 	};
 
@@ -54,17 +54,17 @@ namespace EConst {
 	}; 
 
 	struct Instruction {
-		bool SV_TRANSPARENT;
+		bool SV_TRANSPARENT = false;
 		std::vector<SubMesh> subMeshes;
-		DirectX::XMFLOAT4X4 world;
+		DirectX::XMFLOAT4X4 world = {};
 	};
 
 	struct GPUBuffers {
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> iBuffer;
-		DirectX::XMMATRIX worldMatrix;
-		long indexCount;
-		float cDistSqr;
+		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity();
+		long indexCount = 0;
+		float cDistSqr = 0;
 	};
 	struct GPUIstructionsDTO {
 		std::vector<GPUBuffers> regular;

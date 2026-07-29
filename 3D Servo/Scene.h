@@ -5,11 +5,9 @@
 #include "FileManager.h"
 #include <memory>
 #include <string>
-
 #include "Node3D.h"
-
-#include "MeshInstance3D.h"
-#include "MeshFactory.h"
+#include <vector>
+#include "EngineConstants.h"
 
 class MeshFactory;
 
@@ -27,7 +25,7 @@ public:
 
 	 struct SceneSettings
 	 {
-		 DirectX::XMFLOAT4 clearColor;
+		 DirectX::XMFLOAT4 clearColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 		 std::string sceneName;
 	 };
 
@@ -35,7 +33,7 @@ public:
 
 	 virtual ~Scene() = default;
 
-	 virtual class ShaderManager
+	 class ShaderManager
 	 {
 	 public:
 		 ShaderManager(FileManager* flMgr);

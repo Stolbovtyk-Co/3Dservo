@@ -1,10 +1,9 @@
 #include "ObjParser.h"
 #include <string>
 #include <vector>
-#include <ranges>
 #include <map>
-#include "EngineConstants.h";
-#include <iostream>
+#include "EngineConstants.h"
+#include <DirectXMath.h>
 
 EConst::CpuMeshDTO ObjParser::ParseLines(std::vector<std::string> lines)
 {
@@ -18,7 +17,7 @@ EConst::CpuMeshDTO ObjParser::ParseLines(std::vector<std::string> lines)
 
     EConst::CpuMeshDTO outputDTO;
     
-    for (auto text : lines) {
+    for (auto &text : lines) {
         std::vector<std::string> sp_string = Split(text, ' ');
         std::string kw = sp_string[0];
         auto it = objMapKeyword.find(kw);
@@ -35,7 +34,7 @@ EConst::CpuMeshDTO ObjParser::ParseLines(std::vector<std::string> lines)
                     color.z = std::stof(sp_string[7]);
                 }
                 float w = 1.0f;
-                DirectX::XMFLOAT3 cord;
+                DirectX::XMFLOAT3 cord = {};
                 if (sp_string.size() >= 5) {
                     w = std::stof(sp_string[4]);
                 }
@@ -43,7 +42,7 @@ EConst::CpuMeshDTO ObjParser::ParseLines(std::vector<std::string> lines)
                 cord.y = std::stof(sp_string[2]) / w;
                 cord.z = std::stof(sp_string[3]) / w;
 
-                EConst::VertexPositionColor cV;
+                EConst::VertexPositionColor cV = {};
                 cV.color = color;
                 cV.pos = cord;
                 outputDTO.Vertices.push_back(cV);

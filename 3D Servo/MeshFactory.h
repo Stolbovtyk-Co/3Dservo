@@ -6,13 +6,13 @@
 #include <d3d11.h>
 
 #include "EngineConstants.h"
-#include "Node3D.h"
 #include "ConvexDecomposer.h"
+#include "Node3D.h"
+#include <vector>
 
 class Logger;
 class FileManager;
 class MeshInstance3D;
-class ConvexDecomposer;
 
 class MeshFactory
 {
