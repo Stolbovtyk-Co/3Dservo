@@ -2,7 +2,6 @@
 #include <DirectXMath.h>
 #include <dxgi1_3.h>
 #include <wrl/client.h>
-#include <algorithm> 
 #include <memory>
 #include "Logger.h"
 #include "Scene.h"
@@ -29,10 +28,10 @@ RenderEngine::RenderEngine(std::shared_ptr<Logger> logger, HWND hWnd, int Width,
 {
 	m_logger = logger;
 	Initialize(hWnd, Width, Height);
-	LoadScene(std::make_unique<Scene>(m_device));
+	LoadScene<Scene>();
 	LoadSceneSettings();
 	CreateViewAndPerspective(); // TODO: move this to scene maybe
-	m_frameCount = 0;
+	m_renderQueue = std::make_unique<RenderQueueManager>(m_currentScene, &m_constantBufferData);
 }
 
 void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
@@ -242,30 +241,7 @@ void RenderEngine::CreateViewAndPerspective()
 
 void RenderEngine::Update()
 {
-	m_frameCount++;
-
-	/*XMMATRIX finalRotation = DirectX::XMMatrixRotationY(
-		DirectX::XMConvertToRadians(
-			(float)m_frameCount
-		)
-	) * DirectX::XMMatrixRotationX(
-		DirectX::XMConvertToRadians(
-			(float)m_frameCount
-		)
-	) * DirectX::XMMatrixRotationZ(
-		DirectX::XMConvertToRadians(
-			(float)m_frameCount / 2
-		)
-	);
-	
-	DirectX::XMStoreFloat4x4(
-		&m_constantBufferData.world,
-		finalRotation
-	);*/
-
-	m_currentScene->Update(1);
-
-	if (m_frameCount == MAXUINT)  m_frameCount = 0;
+	m_currentScene->Update(1); //TODO:fix
 }
 
 #pragma endregion
@@ -283,14 +259,11 @@ void RenderEngine::Clear(float r, float g, float b, float a) {
 void RenderEngine::Render() {
 
 	Clear(m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w);
-	auto renderDTO = GetFinalGPUInstructions(m_currentScene->GetGPUInstructions());
+	auto renderQueue = m_renderQueue->MakeRenderQueue();
 
 	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get());
 	
-	for (auto &i : renderDTO.regular) {
-		RenderGPUBuffers(i);
-	}
-	for (auto &i : renderDTO.transparent) {
+	for (auto &i : renderQueue) {
 		RenderGPUBuffers(i);
 	}
 
@@ -344,51 +317,6 @@ void RenderEngine::LoadSceneSettings()
 	Scene::SceneSettings settings = m_currentScene.get()->GetSceneSettings();
 	m_logger.get()->log("Loaded scene: " + settings.sceneName);
 	m_clearColor = settings.clearColor;
-}
-
-EConst::GPUIstructionsDTO RenderEngine::GetFinalGPUInstructions(std::vector<EConst::Instruction> nodeInstructions)
-{
-	EConst::GPUIstructionsDTO dto;
-	DirectX::BoundingFrustum frustum;
-	DirectX::BoundingFrustum::CreateFromMatrix(frustum, DirectX::XMLoadFloat4x4(&(m_constantBufferData.projection)), true);
-	auto invViewMatrix = DirectX::XMMatrixInverse(nullptr, DirectX::XMLoadFloat4x4(&(m_constantBufferData.view)));
-	frustum.Transform(frustum, invViewMatrix);
-	DirectX::XMVECTOR cameraPos = invViewMatrix.r[3];
-	
-	for (auto &inst : nodeInstructions) {
-		auto cWorldMatrix = DirectX::XMLoadFloat4x4(&(inst.world));
-		auto cTransparent = inst.SV_TRANSPARENT;
-		for (auto &mesh : inst.subMeshes) {
-			DirectX::BoundingBox worldBox;
-			mesh.box.Transform(worldBox, cWorldMatrix);
-			if (frustum.Contains(worldBox) == DirectX::DISJOINT) {
-			// WARNING! VIEW CLIPPING COUNTED WRONG! TODO: fix
-			//	continue; 
-			}
-			DirectX::XMVECTOR boxCenter = DirectX::XMLoadFloat3(&worldBox.Center);
-			float distSq = DirectX::XMVectorGetX(DirectX::XMVector3LengthSq(DirectX::XMVectorSubtract(boxCenter, cameraPos)));
-			EConst::GPUBuffers gBuff;
-			gBuff.indexCount = mesh.indexCount;
-			gBuff.cDistSqr = distSq;
-			gBuff.iBuffer = mesh.iBuffer;
-			gBuff.vBuffer = mesh.vBuffer;
-			gBuff.worldMatrix = cWorldMatrix;
-			if (cTransparent) {
-				dto.transparent.push_back(gBuff);
-			}
-			else {
-				dto.regular.push_back(gBuff);
-			}
-		}
-	}
-
-	std::sort(dto.regular.begin(), dto.regular.end(), [](const EConst::GPUBuffers& a, const EConst::GPUBuffers& b) {
-		return a.cDistSqr < b.cDistSqr;
-		});
-	std::sort(dto.transparent.begin(), dto.transparent.end(), [](const EConst::GPUBuffers& a, const EConst::GPUBuffers& b) {
-		return a.cDistSqr > b.cDistSqr;
-		});
-	return dto;
 }
 
 /// <summary>

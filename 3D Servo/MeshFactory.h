@@ -30,13 +30,15 @@ public:
 	std::shared_ptr<Node3D> CreateDynamicInstance(std::string PATH) {} //TODO: Write Later cpuBufferSystem needed
 
 private:
-	std::vector<EConst::SubMesh> GetStaticSubMeshes(std::string PATH);
+	std::vector<EConst::SubMesh> GetStaticCollisionSubMeshes(std::string PATH, EConst::CpuMeshDTO cpu);
 
 	EConst::CpuMeshDTO GetDynamicMesh(std::string PATH) {} //TODO: Write Later cpuBufferSystem needed
 
-	std::vector<EConst::SubMesh> CreateSubMeshes(EConst::CpuMeshDTO cpu, std::string PATH);
+	std::vector<EConst::SubMesh> CreateCollisionSubMeshes(EConst::CpuMeshDTO cpu, std::string PATH);
 	
 	EConst::SubMesh CreateSubMesh(EConst::CpuMeshDTO CpuDTO, EConst::GpuMeshDTO GpuDTO, bool isStatic);
+
+	EConst::GpuMeshDTO CreateGPUBuffers(EConst::CpuMeshDTO hull);
 
 	Logger* m_logger = nullptr;
 	FileManager* m_fileManager = nullptr;

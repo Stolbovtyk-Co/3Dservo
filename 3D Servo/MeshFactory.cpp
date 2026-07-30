@@ -13,19 +13,23 @@
 
 std::shared_ptr<Node3D> MeshFactory::CreateStaticInstance(std::string PATH, bool doCollisionMeshes)
 {
-    std::vector<EConst::SubMesh> VisualHulls; //TODO:load obj properly
+    auto rawData = m_fileManager->ReadText(PATH);
+    auto cpu = ObjParser::ParseLines(rawData);  
+
+    std::vector<EConst::SubMesh> VisualHulls; 
+    VisualHulls.push_back(CreateSubMesh(cpu, CreateGPUBuffers(cpu), false));
     auto newInstance = std::make_shared<MeshInstance3D>(VisualHulls);
 
     if (doCollisionMeshes) {
         //TODO: ASYNCH HERE!!! 
-        std::vector<EConst::SubMesh> CollisionHulls = GetStaticSubMeshes(PATH);
+        std::vector<EConst::SubMesh> CollisionHulls = GetStaticCollisionSubMeshes(PATH, cpu);
         newInstance->SetCollisionSubMeshes(CollisionHulls);
     }
 
     return newInstance;
 }
 
-std::vector<EConst::SubMesh> MeshFactory::GetStaticSubMeshes(std::string PATH)
+std::vector<EConst::SubMesh> MeshFactory::GetStaticCollisionSubMeshes(std::string PATH, EConst::CpuMeshDTO cpu)
 {
     if (m_gpuCache.count(PATH) > 0) {
         std::vector<EConst::SubMesh> result;
@@ -38,14 +42,11 @@ std::vector<EConst::SubMesh> MeshFactory::GetStaticSubMeshes(std::string PATH)
         return result;
     }
 
-    auto rawData = m_fileManager->ReadText(PATH);
-    auto cpu = ObjParser::ParseLines(rawData);
-
-    std::vector<EConst::SubMesh> subMeshes = CreateSubMeshes(cpu, PATH);
+    std::vector<EConst::SubMesh> subMeshes = CreateCollisionSubMeshes(cpu, PATH);
     return subMeshes;
 }
 
-std::vector<EConst::SubMesh> MeshFactory::CreateSubMeshes(EConst::CpuMeshDTO cpu, std::string PATH)
+std::vector<EConst::SubMesh> MeshFactory::CreateCollisionSubMeshes(EConst::CpuMeshDTO cpu, std::string PATH)
 {
     std::vector<EConst::SubMesh> result;
 
@@ -63,48 +64,7 @@ std::vector<EConst::SubMesh> MeshFactory::CreateSubMeshes(EConst::CpuMeshDTO cpu
         //        << v.color.x << " " << v.color.y << " " << v.color.z << " " << v.color.w << '\n';
         //}
 
-        EConst::GpuMeshDTO gpu;
-
-        CD3D11_BUFFER_DESC vDesc(
-            static_cast<UINT>(hull.Vertices.size() * sizeof(EConst::VertexPositionColor)),
-            D3D11_BIND_VERTEX_BUFFER
-        );
-
-        D3D11_SUBRESOURCE_DATA vData;
-        ZeroMemory(&vData, sizeof(D3D11_SUBRESOURCE_DATA));
-        vData.pSysMem = hull.Vertices.data();
-        vData.SysMemPitch = 0;
-        vData.SysMemSlicePitch = 0;
-
-        CD3D11_BUFFER_DESC iDesc(
-            static_cast<UINT>(hull.Indices.size() * sizeof(short)),
-            D3D11_BIND_INDEX_BUFFER
-        );
-
-        D3D11_SUBRESOURCE_DATA iData;
-        ZeroMemory(&iData, sizeof(D3D11_SUBRESOURCE_DATA));
-        iData.pSysMem = hull.Indices.data();
-        iData.SysMemPitch = 0;
-        iData.SysMemSlicePitch = 0;
-
-        HRESULT hr = m_device->CreateBuffer(&vDesc, &vData, &gpu.vBuffer);
-        if (FAILED(hr)) throw;
-
-        gpu.iCount = static_cast<long>(hull.Indices.size());
-
-        hr = m_device->CreateBuffer(&iDesc, &iData, &gpu.iBuffer);
-        if (FAILED(hr)) throw;
-
-        if (gpu.vBuffer == nullptr || gpu.iBuffer == nullptr) throw;
-
-        gpu.Name = hull.Name;
-
-        DirectX::BoundingBox::CreateFromPoints(
-            gpu.bounds,
-            static_cast<size_t>(hull.Vertices.size()),
-            &hull.Vertices[0].pos,
-            sizeof(EConst::VertexPositionColor)
-        );
+        EConst::GpuMeshDTO gpu = CreateGPUBuffers(hull);
 
         gpuCacheList.push_back(gpu);
 
@@ -132,4 +92,52 @@ EConst::SubMesh MeshFactory::CreateSubMesh(EConst::CpuMeshDTO cpu, EConst::GpuMe
     }
 
     return subMesh;
+}
+
+EConst::GpuMeshDTO MeshFactory::CreateGPUBuffers(EConst::CpuMeshDTO hull)
+{
+    EConst::GpuMeshDTO gpu;
+
+    CD3D11_BUFFER_DESC vDesc(
+        static_cast<UINT>(hull.Vertices.size() * sizeof(EConst::VertexPositionColor)),
+        D3D11_BIND_VERTEX_BUFFER
+    );
+
+    D3D11_SUBRESOURCE_DATA vData;
+    ZeroMemory(&vData, sizeof(D3D11_SUBRESOURCE_DATA));
+    vData.pSysMem = hull.Vertices.data();
+    vData.SysMemPitch = 0;
+    vData.SysMemSlicePitch = 0;
+
+    CD3D11_BUFFER_DESC iDesc(
+        static_cast<UINT>(hull.Indices.size() * sizeof(short)),
+        D3D11_BIND_INDEX_BUFFER
+    );
+
+    D3D11_SUBRESOURCE_DATA iData;
+    ZeroMemory(&iData, sizeof(D3D11_SUBRESOURCE_DATA));
+    iData.pSysMem = hull.Indices.data();
+    iData.SysMemPitch = 0;
+    iData.SysMemSlicePitch = 0;
+
+    HRESULT hr = m_device->CreateBuffer(&vDesc, &vData, &gpu.vBuffer);
+    if (FAILED(hr)) throw;
+
+    gpu.iCount = static_cast<long>(hull.Indices.size());
+
+    hr = m_device->CreateBuffer(&iDesc, &iData, &gpu.iBuffer);
+    if (FAILED(hr)) throw;
+
+    if (gpu.vBuffer == nullptr || gpu.iBuffer == nullptr) throw;
+
+    gpu.Name = hull.Name;
+
+    DirectX::BoundingBox::CreateFromPoints(
+        gpu.bounds,
+        static_cast<size_t>(hull.Vertices.size()),
+        &hull.Vertices[0].pos,
+        sizeof(EConst::VertexPositionColor)
+    );
+
+    return gpu;
 }

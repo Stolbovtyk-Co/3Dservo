@@ -9,7 +9,7 @@
 #include <vector>
 #include "EngineConstants.h"
 
-class MeshFactory;
+#include "MeshFactory.h"
 
 class Scene
 {

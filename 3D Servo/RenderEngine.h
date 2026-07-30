@@ -4,10 +4,9 @@
 #include <wrl/client.h>
 #include "Logger.h"
 #include "Scene.h"
-
-#include "Logger.h"
 #include "EngineConstants.h"
 #include <concepts>
+#include "RenderQueueManager.h"
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -25,26 +24,24 @@ public:
 
     void PreloadAssetsAsync();
 
-    template <std::derived_from<Scene> T>
-    void LoadScene(std::unique_ptr<T> sc) {
-        m_currentScene = std::move(sc);
+    template <typename T>
+    void LoadScene() requires std::is_base_of_v<Scene, T> {
+        m_currentScene = std::make_shared<T>(m_device);
     }
 
 private:
 
     void Clear(float r, float g, float b, float a);
     void LoadSceneSettings();
-    EConst::GPUIstructionsDTO GetFinalGPUInstructions(std::vector<EConst::Instruction> nodeInstructions);
 
     void RenderGPUBuffers(EConst::GPUBuffers g);
 
-    std::unique_ptr <Scene> m_currentScene = nullptr;
+    std::shared_ptr <Scene> m_currentScene = nullptr;
 
     EConst::ConstantBufferStruct m_constantBufferData;
 
     float m_width;
     float m_height;
-    unsigned int  m_frameCount;
     DirectX::XMFLOAT4 m_clearColor;
 
     Microsoft::WRL::ComPtr<ID3D11Device> m_device = nullptr;
@@ -63,6 +60,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
     std::shared_ptr<Logger> m_logger;
+    std::unique_ptr<RenderQueueManager> m_renderQueue;
+
     //Loaders
     //BufferLoader m_bufferLoader;
 

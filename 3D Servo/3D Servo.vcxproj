@@ -149,6 +149,7 @@
     <ClCompile Include="Node3D.cpp" />
     <ClCompile Include="ObjParser.cpp" />
     <ClCompile Include="RenderEngine.cpp" />
+    <ClCompile Include="RenderQueueManager.cpp" />
     <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +164,7 @@
     <ClInclude Include="NodeFactory.h" />
     <ClInclude Include="ObjParser.h" />
     <ClInclude Include="RenderEngine.h" />
+    <ClInclude Include="RenderQueueManager.h" />
     <ClInclude Include="RotateScript.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ScriptPerfab.h" />
