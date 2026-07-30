@@ -1,8 +1,10 @@
 #include "RenderQueueManager.h"
 #include <algorithm> 
 
-std::vector<EConst::GPUBuffers> RenderQueueManager::MakeRenderQueue()
+EConst::GPUIstructionsDTO RenderQueueManager::MakeRenderQueue()
 {
+	EConst::GPUIstructionsDTO output;
+
 	std::vector<EConst::Instruction> nodeInstructions = m_scenePtr->GetGPUInstructions();
 
 	std::vector<EConst::GPUBuffers> regular;
@@ -59,7 +61,8 @@ std::vector<EConst::GPUBuffers> RenderQueueManager::MakeRenderQueue()
 		return a.cDistSqr > b.cDistSqr;
 		});
 
-	regular.insert(regular.end(), transparent.begin(), transparent.end());
+	output.regular = regular;
+	output.transparent = transparent;
 
-	return regular;
+	return output;
 }

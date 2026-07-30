@@ -10,7 +10,7 @@ public:
 		m_scenePtr = sc;
 		m_bufferStruct = BStruct;
 	}
-	std::vector<EConst::GPUBuffers> MakeRenderQueue();
+	EConst::GPUIstructionsDTO MakeRenderQueue();
 private:
 	std::shared_ptr<Scene> m_scenePtr;
 	EConst::ConstantBufferStruct* m_bufferStruct;

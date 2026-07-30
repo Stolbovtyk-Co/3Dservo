@@ -24,18 +24,18 @@ void Scene::Setup()
 	std::size_t i = m_sceneObjects.size();
 	m_sceneObjects.push_back(sceneMesh);
 	m_sceneObjects[i]->SetParent(&m_tree);
-	m_sceneObjects[i]->AddTag("SV_TRANSPARENT");
+	//m_sceneObjects[i]->AddTag("SV_TRANSPARENT");
 	m_sceneObjects[i]->AddScript<RotateScript>();
-	m_sceneObjects[i]->SetPosition({ 0.0f, 0.0f, 0.0f });
+	m_sceneObjects[i]->SetPosition({ 0.0f, 0.0f, -4.0f });
 	m_tree.addChild(m_sceneObjects[i].get());
 
-	std::shared_ptr<Node3D> sceneMesh2 = m_MeshFactory->CreateStaticInstance("Scene.obj");
+	std::shared_ptr<Node3D> sceneMesh2 = m_MeshFactory->CreateStaticInstance("SceneCR.obj");
 	i = m_sceneObjects.size();
 	m_sceneObjects.push_back(sceneMesh2);
 	m_sceneObjects[i]->SetParent(&m_tree);
 	m_sceneObjects[i]->AddTag("SV_TRANSPARENT");
 	m_sceneObjects[i]->AddScript<RotateScript>();
-	m_sceneObjects[i]->SetPosition({3.0f, 0.0f, -4.0f});
+	m_sceneObjects[i]->SetPosition({1.0f, 0.0f, 0.0f});
 	m_tree.addChild(m_sceneObjects[i].get());
 
 

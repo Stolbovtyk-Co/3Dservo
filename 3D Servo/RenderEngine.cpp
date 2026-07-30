@@ -124,7 +124,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 
 	D3D11_RASTERIZER_DESC rasterDesc = {};
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
 	rasterDesc.FrontCounterClockwise = FALSE;
 	rasterDesc.DepthClipEnable = TRUE;
 
@@ -200,6 +200,27 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 	m_context->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
 	);
+
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	hr = m_device->CreateBlendState(&blendDesc, &m_pBlendStateTransparent);
+
+	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+	dsDesc.DepthEnable = TRUE;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	m_device->CreateDepthStencilState(&dsDesc, &pDepthStencilStateRegular);
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	m_device->CreateDepthStencilState(&dsDesc, &pDepthStencilStateTransparent);
 }
 
 void RenderEngine::CreateViewAndPerspective()
@@ -262,8 +283,18 @@ void RenderEngine::Render() {
 	auto renderQueue = m_renderQueue->MakeRenderQueue();
 
 	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get());
+
+	m_context->OMSetBlendState(nullptr, NULL, 0xffffffff);
+	m_context->OMSetDepthStencilState(pDepthStencilStateRegular, 1);
 	
-	for (auto &i : renderQueue) {
+	for (auto &i : renderQueue.regular) {
+		RenderGPUBuffers(i);
+	}
+
+	m_context->OMSetBlendState(m_pBlendStateTransparent, NULL, 0xffffffff);
+	m_context->OMSetDepthStencilState(pDepthStencilStateTransparent, 1);
+
+	for (auto& i : renderQueue.transparent) {
 		RenderGPUBuffers(i);
 	}
 

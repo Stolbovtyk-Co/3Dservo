@@ -66,7 +66,7 @@ namespace EConst {
 		long indexCount = 0;
 		float cDistSqr = 0;
 	};
-	struct GPUIstructionsDTO { //Obsolete
+	struct GPUIstructionsDTO { 
 		std::vector<GPUBuffers> regular;
 		std::vector<GPUBuffers> transparent;
 	};

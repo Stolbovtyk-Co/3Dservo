@@ -68,6 +68,11 @@ private:
     //=========================\\
     //Direct3D device resources\\
     //=========================\\
+
+    //Stencils
+    ID3D11DepthStencilState* pDepthStencilStateRegular = nullptr;
+    ID3D11DepthStencilState* pDepthStencilStateTransparent = nullptr;
+    ID3D11BlendState* m_pBlendStateTransparent = nullptr;
     
     //Shaders
     Microsoft::WRL::ComPtr<ID3D11VertexShader>      m_vertexShader;
