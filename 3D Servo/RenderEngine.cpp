@@ -123,7 +123,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 	D3D11_RASTERIZER_DESC rasterDesc = {};
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.CullMode = D3D11_CULL_BACK;
-	rasterDesc.FrontCounterClockwise = TRUE;
+	rasterDesc.FrontCounterClockwise = FALSE;
 	rasterDesc.DepthClipEnable = TRUE;
 
 	hr = m_device->CreateRasterizerState(&rasterDesc, m_rasterizerState.GetAddressOf());
