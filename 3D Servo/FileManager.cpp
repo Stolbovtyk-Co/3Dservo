@@ -1,5 +1,6 @@
 #include "FileManager.h"
 #include <fstream>
+#include <filesystem>
 
 FileManager::ReadedBytesDTO FileManager::ReadBytes(std::string PATH)
 {
@@ -34,6 +35,11 @@ FileManager::ReadedBytesDTO FileManager::ReadBytes(std::string PATH)
 std::vector<std::string> FileManager::ReadText(std::string PATH)
 {
 	m_logger.log("[INFO|FileManager]: Loading text file (" + PATH + ").");
+	
+	if (!std::filesystem::exists(PATH)) {
+		m_logger.log("[FATAL|FileManager] File not found at PATH: " + PATH);
+	}
+
 	std::ifstream file(PATH);
 	if (!file.is_open()) {
 		m_logger.log("[FATAL|FileManager]: Cannot load text file (" + PATH + ").");

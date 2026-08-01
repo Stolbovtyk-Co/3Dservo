@@ -123,7 +123,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 	D3D11_RASTERIZER_DESC rasterDesc = {};
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.CullMode = D3D11_CULL_BACK;
-	rasterDesc.FrontCounterClockwise = FALSE;
+	rasterDesc.FrontCounterClockwise = TRUE;
 	rasterDesc.DepthClipEnable = TRUE;
 
 	hr = m_device->CreateRasterizerState(&rasterDesc, m_rasterizerState.GetAddressOf());
@@ -311,6 +311,7 @@ void RenderEngine::RenderGPUBuffers(EConst::GPUBuffers g)
 		0,
 		0
 	);
+
 	UINT stride = sizeof(EConst::VertexPositionColor);
 	UINT offset = 0;
 	m_context->IASetVertexBuffers(
@@ -320,16 +321,19 @@ void RenderEngine::RenderGPUBuffers(EConst::GPUBuffers g)
 		&stride,
 		&offset
 	);
+
 	m_context->IASetIndexBuffer(
 		g.iBuffer.Get(),
 		DXGI_FORMAT_R16_UINT,
 		0
 	);
+
 	m_context->VSSetConstantBuffers(
 		0,
 		1,
 		m_constantBuffer.GetAddressOf()
 	);
+
 	m_context->DrawIndexed(
 		g.indexCount,
 		0,
