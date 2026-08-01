@@ -19,17 +19,11 @@ public:
 
 	 virtual void Update(float delta);
 
-	 inline const Node3D* GetTree() {
-		 return &m_tree;
-	 }
-
 	 struct SceneSettings
 	 {
 		 DirectX::XMFLOAT4 clearColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 		 std::string sceneName;
 	 };
-
-	 virtual std::vector<EConst::Instruction> GetGPUInstructions();
 
 	 virtual ~Scene() = default;
 
@@ -82,5 +76,11 @@ public:
 	SceneSettings GetSceneSettings() {
 		return m_st;
 	}
+
+	inline const Node3D* GetTree() {
+		return &m_tree;
+	}
+
+	virtual std::vector<EConst::Instruction> GetGPUInstructions();
 };
 
