@@ -3,27 +3,27 @@
 #include "ObjParser.h"
 #include "FileManager.h"
 #include "MeshInstance3D.h"
-#include "ConvexDecomposer.h"
-#include <memory>
-#include "Node3D.h"
-#include <string>
-#include <vector>
 #include "EngineConstants.h"
 #include <d3d11.h>
 #include "Obstacle3D.h"
 
 std::shared_ptr<Node3D> MeshFactory::CreateStaticInstance(std::string PATH, bool doCollisionMeshes)
 {
-    std::shared_ptr<MeshInstance3D> newInstance;
-
     auto rawData = m_fileManager->ReadText(PATH);
+
+    if (rawData.empty()) {
+        throw std::runtime_error("[FATAL|MeshFactory] No Data!");
+    }
+
     auto cpu = ObjParser::ParseLines(rawData);  
 
     std::vector<EConst::SubMesh> VisualHulls; 
     VisualHulls.push_back(CreateSubMesh(cpu, CreateGPUBuffers(cpu), false));
 
+    std::shared_ptr<MeshInstance3D> newInstance;
+
     if (doCollisionMeshes) {
-        //TODO: ASYNCH HERE!!! 
+        //TODO: ASYNCH HERE!!!! 
         auto obstacle = std::make_shared<Obstacle3D>();
         std::vector<EConst::SubMesh> CollisionHulls = GetStaticCollisionSubMeshes(PATH, cpu);
         obstacle->SetCollisionSubMeshes(CollisionHulls);
@@ -118,7 +118,7 @@ EConst::GpuMeshDTO MeshFactory::CreateGPUBuffers(EConst::CpuMeshDTO hull)
     vData.SysMemSlicePitch = 0;
 
     CD3D11_BUFFER_DESC iDesc(
-        static_cast<UINT>(hull.Indices.size() * sizeof(short)),
+        static_cast<UINT>(hull.Indices.size() * sizeof(hull.Indices[0])),
         D3D11_BIND_INDEX_BUFFER
     );
 
