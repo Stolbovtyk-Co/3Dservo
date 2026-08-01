@@ -9,7 +9,7 @@ public:
 	RotateScript(Node3D* obj) : ScriptPerfab(obj) {};
 
 	void OnUpdate(float delta) override {
-		float rotSp = 0.005f;
+		float rotSp = 0.05f;
 		auto r = DirectX::XMFLOAT3(m_controlledNode->getLocalRotation().x + rotSp,
 			m_controlledNode->getLocalRotation().y + rotSp, m_controlledNode->getLocalRotation().z + rotSp / 2);
 		m_controlledNode->SetRotation(r);

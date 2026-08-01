@@ -20,26 +20,25 @@ void Scene::Setup()
 	m_MeshFactory = std::make_unique<MeshFactory>(m_com_device, &m_fileMgr, nullptr);
 	m_tree.Initialize();
 
-	std::shared_ptr<Node3D> sceneMesh = m_MeshFactory->CreateStaticInstance("Scene.obj");
+	std::shared_ptr<Node3D> sceneMesh = m_MeshFactory->CreateStaticInstance("SceneCR.obj");
 	std::size_t i = m_sceneObjects.size();
 	m_sceneObjects.push_back(sceneMesh);
-	m_sceneObjects[i]->SetParent(&m_tree);
-	//m_sceneObjects[i]->AddTag("SV_TRANSPARENT");
+	//m_sceneObjects[i]->AddTag("SV_HIDE");
 	m_sceneObjects[i]->AddScript<RotateScript>();
 	m_sceneObjects[i]->SetPosition({ 0.0f, 0.0f, -4.0f });
-	m_tree.addChild(m_sceneObjects[i].get());
+	m_sceneObjects[i]->SetScale({ 1.5f, 1.5f, 1.5f });
+	m_tree.addChild(m_sceneObjects[i]);
 
 	std::shared_ptr<Node3D> sceneMesh2 = m_MeshFactory->CreateStaticInstance("SceneCR.obj");
 	i = m_sceneObjects.size();
 	m_sceneObjects.push_back(sceneMesh2);
-	m_sceneObjects[i]->SetParent(&m_tree);
 	m_sceneObjects[i]->AddTag("SV_TRANSPARENT");
 	m_sceneObjects[i]->AddScript<RotateScript>();
 	m_sceneObjects[i]->SetPosition({1.0f, 0.0f, 0.0f});
-	m_tree.addChild(m_sceneObjects[i].get());
+	m_tree.addChild(m_sceneObjects[i]);
 
 
-	m_tree.SetScale({ 0.3f, 0.3f, 0.3f });
+	m_tree.SetScale({ 0.6f, 0.6f, 0.6f });
 }
 
 void Scene::Update(float delta)
@@ -54,7 +53,7 @@ std::vector<EConst::Instruction> Scene::GetGPUInstructions()
 	for (auto& node : m_sceneObjects) {
 		if (node->GetParent() != nullptr) {
 			if (auto meshNode = std::dynamic_pointer_cast<MeshInstance3D>(node)) {
-				if (meshNode->HasSubMeshes()) {
+				if (meshNode->HasSubMeshes() && !meshNode->HasTag("SV_HIDE")) {
 					insts.push_back(meshNode->GetGPUInstruction());
 				}
 			}

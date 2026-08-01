@@ -27,6 +27,8 @@ public:
 	 {
 		 DirectX::XMFLOAT4 clearColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 		 std::string sceneName;
+		 DirectX::XMVECTOR cameraPos = DirectX::XMVectorSet(0.0f, 0.0f, 1.5f, 0.f);
+		 DirectX::XMVECTOR cameraLookAt = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.f);
 	 };
 
 	 virtual std::vector<EConst::Instruction> GetGPUInstructions();

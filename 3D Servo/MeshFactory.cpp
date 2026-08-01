@@ -10,21 +10,29 @@
 #include <vector>
 #include "EngineConstants.h"
 #include <d3d11.h>
+#include "Obstacle3D.h"
 
 std::shared_ptr<Node3D> MeshFactory::CreateStaticInstance(std::string PATH, bool doCollisionMeshes)
 {
+    std::shared_ptr<MeshInstance3D> newInstance;
+
     auto rawData = m_fileManager->ReadText(PATH);
     auto cpu = ObjParser::ParseLines(rawData);  
 
     std::vector<EConst::SubMesh> VisualHulls; 
     VisualHulls.push_back(CreateSubMesh(cpu, CreateGPUBuffers(cpu), false));
-    auto newInstance = std::make_shared<MeshInstance3D>(VisualHulls);
 
     if (doCollisionMeshes) {
         //TODO: ASYNCH HERE!!! 
+        auto obstacle = std::make_shared<Obstacle3D>();
         std::vector<EConst::SubMesh> CollisionHulls = GetStaticCollisionSubMeshes(PATH, cpu);
-        newInstance->SetCollisionSubMeshes(CollisionHulls);
+        obstacle->SetCollisionSubMeshes(CollisionHulls);
+        newInstance = obstacle;
     }
+    else {
+        newInstance = std::make_shared<MeshInstance3D>();
+    }
+    newInstance->SetSubMeshes(VisualHulls);
 
     return newInstance;
 }

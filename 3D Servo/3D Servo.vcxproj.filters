@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Файлы заголовков\Nodes">
+      <UniqueIdentifier>{788d4520-785f-4a6a-8dca-5af4abdcd400}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Utils">
+      <UniqueIdentifier>{c9ed02b7-a0dd-4cc6-8958-188065deb985}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -51,6 +57,9 @@
     <ClCompile Include="RenderQueueManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Obstacle3D.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -59,25 +68,10 @@
     <ClInclude Include="RenderEngine.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="EngineConstants.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Node3D.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjParser.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshInstance3D.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="NodeFactory.h">
@@ -89,14 +83,32 @@
     <ClInclude Include="MeshFactory.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="ConvexDecomposer.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="RotateScript.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="RenderQueueManager.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Node3D.h">
+      <Filter>Файлы заголовков\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshInstance3D.h">
+      <Filter>Файлы заголовков\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvexDecomposer.h">
+      <Filter>Файлы заголовков\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="FileManager.h">
+      <Filter>Файлы заголовков\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Файлы заголовков\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjParser.h">
+      <Filter>Файлы заголовков\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Obstacle3D.h">
+      <Filter>Файлы заголовков\Nodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

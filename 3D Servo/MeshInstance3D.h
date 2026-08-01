@@ -7,16 +7,9 @@ class MeshInstance3D : public Node3D
 public:
 	MeshInstance3D() : Node3D() { }
 
-	MeshInstance3D(std::vector<EConst::SubMesh> subMeshes) : Node3D() {
-		SetSubMeshes(subMeshes);
-	}
-
 #pragma region Setters
 	inline void SetSubMeshes(std::vector<EConst::SubMesh> subMeshes) {
 		m_subMeshes = std::move(subMeshes);
-	}
-	inline void SetCollisionSubMeshes(std::vector<EConst::SubMesh> subMeshes) {
-		m_subMeshes_collision = std::move(subMeshes);
 	}
 #pragma endregion
 
@@ -35,7 +28,7 @@ public:
 
 	inline bool HasSubMeshes() { return m_subMeshes.size() > 0; }
 
-	inline EConst::Instruction GetGPUInstruction() {
+	inline virtual EConst::Instruction GetGPUInstruction() {
 		EConst::Instruction inst;
 		inst.subMeshes = m_subMeshes;
 		inst.SV_TRANSPARENT = HasTag("SV_TRANSPARENT");
@@ -52,39 +45,4 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
 
 	std::vector<EConst::SubMesh> m_subMeshes;
-	std::vector<EConst::SubMesh> m_subMeshes_collision;
 };
-
-/*
-⣿⣿⠇⡄⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⡿⠀⣷⣀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⡇⣴⣿⣿⣷⣄⠀⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣟⣿⣿⣯⣹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⢠⣿⣿⣿⣿⣿⣷⣤⡀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⠉⠉⠉⠉⠛⠛⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⢏⠀⢻⣿⣿⣿⡏⠉⠉⢈⣤⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠈⠿⣿⡏⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⢠⣤⣤⣤⣀⣤⣠⣀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣷⣄⠀⠀⠈⣷⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠉⠙⠛⠉⠘⠛⠛⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣆⣰⡿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⡷⡄⠀⠀⢠⣤⣀⠆⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⢡⡈⠻⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢧⠐⡀⠀⣀⠨⣡⣀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⡏⠾⢛⠡⠌⠹⣿⣿⣿⣿⣿⣿⣿⣿⡛⣌⢳⣼⡀⠘⠛⠛⣸⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣧⠖⢁⠴⠖⠒⢻⣿⣿⣿⣿⣿⣿⣿⠃⠈⠹⢿⣿⣶⣶⠞⠁⡛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣷⣠⣴⣾⣿⣍⠛⣛⡭⠝⠓⠿⠚⢄⠀⣠⣼⢿⣭⣡⡀⡰⣶⠏⠉⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣄⠣⠀⠀⠀⠀⠀⠉⠉⠉⠉⢺⡃⢸⠀⢠⠆⠀⠀⠀⠀⠀⠉⠛⢿⣿⣿⣿⣿
-⣿⣿⠟⣻⣿⡿⣿⣿⣿⠿⣻⣿⣆⠡⡂⠀⠀⠀⠀⠀⠀⠀⡼⠀⢹⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿
-⣿⡏⠒⠙⠻⢿⢦⣴⣶⣿⣿⡅⢿⣧⡐⡀⠀⠀⠀⠀⠀⠀⡇⠀⢸⠈⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡿⣿⣿
-⣿⡷⡀⠀⠀⠀⠈⠉⣿⣟⣹⣥⣶⠙⣷⡈⠄⠀⠀⠀⠀⠀⡗⠂⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡜⢸⠇⢹⣿
-⡟⠀⠰⡌⠀⠀⢀⣴⡾⢱⣾⣭⢵⠀⠘⣿⣌⢂⡐⠀⠀⢰⡇⠀⢸⠀⠀⠀⡀⠀⠀⠀⠀⠀⢘⠤⣬⠀⠈⣿
-⠀⠀⠀⠈⠀⠀⠉⣲⢯⣿⡿⣿⣾⡤⠸⠘⢿⣆⠣⠀⠀⣸⣇⠄⠈⠀⠀⠀⠀⠂⠀⠀⠀⢠⠁⣴⠟⠀⠀⣿
-⠀⠀⠀⣀⡤⠔⢻⠋⠈⣿⢻⣿⡧⢑⠀⠀⠘⣿⣆⠱⡆⣿⡄⠀⠀⠀⠀⠀⠀⠂⠀⠀⠀⢆⢴⠁⠈⠃⠀⣿
-⠀⠀⠢⡈⠁⠂⠺⡄⣠⣿⣿⣿⠁⣼⠀⠀⠀⠘⢿⣧⡑⣏⠁⠀⢠⠀⠀⡜⠀⠀⠀⠀⠐⢀⣲⠳⠀⠄⠀⣿
-⠸⠀⠀⠈⠀⠀⢼⣿⣿⠿⠛⢿⠀⡇⠀⠀⠀⠀⠈⢿⣷⡘⢇⠀⠸⠀⠈⠀⠀⠀⠐⢠⢃⣲⣁⡤⠀⠠⠀⢻
-⠄⠀⠀⢀⣠⠔⣊⣭⣿⠀⠈⠀⠀⠀⠀⠀⠀⠀⡈⠀⠻⣷⡌⠄⠀⠀⢀⣀⠀⢀⠀⣼⣼⣿⣋⠀⢀⡀⠀⠘
-⣜⣀⣰⣭⣿⣿⣿⣿⣇⠀⠀⠀⣶⠀⠀⠀⡄⠰⠀⢠⢆⣻⣿⡾⠊⠀⡀⠻⣧⡈⣼⣿⡿⠋⣥⣤⡐⠂⠐⡄
-⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀⢀⡀⢹⡀⠀⠐⠀⠀⠠⠁⡟⣿⣿⣿⡖⠈⠡⠐⠛⠀⠁⠀⠀⠠⡄⠉⢫⡷⢦⢠
-⣿⣿⣿⣿⣿⣿⣿⣿⣧⣤⣀⣀⣼⡁⠠⠦⠀⠀⠀⠀⡇⣷⠛⣿⣿⣃⡠⠀⠀⡄⠀⠀⠀⠀⠀⠀⠀⢄⠁⣼
-⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠇⠀⢀⣧⢻⠐⣿⡿⣿⣽⡗⢻⡇⠀⠀⠀⠀⠀⠀⠀⢀⠁⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⡤⠤⣄⣀⡤⠔⠀⠀⠈⠀⠀⢸⠸⢸⠀⣿⡇⣹⡿⣷⣄⠙⢧⡀⠀⠀⠄⠀⠀⢀⣠⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠌⠀⠀⠀⠀⠀⠀⠀⠇⠁⢸⡄⣿⣿⣿⣿⡿⣿⣷⣤⣿⣆⣀⣤⣶⣾⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⢸⠃⠙⣯⣙⡋⠸⣛⣿⣿⣿⡿⢹⡇⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⢠⠃⠀⠀⠈⠁⠀⡍⠉⠓⠋⢻⣄⠈⠁⢠⡞⠁⢸⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⢠⠃⠀⠀⠀⢸⡆⠀⠇⠀⠀⠀⠀⠉⠓⠒⠋⠀⠀⢸⣿⣿⣿⣿
-*/

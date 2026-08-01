@@ -59,6 +59,7 @@ LRESULT CALLBACK Application::WindowProc(HWND m_hWnd, UINT message, WPARAM wPara
     case WM_DESTROY:
         PostQuitMessage(0); 
         return 0;
+        //TODO: Input events pls
     }
     return DefWindowProc(m_hWnd, message, wParam, lParam);
 }

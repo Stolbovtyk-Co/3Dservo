@@ -27,6 +27,7 @@ public:
     template <typename T>
     void LoadScene() requires std::is_base_of_v<Scene, T> {
         m_currentScene = std::make_shared<T>(m_device);
+        LoadSceneSettings();
     }
 
 private:

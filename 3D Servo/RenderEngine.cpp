@@ -29,8 +29,6 @@ RenderEngine::RenderEngine(std::shared_ptr<Logger> logger, HWND hWnd, int Width,
 	m_logger = logger;
 	Initialize(hWnd, Width, Height);
 	LoadScene<Scene>();
-	LoadSceneSettings();
-	CreateViewAndPerspective(); // TODO: move this to scene maybe
 	m_renderQueue = std::make_unique<RenderQueueManager>(m_currentScene, &m_constantBufferData);
 }
 
@@ -225,8 +223,8 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 
 void RenderEngine::CreateViewAndPerspective()
 {
-	DirectX::XMVECTOR eye = DirectX::XMVectorSet(0.0f, 0.0f, 1.5f, 0.f);
-	DirectX::XMVECTOR at = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.f);
+	DirectX::XMVECTOR eye = m_currentScene->GetSceneSettings().cameraPos;
+	DirectX::XMVECTOR at = m_currentScene->GetSceneSettings().cameraLookAt;
 	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.f);
 
 	DirectX::XMStoreFloat4x4(
@@ -348,6 +346,7 @@ void RenderEngine::LoadSceneSettings()
 	Scene::SceneSettings settings = m_currentScene.get()->GetSceneSettings();
 	m_logger.get()->log("Loaded scene: " + settings.sceneName);
 	m_clearColor = settings.clearColor;
+	CreateViewAndPerspective();
 }
 
 /// <summary>

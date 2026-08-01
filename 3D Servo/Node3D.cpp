@@ -2,7 +2,7 @@
 
 void Node3D::Initialize()
 {
-	for (auto ch : m_children) {
+	for (auto ch : m_childrenPtr) {
 		ch->Initialize();
 	}
 }
@@ -25,22 +25,22 @@ void Node3D::ProcessPendingChanges()
 	m_scriptsToAdd.clear();
 	//Remove children
 	for (auto& child : m_childrenToRemove) {
-		auto it = std::find(m_children.begin(), m_children.end(), child);
-		if (it != m_children.end()) {
+		auto it = std::find(m_childrenPtr.begin(), m_childrenPtr.end(), child);
+		if (it != m_childrenPtr.end()) {
 			// Call event
 			for (auto& sc : m_attachedScripts) {
 				if (sc) {
 					sc->OnChildRemoved(child);
 				}
 			}
-			m_children.erase(it);
+			m_childrenPtr.erase(it);
 		}
 	}
 	m_childrenToRemove.clear();
 	//Add children
 	for (auto& child : m_childrenToAdd) {
 		child->SetParent(this);
-		m_children.push_back(child);
+		m_childrenPtr.push_back(child);
 		child->ProcessPendingChanges();
 		child->UpdateTransforms(DirectX::XMLoadFloat4x4(&m_globalTransform));
 		// Call event
@@ -88,7 +88,7 @@ void Node3D::ProcessPendingChanges()
 	}
 	m_tagsToAdd.clear();
 	//Call ProcessPendingChanges() in children;
-	for (auto& child : m_children) {
+	for (auto& child : m_childrenPtr) {
 		if (child) {
 			child->ProcessPendingChanges();
 		}
@@ -102,7 +102,7 @@ void Node3D::Update(float delta)
 			sc->OnUpdate(delta);
 		}
 	}
-	for (auto ch : m_children) { 
+	for (auto ch : m_childrenPtr) { 
 		ch->Update(delta);
 	}
 }
@@ -113,7 +113,7 @@ void Node3D::UpdateTransforms(DirectX::FXMMATRIX parentGlobalTransform)
 	DirectX::XMMATRIX global = local * parentGlobalTransform;
 	DirectX::XMStoreFloat4x4(&m_globalTransform, global);
 
-	for (auto child : m_children) {
+	for (auto child : m_childrenPtr) {
 		child->UpdateTransforms(global);
 	}
 }
@@ -122,7 +122,7 @@ void Node3D::UpdateChildTransforms()
 {
 	DirectX::XMMATRIX global = XMLoadFloat4x4(&m_globalTransform);
 
-	for (auto child : m_children) {
+	for (auto child : m_childrenPtr) {
 		child->UpdateTransforms(global);
 	}
 }
@@ -168,14 +168,14 @@ void Node3D::RebuildLocalTransform() {
 	MarkDirty();
 }
 
-void Node3D::addChild(Node3D* child)
+void Node3D::addChild(std::shared_ptr<Node3D> child)
 {
 	if (!child) return;
 
 	m_childrenToAdd.push_back(child);
 }
 
-void Node3D::removeChild(Node3D* child)
+void Node3D::removeChild(std::shared_ptr<Node3D> child)
 {
 	if (!child) return;
 

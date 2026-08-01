@@ -6,8 +6,6 @@
 #include "EngineConstants.h"
 #include "ScriptPerfab.h"
 
-//TODO: m_children should be shared_ptr
-
 class Node3D
 {
 public:
@@ -55,7 +53,7 @@ public:
 	}
 
 	virtual void SetParent(Node3D* parent) {
-		if (m_parent == nullptr && parent != nullptr) {
+		if (parent != nullptr) {
 			m_parent = parent;
 		}
 	}
@@ -92,8 +90,8 @@ public:
 		return m_globalTransform;
 	}
 
-	inline std::vector<Node3D*> GetChildren() const {
-		return m_children;
+	inline std::vector<std::shared_ptr<Node3D>> GetChildren() const {
+		return m_childrenPtr;
 	}
 
 	inline Node3D* GetParent() const {
@@ -121,9 +119,9 @@ public:
 
 #pragma region TreeTools
 
-	virtual void addChild(Node3D* child);
+	virtual void addChild(std::shared_ptr<Node3D> child);
 
-	virtual void removeChild(Node3D* child);
+	virtual void removeChild(std::shared_ptr<Node3D> child);
 
 	virtual inline bool isDirty() {
 		return m_dirty;
@@ -154,8 +152,8 @@ protected:
 	std::vector<std::shared_ptr<ScriptPerfab>> m_scriptsToAdd;
 	std::vector<std::shared_ptr<ScriptPerfab>> m_scriptsToRemove;
 
-	std::vector<Node3D*> m_childrenToAdd;
-	std::vector<Node3D*> m_childrenToRemove;
+	std::vector<std::shared_ptr<Node3D>> m_childrenToAdd;
+	std::vector<std::shared_ptr<Node3D>> m_childrenToRemove;
 
 	std::vector<std::string> m_tagsToAdd;
 	std::vector<std::string> m_tagsToRemove;
@@ -163,7 +161,7 @@ protected:
 	//======================================
 	//WARNING! DO NOT CHANGE THESE DIRECTLY!
 	//======================================
-	std::vector<Node3D*> m_children;
+	std::vector<std::shared_ptr<Node3D>> m_childrenPtr;
 	std::vector<std::shared_ptr<ScriptPerfab>> m_attachedScripts;
 	std::vector<std::string> m_attachedTags;
 };
