@@ -13,7 +13,7 @@ public:
     ConvexDecomposer() = default;
     ~ConvexDecomposer() = default;
 
-    std::vector<EConst::CpuMeshDTO> runConvexDecomposition(EConst::CpuMeshDTO dto);
+    //std::vector<EConst::CpuMeshDTO> runConvexDecomposition(EConst::CpuMeshDTO dto);
 
 private:
     struct vhacdMeshDTO {
@@ -21,7 +21,7 @@ private:
         std::vector<uint32_t> Triangles;
     };
 
-    vhacdMeshDTO ConvertToVHACD(EConst::CpuMeshDTO dto);
+    //vhacdMeshDTO ConvertToVHACD(EConst::CpuMeshDTO dto);
 
-    EConst::CpuMeshDTO ConvertToMesh(void* hullPtr);
+    //EConst::CpuMeshDTO ConvertToMesh(void* hullPtr);
 };

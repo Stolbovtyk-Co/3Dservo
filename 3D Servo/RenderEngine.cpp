@@ -312,7 +312,7 @@ void RenderEngine::RenderGPUBuffers(EConst::GPUBuffers g)
 		0
 	);
 
-	UINT stride = sizeof(EConst::VertexPositionColor);
+	UINT stride = sizeof(EConst::VertexInfo);
 	UINT offset = 0;
 	m_context->IASetVertexBuffers(
 		0,
@@ -324,7 +324,7 @@ void RenderEngine::RenderGPUBuffers(EConst::GPUBuffers g)
 
 	m_context->IASetIndexBuffer(
 		g.iBuffer.Get(),
-		DXGI_FORMAT_R16_UINT,
+		DXGI_FORMAT_R32_UINT,
 		0
 	);
 

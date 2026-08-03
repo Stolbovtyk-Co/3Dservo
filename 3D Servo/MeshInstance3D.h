@@ -14,14 +14,6 @@ public:
 #pragma endregion
 
 #pragma region Getters
-	inline const std::vector<EConst::VertexPositionColor>& GetVertexPositionColor() const {
-		return m_localVertices;
-	}
-
-	inline std::vector<long> GetIndeces() const {
-		return m_localIndices;
-	}
-
 	inline bool HasGeometry() const {
 		return m_pVertexBuffer != nullptr && m_pIndexBuffer != nullptr;
 	}

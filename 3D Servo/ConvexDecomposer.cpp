@@ -1,3 +1,4 @@
+/*
 #define NOMINMAX 1 
 #include "ConvexDecomposer.h"
 
@@ -104,3 +105,4 @@ EConst::CpuMeshDTO ConvexDecomposer::ConvertToMesh(void* hullPtr)
 
     return partDto;
 }
+*/

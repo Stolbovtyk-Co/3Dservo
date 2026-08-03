@@ -4,13 +4,16 @@
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 #include <string>
+#include <vector>
 
 namespace EConst {
-	typedef struct _vertexPositionColor
+	typedef struct _vertexInfo 
 	{
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT4 color;
-	} VertexPositionColor;
+		DirectX::XMFLOAT2 uv;
+		DirectX::XMFLOAT3 normal;
+	} VertexInfo;
 
 	typedef struct _constantBufferStruct {
 		DirectX::XMFLOAT4X4 world;
@@ -18,38 +21,31 @@ namespace EConst {
 		DirectX::XMFLOAT4X4 projection;
 	} ConstantBufferStruct;
 
-	 struct RawMeshDTO {
-		std::string Name = "default_name";
-		std::vector<float> Vertices;
-		std::vector<short> Indices;
-	};
-
-	 struct CpuMeshDTO {
-		std::string Name = "default_name";
-		std::vector<EConst::VertexPositionColor> Vertices;
-		std::vector<short> Indices;
-	};
-
-	struct GpuMeshDTO
+	struct CpuSubMesh
 	{
-		std::string Name;
-		Microsoft::WRL::ComPtr < ID3D11Buffer> vBuffer;
-		Microsoft::WRL::ComPtr < ID3D11Buffer> iBuffer;
-		long iCount = 0;
-		DirectX::BoundingBox bounds;
+		std::string MaterialName;
+		uint32_t StartIndex;
+		uint32_t IndexCount;
+	};
+
+	struct CpuMesh
+	{
+		std::string OName;
+
+		std::vector<EConst::VertexInfo> Vertices;
+		std::vector<uint32_t> Indices;
+
+		std::vector<CpuSubMesh> SubMeshes;
 	};
 
 	struct SubMesh {
 		//Render
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> iBuffer;
-		long indexCount = 0;
+		uint32_t indexCount = 0;
 
-		//Dynamic Mesh
-		std::vector<EConst::VertexPositionColor> Vertices;
-		std::vector<short> Indices;
+		std::vector<CpuSubMesh> MaterialRegions;
 
-		//For Queue
 		DirectX::BoundingBox box;
 	}; 
 
@@ -69,5 +65,26 @@ namespace EConst {
 	struct GPUIstructionsDTO { 
 		std::vector<GPUBuffers> regular;
 		std::vector<GPUBuffers> transparent;
+	};
+	struct MaterialBuffer {
+		DirectX::XMFLOAT3 ambientColor;  
+		float padding1;                  
+		DirectX::XMFLOAT3 diffuseColor;  
+		float padding2;
+		DirectX::XMFLOAT3 specularColor; 
+		float shininess;                 
+	};
+	struct MaterialData {
+		std::string name;
+		MaterialBuffer Settings;
+		std::string DiffuseTextureFile;
+		std::string SpecularTextureFile;
+		std::string NormalTextureFile;
+	};
+	struct DX11Material {
+		Microsoft::WRL::ComPtr<ID3D11Buffer> vBuffer;
+		Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> Texture; //map_Kd
+		Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> SpecularMap; //map_Ks
+		Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> NormalMap; //map_Bump
 	};
 }

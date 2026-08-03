@@ -138,9 +138,6 @@ protected:
 	bool m_dirty = true; //If true should call UpdateTransforms for all childrens TODO:fix
 
 
-	std::vector<EConst::VertexPositionColor> m_localVertices;
-	std::vector<long> m_localIndices;
-
 	//Stuff
 	DirectX::XMFLOAT3 m_position = { 0,0,0 };
 	DirectX::XMFLOAT3 m_rotation = { 0,0,0,};

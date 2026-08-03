@@ -1,14 +1,8 @@
 #pragma once
-#include <unordered_map>
 #include <memory>
 #include <string>
-#include <vector>
-#include <wrl/client.h>
-#include <d3d11.h>
-
-#include "EngineConstants.h"
-#include "ConvexDecomposer.h"
 #include "Node3D.h"
+#include "ObjectManager.h"
 
 class Logger;
 class FileManager;
@@ -17,33 +11,16 @@ class MeshInstance3D;
 class MeshFactory
 {
 public:
-	MeshFactory(Microsoft::WRL::ComPtr<ID3D11Device> Device, FileManager* FileMan, Logger* Log) 
-		: m_device(Device), m_fileManager(FileMan), m_logger(Log) 
+	MeshFactory(ObjectManager* objMgr) 
 	{
-		m_decomposer = std::make_unique<ConvexDecomposer>();
+		m_objMgr = objMgr;
 	}
 
 	~MeshFactory() = default;
 
-	std::shared_ptr<Node3D> CreateStaticInstance(std::string PATH, bool doCollisionMeshes = false);
-
-	std::shared_ptr<Node3D> CreateDynamicInstance(std::string PATH) {} //TODO: Write Later cpuBufferSystem needed
+	std::shared_ptr<Node3D> CreateStaticInstance(std::string PATH);
 
 private:
-	std::vector<EConst::SubMesh> GetStaticCollisionSubMeshes(std::string PATH, EConst::CpuMeshDTO cpu);
-
-	EConst::CpuMeshDTO GetDynamicMesh(std::string PATH) {} //TODO: Write Later cpuBufferSystem needed
-
-	std::vector<EConst::SubMesh> CreateCollisionSubMeshes(EConst::CpuMeshDTO cpu, std::string PATH);
-	
-	EConst::SubMesh CreateSubMesh(EConst::CpuMeshDTO CpuDTO, EConst::GpuMeshDTO GpuDTO, bool isStatic);
-
-	EConst::GpuMeshDTO CreateGPUBuffers(EConst::CpuMeshDTO hull);
-
-	Logger* m_logger = nullptr;
-	FileManager* m_fileManager = nullptr;
-	std::unique_ptr<ConvexDecomposer> m_decomposer;
-	Microsoft::WRL::ComPtr<ID3D11Device> m_device = nullptr;
-	std::unordered_map<std::string, std::vector<EConst::GpuMeshDTO>> m_gpuCache; //TODO: Fix
+	ObjectManager* m_objMgr;
 };
 

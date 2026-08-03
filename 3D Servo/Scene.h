@@ -8,8 +8,9 @@
 #include "Node3D.h"
 #include <vector>
 #include "EngineConstants.h"
-
 #include "MeshFactory.h"
+#include "mtlManager.h"
+#include "ObjectManager.h"
 
 class Scene
 {
@@ -61,6 +62,8 @@ protected:
 	std::vector<std::shared_ptr<Node3D>> m_sceneObjects;
 
 	FileManager m_fileMgr;
+	std::unique_ptr<mtlManager> m_mtlManager;
+	std::unique_ptr<ObjectManager> m_objectManager;
 
 	std::unique_ptr <ShaderManager> m_sh;
 	SceneSettings m_st;

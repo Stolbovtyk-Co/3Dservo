@@ -16,7 +16,10 @@ void Scene::Setup()
 	m_st.clearColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	m_st.sceneName = "gm_Scene_Perfab";
 
-	m_MeshFactory = std::make_unique<MeshFactory>(m_com_device, &m_fileMgr, nullptr);
+	m_mtlManager = std::make_unique<mtlManager>(&m_fileMgr, m_com_device);
+	m_objectManager = std::make_unique<ObjectManager>(&m_fileMgr,m_mtlManager.get(), m_com_device);
+
+	m_MeshFactory = std::make_unique<MeshFactory>(m_objectManager.get());
 	m_tree.Initialize();
 
 	std::shared_ptr<Node3D> sceneMesh = m_MeshFactory->CreateStaticInstance("SceneCR.obj");
