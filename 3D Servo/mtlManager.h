@@ -3,6 +3,7 @@
 #include "FileManager.h"
 #include "MtlParser.h"
 #include <unordered_map>
+#include "Logger.h"
 #include <vector>
 
 class mtlManager
@@ -22,6 +23,7 @@ private:
 	FileManager* m_flMgr;
 	MtlParser m_mtlParser;
 	std::unordered_map<std::string, EConst::DX11Material> m_materialDB;
+	Logger m_logger;
 	//---------------------------------------
 	//	IMPORTED FROM RENDER ENGINE CLASSES:
 	Microsoft::WRL::ComPtr<ID3D11Device> m_comDevice;

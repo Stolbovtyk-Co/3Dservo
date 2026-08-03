@@ -24,9 +24,8 @@ using namespace DirectX;
 
 #pragma region Initialization
 
-RenderEngine::RenderEngine(std::shared_ptr<Logger> logger, HWND hWnd, int Width, int Height)
+RenderEngine::RenderEngine(HWND hWnd, int Width, int Height)
 {
-	m_logger = logger;
 	Initialize(hWnd, Width, Height);
 	LoadScene<Scene>();
 	m_renderQueue = std::make_unique<RenderQueueManager>(m_currentScene, &m_constantBufferData);
@@ -74,7 +73,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		&context                    // Returns the device immediate context.
 	);
 	if (FAILED(hr)) {
-		m_logger->logHR(hr);
+		m_logger.logHR(hr);
 		return;
 	}
 
@@ -103,7 +102,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 
 	hr = dxgiDevice->GetAdapter(&adapter);
 	if (FAILED(hr)) {
-		m_logger->logHR(hr);
+		m_logger.logHR(hr);
 		return;
 	}
 	
@@ -116,7 +115,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		&m_swapChain
 	);
 	if (FAILED(hr)) {
-		m_logger->logHR(hr);
+		m_logger.logHR(hr);
 		return;
 	}
 
@@ -128,7 +127,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 
 	hr = m_device->CreateRasterizerState(&rasterDesc, m_rasterizerState.GetAddressOf());
 	if (FAILED(hr)) {
-		m_logger->logHR(hr);
+		m_logger.logHR(hr);
 		return;
 	}
 	m_context->RSSetState(m_rasterizerState.Get());
@@ -145,7 +144,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		__uuidof(ID3D11Texture2D),
 		(void**)&m_pBackBuffer);
 	if (FAILED(hr)) {
-		m_logger->logHR(hr);
+		m_logger.logHR(hr);
 		return;
 	}
 
@@ -155,7 +154,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 		m_pRenderTarget.GetAddressOf()
 	);
 	if (FAILED(hr)) {
-		m_logger->logHR(hr);
+		m_logger.logHR(hr);
 		return;
 	}
 
@@ -348,7 +347,7 @@ void RenderEngine::RenderGPUBuffers(EConst::GPUBuffers g)
 void RenderEngine::LoadSceneSettings()
 {
 	Scene::SceneSettings settings = m_currentScene.get()->GetSceneSettings();
-	m_logger.get()->log("Loaded scene: " + settings.sceneName);
+	LOG_INFO(m_logger, "Loaded scene: " + settings.sceneName);
 	m_clearColor = settings.clearColor;
 	CreateViewAndPerspective();
 }

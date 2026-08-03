@@ -40,7 +40,7 @@ void Application::Initialize() {
 
     ShowWindow(m_hWnd, SW_SHOW);
 
-    m_renderEngine = std::make_unique<RenderEngine>(m_logger, m_hWnd, WIN_WIDTH, WIN_HEIGHT);
+    m_renderEngine = std::make_unique<RenderEngine>(m_hWnd, WIN_WIDTH, WIN_HEIGHT);
     m_renderEngine->PreloadAssetsAsync();
 }
 

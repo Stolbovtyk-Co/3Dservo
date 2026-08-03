@@ -19,6 +19,9 @@
     <Filter Include="Файлы заголовков\Utils">
       <UniqueIdentifier>{c9ed02b7-a0dd-4cc6-8958-188065deb985}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\ResourceManagers">
+      <UniqueIdentifier>{9a9e4de4-c45b-4357-ac12-b1fd6f242cc8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -120,13 +123,13 @@
       <Filter>Файлы заголовков\Nodes</Filter>
     </ClInclude>
     <ClInclude Include="mtlManager.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="MtlParser.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\ResourceManagers</Filter>
     </ClInclude>
     <ClInclude Include="ObjectManager.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\ResourceManagers</Filter>
+    </ClInclude>
+    <ClInclude Include="MtlParser.h">
+      <Filter>Файлы заголовков\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

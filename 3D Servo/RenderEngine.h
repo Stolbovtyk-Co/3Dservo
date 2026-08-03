@@ -12,7 +12,7 @@
 
 class RenderEngine {
 public:
-    RenderEngine(std::shared_ptr<Logger> logger, HWND hWnd, int Width, int Height);
+    RenderEngine(HWND hWnd, int Width, int Height);
 
     void Initialize(HWND hWnd, int m_width, int m_height);
     
@@ -60,7 +60,7 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
-    std::shared_ptr<Logger> m_logger;
+    Logger m_logger;
     std::unique_ptr<RenderQueueManager> m_renderQueue;
 
     //Loaders

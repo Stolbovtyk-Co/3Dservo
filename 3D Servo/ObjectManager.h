@@ -3,6 +3,7 @@
 #include "FileManager.h"
 #include "mtlManager.h"
 #include <unordered_map>
+#include "Logger.h"
 #include <vector>
 
 class ObjectManager
@@ -21,6 +22,8 @@ private:
 
 	std::unordered_map<std::string,std::vector<EConst::SubMesh>> m_objectDB;
 	std::vector<std::string> m_knownObjectFiles;
+
+	Logger m_logger;
 
 	FileManager* m_flMgr;
 	mtlManager* m_mtlMgr;	

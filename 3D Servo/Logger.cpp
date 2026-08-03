@@ -1,36 +1,160 @@
 #include "Logger.h"
 
-#include <chrono>
 #include <iostream>
 
-void Logger::run() {
-	std::vector<std::string> localBuffer;
 
-	while (m_isRunning) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
-		{
-			std::lock_guard<std::mutex> lock(m_mutex);
-			if (!m_buffer.empty()) {
-				localBuffer = std::move(m_buffer);
-				m_buffer.clear();
-			}
-		}
-		if (!localBuffer.empty()) {
-			for (const auto& msg : localBuffer) {
-				std::cout << msg << "\n";
-			}
-			std::cout.flush();
-			localBuffer.clear();
-		}
-	}
+std::mutex Logger::m_mutex;
+
+Logger::Logger()
+{
+    m_worker = std::jthread(&Logger::worker, this);
 }
 
-void Logger::log(std::string message) {
-	std::lock_guard<std::mutex> lock(m_mutex);
-	m_buffer.push_back(std::move(message));
+Logger::~Logger()
+{
+    {
+        std::lock_guard lock(m_mutex);
+        m_running = false;
+    }
+
+    m_cv.notify_one();
 }
 
-void Logger::logHR(HRESULT hr) {
-	std::lock_guard<std::mutex> lock(m_mutex);
-	m_buffer.push_back(std::format("HRESULT: 0x{:08X}", static_cast<unsigned long>(hr)));
+void Logger::log(std::string message)
+{
+    log(Level::Info, "", std::move(message));
+}
+
+void Logger::log(Level level,
+    std::string_view className,
+    std::string message)
+{
+    {
+        std::lock_guard lock(m_mutex);
+
+        m_queue.emplace(
+            Entry{
+                std::chrono::system_clock::now(),
+                level,
+                std::string(className),
+                std::move(message)
+            });
+    }
+
+    m_cv.notify_one();
+}
+
+void Logger::logHR(HRESULT hr,
+    std::string_view
+    className)
+{
+    log(Level::Error,
+        className,
+        std::format("HRESULT = 0x{:08X}",
+            static_cast<uint32_t>(hr)));
+}
+
+void Logger::worker()
+{
+    while (true)
+    {
+        Entry entry;
+
+        {
+            std::unique_lock lock(m_mutex);
+
+            m_cv.wait(lock, [&]
+                {
+                    return !m_queue.empty() || !m_running;
+                });
+
+            if (!m_running && m_queue.empty())
+                break;
+
+            entry = std::move(m_queue.front());
+            m_queue.pop();
+        }
+
+        print(entry);
+    }
+}
+
+void Logger::print(const Entry& entry)
+{
+    auto tt = std::chrono::system_clock::to_time_t(entry.time);
+
+    tm localTime{};
+    localtime_s(&localTime, &tt);
+
+    auto milliseconds =
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            entry.time.time_since_epoch()) %
+        1000;
+
+    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    GetConsoleScreenBufferInfo(console, &info);
+
+    SetConsoleTextAttribute(console, levelColor(entry.level));
+
+    std::string out = std::format("[{:02}:{:02}:{:02}.{:03}]",
+            localTime.tm_hour,
+            localTime.tm_min,
+            localTime.tm_sec,
+            milliseconds.count());
+
+    out += "[" + levelToString(entry.level) + "]";
+    if (!entry.className.empty())
+        out += "[" + entry.className + "]";
+
+    out += " " + entry.message + '\n';
+
+    std::cout << out;
+
+    SetConsoleTextAttribute(console, info.wAttributes);
+}
+
+std::string Logger::levelToString(Level level)
+{
+    switch (level)
+    {
+    case Level::Info:    return "INFO";
+    case Level::Warning: return "WARN";
+    case Level::Error:   return "ERROR";
+    case Level::Fatal:   return "FATAL";
+    }
+
+    return "UNKNOWN";
+}
+
+WORD Logger::levelColor(Level level)
+{
+    switch (level)
+    {
+    case Level::Info:
+        return FOREGROUND_RED |
+            FOREGROUND_GREEN |
+            FOREGROUND_BLUE;
+
+    case Level::Warning:
+        return FOREGROUND_RED |
+            FOREGROUND_GREEN |
+            FOREGROUND_INTENSITY;
+
+    case Level::Error:
+        return FOREGROUND_RED |
+            FOREGROUND_INTENSITY;
+
+    case Level::Fatal:
+        return BACKGROUND_RED |
+            FOREGROUND_RED |
+            FOREGROUND_GREEN |
+            FOREGROUND_BLUE |
+            FOREGROUND_INTENSITY;
+    }
+
+    return FOREGROUND_RED |
+        FOREGROUND_GREEN |
+        FOREGROUND_BLUE;
 }

@@ -17,6 +17,7 @@ void ObjectManager::LoadObject(std::string object)
 		for (auto& mesh : meshes) {
 			buffers.push_back(LoadObjectToGPU(mesh));
 		}
+        LOG_INFO(m_logger, "New object loaded: " + object);
 		m_objectDB.emplace(object, buffers);
 
 		m_knownObjectFiles.push_back(object);

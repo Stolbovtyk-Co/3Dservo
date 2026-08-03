@@ -17,6 +17,7 @@ void mtlManager::AddNewMtlFile(std::string name)
 		std::vector<EConst::MaterialData> materials = m_mtlParser.TxtToMtl(mtlFileLines);
 		for (auto& matData : materials) {
 			m_materialDB.emplace(matData.name, LoadMaterialToGPU(matData));
+            LOG_INFO(m_logger,"New material loaded : " + matData.name);
 		}
 		m_knownMtlFiles.push_back(name);
 	}
