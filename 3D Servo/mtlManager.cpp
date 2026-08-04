@@ -1,6 +1,7 @@
 #include "mtlManager.h"
 #include <algorithm>
 #include <directxtk/WICTextureLoader.h>
+#include <wrl/client.h>
 
 void mtlManager::AddNewMtlFiles(std::vector<std::string> names)
 {
@@ -16,7 +17,8 @@ void mtlManager::AddNewMtlFile(std::string name)
 		std::vector<std::string> mtlFileLines = m_flMgr->ReadText(name);
 		std::vector<EConst::MaterialData> materials = m_mtlParser.TxtToMtl(mtlFileLines);
 		for (auto& matData : materials) {
-			m_materialDB.emplace(matData.name, LoadMaterialToGPU(matData));
+            auto dx11m = LoadMaterialToGPU(matData);
+            m_materialDB.emplace(matData.name, dx11m);
             LOG_INFO(m_logger,"New material loaded : " + matData.name);
 		}
 		m_knownMtlFiles.push_back(name);
@@ -30,33 +32,40 @@ const EConst::DX11Material& mtlManager::GetMaterial(std::string name)
 		return mat->second;
 	}
 	else {
-		throw std::out_of_range("Material not found");
+		throw std::out_of_range("Material not found(" + name + ")");
 	}
+}
+
+void mtlManager::CreateMaterialConstantBuffer(ID3D11Device* pDevice)
+{
+    static_assert(sizeof(EConst::MaterialBuffer) % 16 == 0, "MaterialBuffer size must be a multiple of 16 bytes!");
+
+    ID3D11Buffer* pBuffer = nullptr;
+
+    D3D11_BUFFER_DESC cbDesc = {};
+    cbDesc.ByteWidth = sizeof(EConst::MaterialBuffer);       // Will be exactly 64 bytes
+    cbDesc.Usage = D3D11_USAGE_DYNAMIC;             // Optimized for CPU writes / GPU reads
+    cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;   // Tells DX11 this is a constant buffer
+    cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // Allows the CPU to use Map() with WRITE_DISCARD
+    cbDesc.MiscFlags = 0;
+    cbDesc.StructureByteStride = 0;
+
+    HRESULT hr = pDevice->CreateBuffer(&cbDesc, nullptr, &m_Buffer);
+
 }
 
 EConst::DX11Material mtlManager::LoadMaterialToGPU(EConst::MaterialData& matData)
 {
     EConst::DX11Material material{};
 
-    // Constant buffer
-    D3D11_BUFFER_DESC bd{};
-    bd.ByteWidth = sizeof(EConst::MaterialBuffer);
-    bd.Usage = D3D11_USAGE_IMMUTABLE;
-    bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    material.mBuffer = matData.Settings;
 
-    D3D11_SUBRESOURCE_DATA initData{};
-    initData.pSysMem = &(matData.Settings);
+    
 
-    HRESULT hr = m_comDevice->CreateBuffer(
-        &bd,
-        &initData,
-        material.vBuffer.GetAddressOf());
-
-    if (FAILED(hr))
-        throw std::runtime_error("Failed to create material constant buffer.");
     // Diffuse texture
     if (!matData.DiffuseTextureFile.empty())
     {
+        material.mBuffer.hasDiffuseMap = 1;
         DirectX::CreateWICTextureFromFile(
             m_comDevice.Get(),
             std::wstring(
@@ -68,6 +77,7 @@ EConst::DX11Material mtlManager::LoadMaterialToGPU(EConst::MaterialData& matData
     // Specular texture
     if (!matData.SpecularTextureFile.empty())
     {
+        material.mBuffer.hasSpecularMap = 1;
         DirectX::CreateWICTextureFromFile(
             m_comDevice.Get(),
             std::wstring(
@@ -79,6 +89,7 @@ EConst::DX11Material mtlManager::LoadMaterialToGPU(EConst::MaterialData& matData
     // Normal map
     if (!matData.NormalTextureFile.empty())
     {
+        material.mBuffer.hasNormalMap = 1;
         DirectX::CreateWICTextureFromFile(
             m_comDevice.Get(),
             std::wstring(

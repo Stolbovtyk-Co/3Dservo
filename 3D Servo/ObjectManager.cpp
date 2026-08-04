@@ -61,7 +61,7 @@ EConst::SubMesh ObjectManager::LoadObjectToGPU(const EConst::CpuMesh& mesh)
         out.vBuffer.GetAddressOf());
 
     if (FAILED(hr))
-        throw std::runtime_error("Failed to create vertex buffer.");
+        LOG_ERROR(m_logger, "Failed to create vertex buffer.");
 
     // Index Buffer
     D3D11_BUFFER_DESC ibDesc{};
@@ -79,7 +79,7 @@ EConst::SubMesh ObjectManager::LoadObjectToGPU(const EConst::CpuMesh& mesh)
         out.iBuffer.GetAddressOf());
 
     if (FAILED(hr))
-        throw std::runtime_error("Failed to create index buffer.");
+        LOG_ERROR(m_logger, "Failed to create index buffer.");
 
     // Metadata
     out.indexCount = static_cast<uint32_t>(mesh.Indices.size());

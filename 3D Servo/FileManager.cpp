@@ -17,7 +17,6 @@ FileManager::ReadedBytesDTO FileManager::ReadBytes(std::string PATH)
 	err = fopen_s(&File, PATH.c_str(), "rb");
 	if (err != 0 || File == nullptr) {
 		LOG_ERROR(m_logger, "Cannot load binary file (" + PATH + ")." );
-		throw;
 	}
 
 	fseek(File, 0, SEEK_END);

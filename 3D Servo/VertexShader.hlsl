@@ -1,37 +1,41 @@
-cbuffer ModelViewProjectionConstantBuffer : register(b0)
+cbuffer TransformBuffer : register(b0)
 {
-    matrix mWorld; // world matrix for object
-    matrix View; // view matrix
-    matrix Projection; // projection matrix
+    matrix worldMatrix;
+    matrix viewMatrix;
+    matrix projectionMatrix;
 };
 
-struct VS_INPUT
+struct VertexInput
 {
-    float3 vPos : POSITION;
-    float4 vColor : COLOR0;
-};
-struct VS_OUTPUT
-{
-    float4 Position : SV_POSITION; // interpolated vertex position (system value)
-    float4 Color : COLOR0; // interpolated diffuse color
+    float3 pos : POSITION;
+    float4 color : COLOR;
+    float2 uv : TEXCOORD0;
+    float3 normal : NORMAL;
 };
 
-VS_OUTPUT main(VS_INPUT input) // main is the default function name
+struct PixelInput
 {
-    VS_OUTPUT Output;
+    float4 position : SV_POSITION;
+    float4 color : COLOR;
+    float2 uv : TEXCOORD0;
+    float3 normal : NORMAL;
+    float3 worldPos : TEXCOORD1;
+};
 
-    float4 pos = float4(input.vPos, 1.0f);
-
-    // Transform the position from object space to homogeneous projection space
-
-    pos = mul(pos, mWorld);
-    pos = mul(pos, View);
-    pos = mul(pos, Projection);
-
-    Output.Position = pos;
-
-    // Just pass through the color data
-    Output.Color = input.vColor;
-
-    return Output;
+PixelInput main(VertexInput input)
+{
+    PixelInput output;
+    
+    float4 worldPosition = mul(float4(input.pos, 1.0f), worldMatrix);
+    output.worldPos = worldPosition.xyz;
+    
+    float4 viewPosition = mul(worldPosition, viewMatrix);
+    output.position = mul(viewPosition, projectionMatrix);
+    
+    output.normal = normalize(mul(input.normal, (float3x3) worldMatrix));
+    
+    output.uv = input.uv;
+    output.color = input.color;
+    
+    return output;
 }

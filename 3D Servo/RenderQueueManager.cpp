@@ -42,6 +42,7 @@ EConst::GPUIstructionsDTO RenderQueueManager::MakeRenderQueue()
 			gBuff.iBuffer = mesh.iBuffer;
 			gBuff.vBuffer = mesh.vBuffer;
 			gBuff.worldMatrix = cWorldMatrix;
+			gBuff.MaterialRegions = mesh.MaterialRegions;
 
 			if (cTransparent)
 			{

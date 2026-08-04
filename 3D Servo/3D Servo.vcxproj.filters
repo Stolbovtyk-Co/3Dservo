@@ -80,13 +80,7 @@
     <ClInclude Include="RenderEngine.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="EngineConstants.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="NodeFactory.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="ScriptPerfab.h">
@@ -129,6 +123,9 @@
       <Filter>Файлы заголовков\ResourceManagers</Filter>
     </ClInclude>
     <ClInclude Include="MtlParser.h">
+      <Filter>Файлы заголовков\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineConstants.h">
       <Filter>Файлы заголовков\Utils</Filter>
     </ClInclude>
   </ItemGroup>

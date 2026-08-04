@@ -27,11 +27,12 @@ std::vector<std::string> ObjParser::GetRequiredMtlFiles(const std::vector<std::s
     for (const std::string& line : lines)
     {
         std::vector<std::string> tokens = Split(line);
+        if (tokens.size() > 0) {
+            if (tokens[0] != "mtllib" || tokens.size() < 2)
+                continue;
 
-        if (tokens[0] != "mtllib" || tokens.size() < 2)
-            continue;
-
-        mtlFiles.push_back(tokens[1]);
+            mtlFiles.push_back(tokens[1]);
+        }
     }
 
     return mtlFiles;
@@ -85,7 +86,7 @@ ObjParser::SplitByMaterial(const std::vector<std::string>& lines)
     std::vector<ObjMaterialGroup> groups;
 
     ObjMaterialGroup current;
-    current.MaterialName = "default";
+    current.MaterialName = "SV_NOTEXTURE";
 
     for (const std::string& line : lines)
     {
@@ -107,7 +108,7 @@ ObjParser::SplitByMaterial(const std::vector<std::string>& lines)
             if (tokens.size() > 1)
                 current.MaterialName = tokens[1];
             else
-                current.MaterialName = "default";
+                current.MaterialName = "SV_NOTEXTURE";
 
             continue;
         }

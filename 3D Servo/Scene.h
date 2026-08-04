@@ -11,6 +11,7 @@
 #include "MeshFactory.h"
 #include "mtlManager.h"
 #include "ObjectManager.h"
+#include "Logger.h"
 
 class Scene
 {
@@ -40,15 +41,18 @@ public:
 			 Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
 			 Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
 			 Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
+			 Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler;
 		 };
 		 ShaderDTO GetShaderManagerDTO();
 		 virtual void Setup(Microsoft::WRL::ComPtr<ID3D11Device> com_device);
 	 protected:
+		 Logger m_logger;
 		 FileManager* m_flMgr;
 		 Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
 		 Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 		 Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
 		 Microsoft::WRL::ComPtr<ID3D11Buffer> m_constantBuffer;
+		 Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler;
 	 };
 
 protected:
@@ -68,6 +72,8 @@ protected:
 	std::unique_ptr <ShaderManager> m_sh;
 	SceneSettings m_st;
 
+	Logger m_logger;
+
 	//---------------------------------------
 	//	IMPORTED FROM RENDER ENGINE CLASSES:
 	Microsoft::WRL::ComPtr<ID3D11Device> m_com_device;
@@ -78,6 +84,10 @@ public:
 	virtual ShaderManager* GetShaderManager() {
 		return m_sh.get();
 	}
+	virtual mtlManager* GetMtlManager() {
+		return m_mtlManager.get();
+	}
+
 	SceneSettings GetSceneSettings() {
 		return m_st;
 	}

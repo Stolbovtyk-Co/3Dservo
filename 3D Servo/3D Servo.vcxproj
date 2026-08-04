@@ -167,7 +167,6 @@
     <ClInclude Include="mtlManager.h" />
     <ClInclude Include="MtlParser.h" />
     <ClInclude Include="Node3D.h" />
-    <ClInclude Include="NodeFactory.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="ObjParser.h" />
     <ClInclude Include="Obstacle3D.h" />

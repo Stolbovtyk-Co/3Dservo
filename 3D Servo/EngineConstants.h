@@ -58,6 +58,7 @@ namespace EConst {
 	struct GPUBuffers {
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> iBuffer;
+		std::vector<CpuSubMesh> MaterialRegions;
 		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixIdentity();
 		long indexCount = 0;
 		float cDistSqr = 0;
@@ -66,13 +67,17 @@ namespace EConst {
 		std::vector<GPUBuffers> regular;
 		std::vector<GPUBuffers> transparent;
 	};
-	struct MaterialBuffer {
+	struct alignas(16) MaterialBuffer {
 		DirectX::XMFLOAT3 ambientColor;  
 		float padding1;                  
 		DirectX::XMFLOAT3 diffuseColor;  
 		float padding2;
 		DirectX::XMFLOAT3 specularColor; 
-		float shininess;                 
+		float shininess;     
+		int    hasDiffuseMap = 0;
+		int    hasSpecularMap = 0;
+		int    hasNormalMap = 0;
+		float  padding3;
 	};
 	struct MaterialData {
 		std::string name;
@@ -82,9 +87,9 @@ namespace EConst {
 		std::string NormalTextureFile;
 	};
 	struct DX11Material {
-		Microsoft::WRL::ComPtr<ID3D11Buffer> vBuffer;
-		Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> Texture; //map_Kd
-		Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> SpecularMap; //map_Ks
-		Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> NormalMap; //map_Bump
+		MaterialBuffer mBuffer;
+		Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> Texture = nullptr; //map_Kd
+		Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> SpecularMap = nullptr; //map_Ks
+		Microsoft::WRL::ComPtr <ID3D11ShaderResourceView> NormalMap = nullptr; //map_Bump
 	};
 }

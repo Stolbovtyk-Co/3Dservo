@@ -122,7 +122,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 	D3D11_RASTERIZER_DESC rasterDesc = {};
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.CullMode = D3D11_CULL_BACK;
-	rasterDesc.FrontCounterClockwise = FALSE;
+	rasterDesc.FrontCounterClockwise = TRUE;
 	rasterDesc.DepthClipEnable = TRUE;
 
 	hr = m_device->CreateRasterizerState(&rasterDesc, m_rasterizerState.GetAddressOf());
@@ -281,6 +281,7 @@ void RenderEngine::Render() {
 
 	m_context->OMSetRenderTargets(1, m_pRenderTarget.GetAddressOf(), m_pDepthStencilView.Get());
 
+
 	m_context->OMSetBlendState(nullptr, NULL, 0xffffffff);
 	m_context->OMSetDepthStencilState(pDepthStencilStateRegular, 1);
 	
@@ -302,6 +303,7 @@ void RenderEngine::RenderGPUBuffers(EConst::GPUBuffers g)
 {
 	DirectX::XMMATRIX globalMat = g.worldMatrix;
 	DirectX::XMStoreFloat4x4(&m_constantBufferData.world, DirectX::XMMatrixTranspose(globalMat));
+
 	m_context->UpdateSubresource(
 		m_constantBuffer.Get(),
 		0,
@@ -333,11 +335,57 @@ void RenderEngine::RenderGPUBuffers(EConst::GPUBuffers g)
 		m_constantBuffer.GetAddressOf()
 	);
 
-	m_context->DrawIndexed(
-		g.indexCount,
-		0,
-		0
-	);
+	ID3D11SamplerState* rawSampler = m_sampler.Get();
+	m_context->PSSetSamplers(0, 1, &rawSampler);
+
+	for (const auto& subMesh : g.MaterialRegions) {
+		auto& cMat = m_currentScene->GetMtlManager()->GetMaterial(subMesh.MaterialName);
+		auto tBuffer = m_currentScene->GetMtlManager()->GetTBuffer();
+
+		//TODO: send camera pos
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		HRESULT hrT = m_context->Map(
+			tBuffer,
+			0,
+			D3D11_MAP_WRITE_DISCARD,
+			0,
+			&mappedResource
+		);
+		if(SUCCEEDED(hrT)) {
+			memcpy(mappedResource.pData, &(cMat.mBuffer), sizeof(EConst::MaterialBuffer));
+			m_context->Unmap(tBuffer, 0);
+		}
+
+		ID3D11ShaderResourceView* textureSRV = cMat.Texture.Get();
+		m_context->PSSetShaderResources(
+			0,           
+			1,            
+			&textureSRV   
+		);
+
+		ID3D11ShaderResourceView* textureN = cMat.NormalMap.Get();
+		m_context->PSSetShaderResources(
+			2,
+			1,
+			&textureN
+		);
+
+		ID3D11ShaderResourceView* textureS = cMat.SpecularMap.Get();
+		m_context->PSSetShaderResources(
+			1,
+			1,
+			&textureS
+		);
+
+		m_context->PSSetConstantBuffers(1, 1, &tBuffer);
+
+		m_context->DrawIndexed(
+			subMesh.IndexCount,  
+			subMesh.StartIndex,   
+			0                     
+		);
+	}
 }
 
 #pragma endregion
@@ -364,6 +412,7 @@ void RenderEngine::PreloadAssetsAsync()
 	m_inputLayout = ShaderDTO.inputLayout;
 	m_pixelShader = ShaderDTO.pixelShader;
 	m_constantBuffer = ShaderDTO.constantBuffer;
+	m_sampler = ShaderDTO.sampler;
 
 	m_context->VSSetShader(
 		m_vertexShader.Get(),
