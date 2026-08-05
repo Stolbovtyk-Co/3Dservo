@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+
+//TODO: destroy this shit
 namespace EConst {
 	typedef struct _vertexInfo 
 	{

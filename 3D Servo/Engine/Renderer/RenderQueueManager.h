@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "Scene.h"
+#include "Scene/Scene.h"
 #include "EngineConstants.h"
 
 class RenderQueueManager

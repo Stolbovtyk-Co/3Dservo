@@ -1,5 +1,5 @@
 #include "MeshFactory.h"
-#include "MeshInstance3D.h"
+#include "Scene/Nodes/MeshInstance3D.h"
 
 std::shared_ptr<Node3D> MeshFactory::CreateStaticInstance(std::string PATH)
 {

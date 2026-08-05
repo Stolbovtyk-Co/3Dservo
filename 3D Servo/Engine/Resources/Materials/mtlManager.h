@@ -1,9 +1,9 @@
 #pragma once
 #include "EngineConstants.h"
-#include "FileManager.h"
-#include "MtlParser.h"
+#include "Importers/FileManager.h"
+#include "Importers/Obj/MtlParser.h"
 #include <unordered_map>
-#include "Logger.h"
+#include "Core/Logger.h"
 #include <vector>
 #include <wrl/client.h>
 

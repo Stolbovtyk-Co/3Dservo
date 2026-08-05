@@ -1,7 +1,7 @@
 #pragma once
-#include "ScriptPerfab.h"
+#include "Scene/Scripts/ScriptPerfab.h"
 #include <DirectXMath.h>
-#include "Node3D.h"
+#include "Scene/Nodes/Node3D.h"
 
 class RotateScript : public ScriptPerfab
 {

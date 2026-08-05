@@ -2,16 +2,16 @@
 #include <wrl/client.h>
 #include <d3d11.h>
 #include <DirectXMath.h>
-#include "FileManager.h"
+#include "Importers/FileManager.h"
 #include <memory>
 #include <string>
-#include "Node3D.h"
+#include "Nodes/Node3D.h"
 #include <vector>
 #include "EngineConstants.h"
-#include "MeshFactory.h"
-#include "mtlManager.h"
-#include "ObjectManager.h"
-#include "Logger.h"
+#include "Resources/Mesh/MeshFactory.h"
+#include "Resources/Materials/mtlManager.h"
+#include "Resources/Mesh/ObjectManager.h"
+#include "Core/Logger.h"
 
 class Scene
 {
@@ -31,29 +31,6 @@ public:
 
 	 virtual ~Scene() = default;
 
-	 class ShaderManager
-	 {
-	 public:
-		 ShaderManager(FileManager* flMgr);
-		 struct ShaderDTO
-		 {
-			 Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader;
-			 Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
-			 Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader;
-			 Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
-			 Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler;
-		 };
-		 ShaderDTO GetShaderManagerDTO();
-		 virtual void Setup(Microsoft::WRL::ComPtr<ID3D11Device> com_device);
-	 protected:
-		 Logger m_logger;
-		 FileManager* m_flMgr;
-		 Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
-		 Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
-		 Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
-		 Microsoft::WRL::ComPtr<ID3D11Buffer> m_constantBuffer;
-		 Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler;
-	 };
 
 protected:
 
@@ -69,7 +46,6 @@ protected:
 	std::unique_ptr<mtlManager> m_mtlManager;
 	std::unique_ptr<ObjectManager> m_objectManager;
 
-	std::unique_ptr <ShaderManager> m_sh;
 	SceneSettings m_st;
 
 	Logger m_logger;
@@ -81,9 +57,6 @@ protected:
 	//---------------------------------------
 	//	GETTER && SETTER ZONE
 public:
-	virtual ShaderManager* GetShaderManager() {
-		return m_sh.get();
-	}
 	virtual mtlManager* GetMtlManager() {
 		return m_mtlManager.get();
 	}

@@ -27,110 +27,122 @@
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
+    <ClCompile Include="Engine\Core\Application.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="RenderEngine.cpp">
+    <ClCompile Include="Engine\Renderer\RenderEngine.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Logger.cpp">
+    <ClCompile Include="Engine\Core\Logger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="ObjParser.cpp">
+    <ClCompile Include="Engine\Importers\Obj\ObjParser.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
+    <ClCompile Include="Engine\Scene\Scene.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="MeshFactory.cpp">
+    <ClCompile Include="Engine\Resources\Mesh\MeshFactory.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="ConvexDecomposer.cpp">
+    <ClCompile Include="Engine\Resources\Mesh\ConvexDecomposer.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="FileManager.cpp">
+    <ClCompile Include="Engine\Importers\FileManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="MeshInstance3D.cpp">
+    <ClCompile Include="Engine\Scene\Nodes\Node3D.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Node3D.cpp">
+    <ClCompile Include="Engine\Renderer\RenderQueueManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="RenderQueueManager.cpp">
+    <ClCompile Include="Engine\Scene\Nodes\Obstacle3D.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Obstacle3D.cpp">
+    <ClCompile Include="Engine\Resources\Materials\mtlManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="mtlManager.cpp">
+    <ClCompile Include="Engine\Importers\Obj\MtlParser.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="MtlParser.cpp">
+    <ClCompile Include="Engine\Resources\Mesh\ObjectManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectManager.cpp">
+    <ClCompile Include="Engine\Scene\Nodes\MeshInstance3D.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\Device\GraphicsDevice.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Renderer\Shaders\ShaderManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
+    <ClInclude Include="Engine\Core\Application.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="RenderEngine.h">
+    <ClInclude Include="Engine\Renderer\RenderEngine.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
+    <ClInclude Include="Engine\Scene\Scene.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptPerfab.h">
+    <ClInclude Include="Engine\Scene\Scripts\ScriptPerfab.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="MeshFactory.h">
+    <ClInclude Include="Engine\Resources\Mesh\MeshFactory.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="RotateScript.h">
+    <ClInclude Include="Env\RotateScript.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="RenderQueueManager.h">
+    <ClInclude Include="Engine\Renderer\RenderQueueManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Node3D.h">
+    <ClInclude Include="Engine\Scene\Nodes\Node3D.h">
       <Filter>Файлы заголовков\Nodes</Filter>
     </ClInclude>
-    <ClInclude Include="MeshInstance3D.h">
+    <ClInclude Include="Engine\Resources\Mesh\ConvexDecomposer.h">
+      <Filter>Файлы заголовков\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Importers\FileManager.h">
+      <Filter>Файлы заголовков\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Logger.h">
+      <Filter>Файлы заголовков\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Importers\Obj\ObjParser.h">
+      <Filter>Файлы заголовков\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Scene\Nodes\Obstacle3D.h">
       <Filter>Файлы заголовков\Nodes</Filter>
     </ClInclude>
-    <ClInclude Include="ConvexDecomposer.h">
-      <Filter>Файлы заголовков\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager.h">
-      <Filter>Файлы заголовков\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Файлы заголовков\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjParser.h">
-      <Filter>Файлы заголовков\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Obstacle3D.h">
-      <Filter>Файлы заголовков\Nodes</Filter>
-    </ClInclude>
-    <ClInclude Include="mtlManager.h">
+    <ClInclude Include="Engine\Resources\Materials\mtlManager.h">
       <Filter>Файлы заголовков\ResourceManagers</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectManager.h">
+    <ClInclude Include="Engine\Resources\Mesh\ObjectManager.h">
       <Filter>Файлы заголовков\ResourceManagers</Filter>
     </ClInclude>
-    <ClInclude Include="MtlParser.h">
+    <ClInclude Include="Engine\Importers\Obj\MtlParser.h">
       <Filter>Файлы заголовков\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="EngineConstants.h">
+    <ClInclude Include="Engine\EngineConstants.h">
       <Filter>Файлы заголовков\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Scene\Nodes\MeshInstance3D.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\Device\GraphicsDevice.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Renderer\Shaders\ShaderManager.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl" />
-    <FxCompile Include="VertexShader.hlsl" />
+    <FxCompile Include="Engine\Scene\Shaders\PixelShader.hlsl" />
+    <FxCompile Include="Engine\Scene\Shaders\VertexShader.hlsl" />
   </ItemGroup>
 </Project>

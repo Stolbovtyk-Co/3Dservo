@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
-#include "Node3D.h"
+#include "Scene/Nodes/Node3D.h"
 #include "ObjectManager.h"
 
 class Logger;

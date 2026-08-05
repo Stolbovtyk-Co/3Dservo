@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 #include "EngineConstants.h"
-#include "ScriptPerfab.h"
+#include "Scene/Scripts/ScriptPerfab.h"
 
 class Node3D
 {

@@ -111,6 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Engine; $(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,56 +140,53 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="ConvexDecomposer.cpp" />
-    <ClCompile Include="FileManager.cpp" />
-    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="Engine\Core\Application.cpp" />
+    <ClCompile Include="Engine\Resources\Mesh\ConvexDecomposer.cpp" />
+    <ClCompile Include="Engine\Importers\FileManager.cpp" />
+    <ClCompile Include="Engine\Core\Logger.cpp" />
+    <ClCompile Include="Engine\Scene\Nodes\MeshInstance3D.cpp" />
+    <ClCompile Include="Engine\Renderer\Device\GraphicsDevice.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MeshFactory.cpp" />
-    <ClCompile Include="MeshInstance3D.cpp" />
-    <ClCompile Include="mtlManager.cpp" />
-    <ClCompile Include="MtlParser.cpp" />
-    <ClCompile Include="Node3D.cpp" />
-    <ClCompile Include="ObjectManager.cpp" />
-    <ClCompile Include="ObjParser.cpp" />
-    <ClCompile Include="Obstacle3D.cpp" />
-    <ClCompile Include="RenderEngine.cpp" />
-    <ClCompile Include="RenderQueueManager.cpp" />
-    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Engine\Resources\Mesh\MeshFactory.cpp" />
+    <ClCompile Include="Engine\Resources\Materials\mtlManager.cpp" />
+    <ClCompile Include="Engine\Importers\Obj\MtlParser.cpp" />
+    <ClCompile Include="Engine\Scene\Nodes\Node3D.cpp" />
+    <ClCompile Include="Engine\Resources\Mesh\ObjectManager.cpp" />
+    <ClCompile Include="Engine\Importers\Obj\ObjParser.cpp" />
+    <ClCompile Include="Engine\Scene\Nodes\Obstacle3D.cpp" />
+    <ClCompile Include="Engine\Renderer\RenderEngine.cpp" />
+    <ClCompile Include="Engine\Renderer\RenderQueueManager.cpp" />
+    <ClCompile Include="Engine\Scene\Scene.cpp" />
+    <ClCompile Include="Engine\Renderer\Shaders\ShaderManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="ConvexDecomposer.h" />
-    <ClInclude Include="EngineConstants.h" />
-    <ClInclude Include="FileManager.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="MeshFactory.h" />
-    <ClInclude Include="MeshInstance3D.h" />
-    <ClInclude Include="mtlManager.h" />
-    <ClInclude Include="MtlParser.h" />
-    <ClInclude Include="Node3D.h" />
-    <ClInclude Include="ObjectManager.h" />
-    <ClInclude Include="ObjParser.h" />
-    <ClInclude Include="Obstacle3D.h" />
-    <ClInclude Include="RenderEngine.h" />
-    <ClInclude Include="RenderQueueManager.h" />
-    <ClInclude Include="RotateScript.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="ScriptPerfab.h" />
+    <ClInclude Include="Engine\Core\Application.h" />
+    <ClInclude Include="Engine\Resources\Mesh\ConvexDecomposer.h" />
+    <ClInclude Include="Engine\EngineConstants.h" />
+    <ClInclude Include="Engine\Importers\FileManager.h" />
+    <ClInclude Include="Engine\Core\Logger.h" />
+    <ClInclude Include="Engine\Resources\Mesh\MeshFactory.h" />
+    <ClInclude Include="Engine\Resources\Materials\mtlManager.h" />
+    <ClInclude Include="Engine\Importers\Obj\MtlParser.h" />
+    <ClInclude Include="Engine\Scene\Nodes\Node3D.h" />
+    <ClInclude Include="Engine\Resources\Mesh\ObjectManager.h" />
+    <ClInclude Include="Engine\Importers\Obj\ObjParser.h" />
+    <ClInclude Include="Engine\Scene\Nodes\MeshInstance3D.h" />
+    <ClInclude Include="Engine\Scene\Nodes\Obstacle3D.h" />
+    <ClInclude Include="Engine\Renderer\RenderEngine.h" />
+    <ClInclude Include="Engine\Renderer\RenderQueueManager.h" />
+    <ClInclude Include="Env\RotateScript.h" />
+    <ClInclude Include="Engine\Scene\Scene.h" />
+    <ClInclude Include="Engine\Scene\Scripts\ScriptPerfab.h" />
+    <ClInclude Include="Engine\Renderer\Device\GraphicsDevice.h" />
+    <ClInclude Include="Engine\Renderer\Shaders\ShaderManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
+    <FxCompile Include="Engine\Scene\Shaders\PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
+    <FxCompile Include="Engine\Scene\Shaders\VertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0_level_9_3</ShaderModel>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

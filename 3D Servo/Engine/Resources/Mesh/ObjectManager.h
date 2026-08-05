@@ -1,9 +1,9 @@
 #pragma once
-#include "ObjParser.h"
-#include "FileManager.h"
-#include "mtlManager.h"
+#include "Importers/Obj/ObjParser.h"
+#include "Importers/FileManager.h"
+#include "Resources/Materials/mtlManager.h"
 #include <unordered_map>
-#include "Logger.h"
+#include "Core/Logger.h"
 #include <vector>
 
 class ObjectManager
