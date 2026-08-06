@@ -1,0 +1,8 @@
+{
+  "name": "3dservo",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "directxtk",
+    "v-hacd"
+  ]
+}

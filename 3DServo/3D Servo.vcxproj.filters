@@ -145,4 +145,7 @@
     <FxCompile Include="Engine\Scene\Shaders\PixelShader.hlsl" />
     <FxCompile Include="Engine\Scene\Shaders\VertexShader.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="vcpkg.json" />
+  </ItemGroup>
 </Project>

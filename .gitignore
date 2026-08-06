@@ -430,3 +430,6 @@ FodyWeavers.xsd
 
 # Compiled shaders
 *.cso
+
+# vcpkg build artifacts
+vcpkg_installed/

@@ -1,11 +1,11 @@
 #include "RenderEngine.h"
-#include <wrl/client.h>
-#include <memory>
 #include "Core/Logger.h"
 #include "Scene/Scene.h"
-#include <d3d11.h> 
-#include <dxgiformat.h> 
 #include "EngineConstants.h"
+#include <wrl/client.h>
+#include <memory>
+#include <d3d11.h> 
+#include <dxgiformat.h>
 
 using namespace DirectX;
 
@@ -30,7 +30,7 @@ void RenderEngine::Initialize(HWND hWnd, int Width, int Height)
 
 void RenderEngine::CreateViewAndPerspective()
 {
-	DirectX::XMVECTOR eye = m_currentScene->GetSceneSettings().cameraPos;
+	DirectX::XMVECTOR eye = m_currentScene->GetSceneSettings().cameraPos; //TODO: rework
 	DirectX::XMVECTOR at = m_currentScene->GetSceneSettings().cameraLookAt;
 	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.f);
 
